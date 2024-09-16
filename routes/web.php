@@ -515,6 +515,11 @@ Route::get('migration', function () {
     echo 'ok migrate';
 });
 
+Route::get('key_generate', function () {
+    \Illuminate\Support\Facades\Artisan::call('key:generate');
+    echo 'key generated';
+});
+
 
 
 
