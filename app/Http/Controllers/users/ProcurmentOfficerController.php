@@ -281,7 +281,7 @@ class ProcurmentOfficerController extends Controller
                     $query->select('order_id')
                         ->from('price_offers')
                         ->whereIn('supplier_id', function ($query) use ($request){
-                            $query->select('id')->from('users')->where('user_category',$request->user_category)->get();
+                            $query->select('id')->from('users')->whereJsonContains('user_category',$request->user_category)->get();
                     });
                 });
             })
