@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\OrderAttachmentModel;
+use App\Models\SystemSettingModel;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-const company_name = 'شركة جيلانكو للتجارة والصناعة';
+$company_name = SystemSettingModel::first('company_name')->company_name ?? 'اسم الشركة';
+define('company_name',$company_name);
 
 Route::get('/', function () {
     if (\Illuminate\Support\Facades\Auth::check()) {

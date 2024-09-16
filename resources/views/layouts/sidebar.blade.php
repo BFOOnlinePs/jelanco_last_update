@@ -14,7 +14,7 @@
                 <div class="image">
                     <img src="{{ asset('img/jelanco.png') }}" style="width: 60%" class="img-circle elevation-2" alt="User Image">
                 </div>
-                <h6 class="text-white mt-2">شركة جيلانكو للتجارة والصناعة</h6>
+                <h6 class="text-white mt-2">{{ company_name }}</h6>
             </a>
             {{--            <div class="info">--}}
 {{--                <a href="#" class="d-block">{{ auth()->user()->name }}</a>--}}

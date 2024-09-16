@@ -8,7 +8,7 @@
             <a href="{{ route('home') }}" class="nav-link">الرئيسية</a>
         </li>
         <li class="pt-2 text-success">
-            <span>شركة جيلانكو للتجارة والصناعة</span>
+            <span>{{ company_name }}</span>
         </li>
 {{--        <li class="nav-item d-none d-sm-inline-block">--}}
 {{--            <a href="#" class="nav-link">Contact</a>--}}
