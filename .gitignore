@@ -1,2 +1,2 @@
-/storage/*.key
-/.env
+.env
+storage/
