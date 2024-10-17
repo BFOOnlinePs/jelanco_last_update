@@ -3,19 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\CriteriaModel;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CriteriaController extends Controller
 {
     public function index(){
         $criteria = CriteriaModel::get();
-        return view('admin.criteria.index',['criteria'=>$criteria]);
+        $users = User::where('user_role',2)->where('user_role',9)->where('user_role',10)->get();
+        return view('admin.criteria.index',['criteria'=>$criteria , 'users'=>$users]);
     }
 
     public function create(Request $request){
         $data = new CriteriaModel();
         $data->name = $request->name;
         $data->mark = $request->mark;
+        $data->role_id = '[2]';
         if($data->save()){
             return redirect()->back()->with(['success'=>'تم اضافة البيانات بنجاح']);
         }else{
