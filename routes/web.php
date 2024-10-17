@@ -499,6 +499,24 @@ Route::group(['middleware' => 'auth',], function () {
         Route::get('note_book_pdf',[App\Http\Controllers\NoteBookController::class, 'note_book_pdf'])->name('note_book.note_book_pdf');
     });
 
+    Route::group(['prefix'=>'criteria'], function () {
+        Route::get('index',[App\Http\Controllers\CriteriaController::class, 'index'])->name('criteria.index');
+        Route::post('create',[App\Http\Controllers\CriteriaController::class, 'create'])->name('criteria.create');
+        Route::get('edit/{id}',[App\Http\Controllers\CriteriaController::class, 'edit'])->name('criteria.edit');
+        Route::post('update',[App\Http\Controllers\CriteriaController::class, 'update'])->name('criteria.update');
+        Route::post('update_role_id',[App\Http\Controllers\CriteriaController::class, 'update_role_id'])->name('criteria.update_role_id');
+    });
+    
+    Route::group(['prefix'=>'evaluation'], function () {
+        Route::get('index',[App\Http\Controllers\EvaluationOrderController::class, 'index'])->name('evaluation.index');
+        Route::post('orders_list',[App\Http\Controllers\EvaluationOrderController::class, 'orders_list'])->name('evaluation.orders_list');
+        Route::get('details/{order_id}',[App\Http\Controllers\EvaluationOrderController::class, 'details'])->name('evaluation.details');
+        Route::post('create_evaluation',[App\Http\Controllers\EvaluationOrderController::class, 'create_evaluation'])->name('evaluation.create_evaluation');
+        Route::post('update_evaluation_status_ajax',[App\Http\Controllers\EvaluationOrderController::class, 'update_evaluation_status_ajax'])->name('evaluation.update_evaluation_status_ajax');
+        Route::post('update_notes_ajax',[App\Http\Controllers\EvaluationOrderController::class, 'update_notes_ajax'])->name('evaluation.update_notes_ajax');
+        Route::get('evaluation_order_pdf/{id}',[App\Http\Controllers\EvaluationOrderController::class, 'evaluation_order_pdf'])->name('evaluation.evaluation_order_pdf');
+    });
+
     Route::get('generate', function () {
         \Illuminate\Support\Facades\Artisan::call('storage:link');
         echo 'ok';

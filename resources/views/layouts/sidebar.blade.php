@@ -1,10 +1,11 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: {{ !empty(App\Models\SystemSettingModel::first()) ?? App\Models\SystemSettingModel::first()->value('sidebar_color') }}">
+<aside class="main-sidebar sidebar-dark-primary elevation-4"
+    style="background-color: {{ !empty(App\Models\SystemSettingModel::first()) ?? App\Models\SystemSettingModel::first()->value('sidebar_color') }}">
     <!-- Brand Logo -->
-{{--    <a href="{{ route('home') }}" class="brand-link">--}}
-{{--        <img src="{{ asset('assets/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"--}}
-{{--             style="opacity: .8">--}}
-{{--        <span class="brand-text font-weight-light">Jelanco</span>--}}
-{{--    </a>--}}
+    {{--    <a href="{{ route('home') }}" class="brand-link"> --}}
+    {{--        <img src="{{ asset('assets/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" --}}
+    {{--             style="opacity: .8"> --}}
+    {{--        <span class="brand-text font-weight-light">Jelanco</span> --}}
+    {{--    </a> --}}
 
     <!-- Sidebar -->
     <div class="sidebar">
@@ -12,24 +13,26 @@
         <div class="user-panel mt-3 pb-3 mb-3 text-center">
             <a href="{{ route('home') }}">
                 <div class="image">
-                    <img src="{{ asset('img/jelanco.png') }}" style="width: 60%" class="img-circle elevation-2" alt="User Image">
+                    <img src="{{ asset('img/jelanco.png') }}" style="width: 60%" class="img-circle elevation-2"
+                        alt="User Image">
                 </div>
                 <h6 class="text-white mt-2">{{ company_name }}</h6>
             </a>
-            {{--            <div class="info">--}}
-{{--                <a href="#" class="d-block">{{ auth()->user()->name }}</a>--}}
-{{--            </div>--}}
+            {{--            <div class="info"> --}}
+            {{--                <a href="#" class="d-block">{{ auth()->user()->name }}</a> --}}
+            {{--            </div> --}}
         </div>
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
                      with font-awesome or any other icon font library -->
-                @if(auth()->user()->user_role == 9)
-
+                @if (auth()->user()->user_role == 9)
                     <li class="nav-item has-treeview ">
-                        <a href="{{ route('users.storekeeper.personal_account',['id'=>auth()->user()->id]) }}" class="nav-link">
+                        <a href="{{ route('users.storekeeper.personal_account', ['id' => auth()->user()->id]) }}"
+                            class="nav-link">
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>
                                 الملف الشخصي
@@ -49,6 +52,14 @@
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>
                                 جميع طلبات الشراء
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item has-treeview ">
+                        <a href="{{ route('evaluation.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>
+                                تقييم طلبات
                             </p>
                         </a>
                     </li>
@@ -74,7 +85,7 @@
                             <i class="nav-icon fas fa-th"></i>
                             <p>
                                 المهام
-                                {{--                            <span class="right badge badge-danger">New</span>--}}
+                                {{--                            <span class="right badge badge-danger">New</span> --}}
                             </p>
                         </a>
                     </li>
@@ -84,7 +95,7 @@
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>
                                 طلبات الشراء
-                                {{--                            <i class="right fas fa-angle-left"></i>--}}
+                                {{--                            <i class="right fas fa-angle-left"></i> --}}
                             </p>
                         </a>
                     </li>
@@ -101,7 +112,15 @@
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>
                                 الأصناف
-                                {{--                            <i class="right fas fa-angle-left"></i>--}}
+                                {{--                            <i class="right fas fa-angle-left"></i> --}}
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item has-treeview ">
+                        <a href="{{ route('evaluation.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>
+                                تقييم طلبات
                             </p>
                         </a>
                     </li>
@@ -110,7 +129,7 @@
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>
                                 الموردين
-                                {{--                            <i class="right fas fa-angle-left"></i>--}}
+                                {{--                            <i class="right fas fa-angle-left"></i> --}}
                             </p>
                         </a>
                     </li>
@@ -127,7 +146,7 @@
                             <i class="nav-icon fas fa-th"></i>
                             <p>
                                 التقويم
-                                {{--                            <span class="right badge badge-danger">New</span>--}}
+                                {{--                            <span class="right badge badge-danger">New</span> --}}
                             </p>
                         </a>
                     </li>
@@ -136,7 +155,7 @@
                             <i class="nav-icon fas fa-th"></i>
                             <p>
                                 المهام
-                                {{--                            <span class="right badge badge-danger">New</span>--}}
+                                {{--                            <span class="right badge badge-danger">New</span> --}}
                             </p>
                         </a>
                     </li>
@@ -145,7 +164,7 @@
                             <i class="nav-icon fa fa-note-sticky"></i>
                             <p>
                                 دفتر ملاحظاتي
-                                {{--                            <span class="right badge badge-danger">New</span>--}}
+                                {{--                            <span class="right badge badge-danger">New</span> --}}
                             </p>
                         </a>
                     </li>
@@ -154,7 +173,7 @@
                             <i class="nav-icon fa fa-file"></i>
                             <p>
                                 التقارير
-                                {{--                            <span class="right badge badge-danger">New</span>--}}
+                                {{--                            <span class="right badge badge-danger">New</span> --}}
                             </p>
                         </a>
                     </li>
@@ -167,13 +186,12 @@
                         </a>
                     </li>
                 @elseif(auth()->user()->user_role == 3)
-
                     <li class="nav-item has-treeview menu-open">
                         <a href="{{ route('orders.procurement_officer.order_index') }}" class="nav-link">
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>
                                 طلبات الشراء
-                                {{--                            <i class="right fas fa-angle-left"></i>--}}
+                                {{--                            <i class="right fas fa-angle-left"></i> --}}
                             </p>
                         </a>
                     </li>
@@ -182,7 +200,7 @@
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>
                                 الأصناف
-                                {{--                            <i class="right fas fa-angle-left"></i>--}}
+                                {{--                            <i class="right fas fa-angle-left"></i> --}}
                             </p>
                         </a>
                     </li>
@@ -191,7 +209,7 @@
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>
                                 الموردين
-                                {{--                            <i class="right fas fa-angle-left"></i>--}}
+                                {{--                            <i class="right fas fa-angle-left"></i> --}}
                             </p>
                         </a>
                     </li>
@@ -200,19 +218,17 @@
                             <i class="nav-icon fas fa-th"></i>
                             <p>
                                 التقويم
-                                {{--                            <span class="right badge badge-danger">New</span>--}}
+                                {{--                            <span class="right badge badge-danger">New</span> --}}
                             </p>
                         </a>
                     </li>
-
-
                 @else
                     <li class="nav-item has-treeview menu-open">
                         <a href="{{ route('users.index') }}" class="nav-link">
                             <i class="nav-icon fa fa-user"></i>
                             <p>
                                 المستخدمين
-                                {{--                            <i class="right fas fa-angle-left"></i>--}}
+                                {{--                            <i class="right fas fa-angle-left"></i> --}}
                             </p>
                         </a>
                     </li>
@@ -231,7 +247,15 @@
                             <i class="nav-icon fa fa-th-list"></i>
                             <p>
                                 طلبات شراء
-                                {{--                            <span class="right badge badge-danger">New</span>--}}
+                                {{--                            <span class="right badge badge-danger">New</span> --}}
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item has-treeview ">
+                        <a href="{{ route('evaluation.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>
+                                تقييم طلبات
                             </p>
                         </a>
                     </li>
@@ -240,7 +264,7 @@
                             <i class="nav-icon fa fa-tasks"></i>
                             <p>
                                 المهام
-                                {{--                            <span class="right badge badge-danger">New</span>--}}
+                                {{--                            <span class="right badge badge-danger">New</span> --}}
                             </p>
                         </a>
                     </li>
@@ -250,7 +274,7 @@
                             <i class="nav-icon fa fa-calendar"></i>
                             <p>
                                 التقويم
-                                {{--                            <span class="right badge badge-danger">New</span>--}}
+                                {{--                            <span class="right badge badge-danger">New</span> --}}
                             </p>
                         </a>
                     </li>
@@ -260,7 +284,7 @@
                             <i class="nav-icon fa fa-file"></i>
                             <p>
                                 التقارير
-                                {{--                            <span class="right badge badge-danger">New</span>--}}
+                                {{--                            <span class="right badge badge-danger">New</span> --}}
                             </p>
                         </a>
                     </li>
@@ -277,7 +301,7 @@
                             <i class="nav-icon fa fa-note-sticky"></i>
                             <p>
                                 دفتر ملاحظاتي
-                                {{--                            <span class="right badge badge-danger">New</span>--}}
+                                {{--                            <span class="right badge badge-danger">New</span> --}}
                             </p>
                         </a>
                     </li>

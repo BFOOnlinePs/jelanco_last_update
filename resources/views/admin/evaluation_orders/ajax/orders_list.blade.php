@@ -7,7 +7,7 @@
                     <th style="width: 10px">#</th>
                     <th style="width: 170px">الرقم المرجعي للطلبية</th>
                     <th style="min-width: 200px">الترسية</th>
-                    <th style="min-width: 200px">مجال العمل</th>
+                    {{-- <th style="min-width: 200px">مجال العمل</th> --}}
                     <th style="width: 180px">متابعة بواسطة</th>
                     <th style="width: 150px">تاريخ الطلبية</th>
                     <th style="width: 200px">حالة الطلبية</th>
@@ -48,7 +48,7 @@
                                     @endforeach
                                 @endif
                             </td>
-                            <td>
+                            {{-- <td>
                                 @foreach ($key->supplier as $child)
                                     @if (!empty($child->user_categories))
                                         {{ implode(', ', $child->user_categories) }}
@@ -56,7 +56,7 @@
                                         empty
                                     @endif
                                 @endforeach
-                            </td>
+                            </td> --}}
                             <td>
                                 @if ($view == 'officer_view' || auth()->user()->user_role == 9)
                                     <select disabled onchange="updateToUser({{ $key->id }} , this.value)"
@@ -67,8 +67,8 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <select onchange="updateToUser({{ $key->id }} , this.value)" class=""
-                                        name="" id="">
+                                    <select disabled onchange="updateToUser({{ $key->id }} , this.value)"
+                                        class="" name="" id="">
                                         @foreach ($users as $user)
                                             <option @if ($user->id == ($key['to_user']->id ?? 1)) selected @endif
                                                 value="{{ $user->id }}">{{ $user->name }}</option>
@@ -78,11 +78,7 @@
                             </td>
                             <td>
                                 {{ $key->inserted_at }}
-                                @if (auth()->user()->user_role != 9)
-                                    <span onclick="showDueDate({{ $key->id }})" class="fa fa-edit text-success"
-                                        style="float: left" data-toggle="modal"
-                                        data-target="#modal-show_due_date"></span>
-                                @endif
+
                                 @if (!empty($key->expected_arrival_date))
                                     <span class="badge bg-success pt-1" style="font-size: 10px;display: block">وصول
                                         متوقع : <span>{{ $key->expected_arrival_date }}</span></span>
@@ -92,8 +88,7 @@
                                 @if (auth()->user()->user_role != 9)
                                     <select
                                         style="background-color: {{ $key['order_status_color']->status_color ?? 'white' }};color: {{ $key['order_status_color']->status_text_color ?? 'black' }};"
-                                        onchange="updateOrderStatus({{ $key->id }} , this.value)" class=""
-                                        name="" id="order_status_{{ $key->id }}">
+                                        class="" name="" id="order_status_{{ $key->id }}">
                                         @foreach ($order_status as $status)
                                             <option @if ($status->id == $key->order_status) selected @endif
                                                 value="{{ $status->id }}">{{ $status->name }}</option>
@@ -112,17 +107,17 @@
                             </td>
                             <td>
                                 <a target="_blank" data-toggle="tooltip" data-placement="top" title="التفاصيل"
-                                    @if (auth()->user()->user_role == 9) href="{{ route('orders.order_items.index', ['order_id' => $key->id]) }}"  @else href="{{ route('procurement_officer.orders.product.index', ['order_id' => $key->id]) }}" @endif
-                                    class="btn btn-dark btn-sm"><span class="fa fa-search"></span></a>
+                                    @if (auth()->user()->user_role == 9) href="{{ route('evaluation.details', ['order_id' => $key->id]) }}"  @else href="{{ route('evaluation.details', ['order_id' => $key->id]) }}" @endif
+                                    class="btn btn-dark btn-sm">تقييم الطلبية</a>
                                 {{--                        <button type="button" onclick="getReferenceNumber({{ $key->order_id }})" class="btn btn-success btn-sm" data-toggle="modals" data-target="#modals-reference_number"> --}}
                                 {{--                            تعديل الرقم المرجعي --}}
                                 {{--                        </button> --}}
-                                @if (auth()->user()->user_role != 3 && auth()->user()->user_role != 9)
+                                {{-- @if (auth()->user()->user_role != 3 && auth()->user()->user_role != 9)
                                     <a data-toggle="tooltip" data-placement="top" title="حذف"
                                         href="{{ route('orders.procurement_officer.delete_order', ['id' => $key->id]) }}"
                                         onclick="return confirm('هل انت متاكد من عملية الحذف علما انه بعد الحذف سوف يتم نقله لسلة المحذوفات')"
                                         class="btn btn-danger btn-sm"><span class="fa fa-trash"></span></a>
-                                @endif
+                                @endif --}}
                             </td>
                         </tr>
                     @endforeach

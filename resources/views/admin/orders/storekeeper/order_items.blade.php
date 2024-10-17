@@ -3,7 +3,7 @@
     طلبات الشراء
 @endsection
 @section('header_title')
-    طلب شراء <span>#{{$order->id}}</span>
+    طلب شراء <span>#{{ $order->id }}</span>
 @endsection
 @section('header_link')
     الرئيسية
@@ -12,35 +12,32 @@
     طلبات الشراء
 @endsection
 @section('style')
-    <link rel="stylesheet"
-          href="{{ asset('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
-
 @endsection
 @section('content')
     @include('admin.messge_alert.success')
     @include('admin.messge_alert.fail')
-    <div class="card @if($order->order_status == 0) bg-warning @else bg-success @endif">
+    <div class="card @if ($order->order_status == 0) bg-warning @else bg-success @endif">
         <div class="card-body">
-            <form action="{{ route('orders.updateOrderStatus',['order_id'=>$order->id]) }}" method="post">
+            <form action="{{ route('orders.updateOrderStatus', ['order_id' => $order->id]) }}" method="post">
                 @csrf
                 <div class="div">
-                    @if($order->order_status == 0)
+                    @if ($order->order_status == 0)
                         <spam>حالة الطلب (غير مرسل)</spam> <button class="btn btn-dark btn-sm"
-                                                              onclick="return confirm('هل انت متاكد ؟')"
-                                                              >اعتماد
+                            onclick="return confirm('هل انت متاكد ؟')">اعتماد
                             وارسال</button>
                         <br>
                         <div class="form-group">
                             <label>وجهة الطلبية</label>
                             <div class="div" style="background-color: white">
                                 <select class="select2bs4 form-control" name="to_user" id="">
-                                    @foreach($salesman as $key)
+                                    @foreach ($salesman as $key)
                                         <option value="{{ $key->id }}">{{ $key->name }}</option>
                                     @endforeach
                                 </select>
@@ -58,13 +55,13 @@
             </form>
         </div>
     </div>
-    @if($order->order_status == 0)
+    @if ($order->order_status == 0)
         <button type="button" class="btn btn-dark mb-2" data-toggle="modal" data-target="#modal-add-product">اضافة صنف
         </button>
     @endif
-    @if($order->order_status != 0)
-        <a href="{{ route('users.storekeeper.shipping_details',['order_id'=>$order->id]) }}" class="mb-2 btn btn-info">تفاصيل الشحنة</a>
-
+    @if ($order->order_status != 0)
+        <a href="{{ route('users.storekeeper.shipping_details', ['order_id' => $order->id]) }}"
+            class="mb-2 btn btn-info">تفاصيل الشحنة</a>
     @endif
     <div class="card">
         <div class="card-header">
@@ -75,27 +72,28 @@
                 <div class="col-md-8">
                     <div class="form-group">
                         <label for="">ملاحظات</label>
-                        <textarea onchange="update_notes_in_orders(this.value)" class="form-control" name="" id="" cols="30" rows="2">{{ $order->st_notes }}</textarea>
+                        <textarea onchange="update_notes_in_orders(this.value)" class="form-control" name="" id=""
+                            cols="30" rows="2">{{ $order->st_notes }}</textarea>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <form action="{{ route('users.storekeeper.upload_attachment_in_order') }}" method="post" enctype="multipart/form-data">
+                    <form action="{{ route('users.storekeeper.upload_attachment_in_order') }}" method="post"
+                        enctype="multipart/form-data">
                         @csrf
                         <div style="float: left">
-                            @if(!empty($order->st_attachment))
-                                <a type="text"
-                                   href="{{ asset('storage/attachment/'.$order->st_attachment) }}"
-                                   download="{{ $order->st_attachment }}" class="btn btn-primary btn-sm"><span
+                            @if (!empty($order->st_attachment))
+                                <a type="text" href="{{ asset('storage/attachment/' . $order->st_attachment) }}"
+                                    download="{{ $order->st_attachment }}" class="btn btn-primary btn-sm"><span
                                         class="fa fa-download"></span></a>
-                                <button
-                                    type="button"
-                                    onclick="viewAttachment({{ $order->id }},'{{ asset('storage/attachment/'.$order->st_attachment) }}',null)"
+                                <button type="button"
+                                    onclick="viewAttachment({{ $order->id }},'{{ asset('storage/attachment/' . $order->st_attachment) }}',null)"
                                     href="" class="btn btn-success btn-sm" data-toggle="modal"
-                                    data-target="#modal-lg-view_attachment"><span
-                                        class="fa fa-search"></span></button>
-                                <a onclick="confirm('هل انت متاكد من عملية الحذف ؟')" href="{{ route('users.storekeeper.delete_attachment_in_order',['id'=>$order->id]) }}" class="btn btn-danger btn-sm"><span class="fa fa-trash"></span></a>
+                                    data-target="#modal-lg-view_attachment"><span class="fa fa-search"></span></button>
+                                <a onclick="confirm('هل انت متاكد من عملية الحذف ؟')"
+                                    href="{{ route('users.storekeeper.delete_attachment_in_order', ['id' => $order->id]) }}"
+                                    class="btn btn-danger btn-sm"><span class="fa fa-trash"></span></a>
                             @endif
-{{--                            <a href="{{ route('procurement_officer.orders.product.delete_attachment_in_product',['id'=>$order->id]) }}" class="btn btn-sm btn-danger"><span class="fa fa-trash"></span></a>--}}
+                            {{--                            <a href="{{ route('procurement_officer.orders.product.delete_attachment_in_product',['id'=>$order->id]) }}" class="btn btn-sm btn-danger"><span class="fa fa-trash"></span></a> --}}
                         </div>
                         <input type="hidden" name="id" value="{{ $order->id }}">
                         <div class="form-group">
@@ -110,7 +108,8 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" style="display: none" id="submit_attachment" class="btn btn-primary btn-sm">رفع المرفق</button>
+                        <button type="submit" style="display: none" id="submit_attachment"
+                            class="btn btn-primary btn-sm">رفع المرفق</button>
 
                     </form>
                 </div>
@@ -140,20 +139,17 @@
                         <div hidden class="form-group">
                             <label for="">رقم الفاتورة</label>
                             <input readonly name="order_id" class="form-control" value="{{ $order->id }}"
-                                   type="text"
-                            >
+                                type="text">
                         </div>
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>الصنف</label>
-                                    <select id="product" onchange="selectedUnit(this.value)" required
-                                            name="product_id"
-                                            class="form-control select2bs4 select2-hidden-accessible"
-                                            style="width: 100%;" data-select2-id="-1" tabindex="-1"
-                                            aria-hidden="true">
+                                    <select id="product" onchange="selectedUnit(this.value)" required name="product_id"
+                                        class="form-control select2bs4 select2-hidden-accessible" style="width: 100%;"
+                                        data-select2-id="-1" tabindex="-1" aria-hidden="true">
                                         <option value="">اختر صنف</option>
-                                        @foreach($product as $key)
+                                        @foreach ($product as $key)
                                             <option value="{{ $key->id }}">{{ $key->product_name_ar }}</option>
                                         @endforeach
                                     </select>
@@ -163,18 +159,17 @@
                                 <div class="form-group">
                                     <label for="">الكمية</label>
                                     <input name="qty" required class="form-control" type="number"
-                                           placeholder="ادخل الكمية">
+                                        placeholder="ادخل الكمية">
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>الوحدة</label>
                                     <select id="units" required name="unit_id"
-                                            class="form-control select2bs4 select2-hidden-accessible"
-                                            style="width: 100%;" data-select2-id="-2" tabindex="-1"
-                                            aria-hidden="true">
+                                        class="form-control select2bs4 select2-hidden-accessible" style="width: 100%;"
+                                        data-select2-id="-2" tabindex="-1" aria-hidden="true">
                                         <option value="" selected>اختر وحدة</option>
-                                        @foreach($unit as $key)
+                                        @foreach ($unit as $key)
                                             <option value="{{ $key->id }}">{{ $key->unit_name }}</option>
                                         @endforeach
                                     </select>
@@ -185,8 +180,8 @@
 
                         <div class="form-group">
                             <label for="">ملاحظات</label>
-                            <textarea class="form-control" name="notes" id="" cols="30"
-                                      placeholder="ادخل الملاحظات" rows="3"></textarea>
+                            <textarea class="form-control" name="notes" id="" cols="30" placeholder="ادخل الملاحظات"
+                                rows="3"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer justify-content-between">
@@ -201,7 +196,7 @@
     <div class="modal fade" id="modal-add-product">
         <div class="modal-dialog modal-lg">
             <form action="{{ route('orders.procurement_officer.update_due_date') }}" method="post"
-                  enctype="multipart/form-data">
+                enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" id="order_id_due_date" name="order_id">
                 <div class="modal-content">
@@ -212,8 +207,8 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <input type="text" onkeyup="search_table_storekeeper_ajax()" id="search_product" class="form-control"
-                               placeholder="البحث عن صنف">
+                        <input type="text" onkeyup="search_table_storekeeper_ajax()" id="search_product"
+                            class="form-control" placeholder="البحث عن صنف">
                         <div class="row mt-2">
                             <div class="col-md-12" id="search_product_view">
 
@@ -254,7 +249,7 @@
     <script src="{{ asset('assets/dist/js/demo.js') }}"></script>
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             search_table_storekeeper_ajax(page);
             order_items_table_ajax();
         });
@@ -273,10 +268,10 @@
                     'order_items_id': order_items_id,
                     'qty': qty
                 },
-                success: function (data) {
+                success: function(data) {
                     toastr.success('تم تعديل الكمية بنجاح')
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
+                error: function(jqXHR, textStatus, errorThrown) {
                     alert('error');
                 }
             });
@@ -294,10 +289,10 @@
                 data: {
                     'order_id': {{ $order->id }},
                 },
-                success: function (data) {
+                success: function(data) {
                     $('#order_items_table').html(data.view);
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
+                error: function(jqXHR, textStatus, errorThrown) {
                     alert('error');
                 }
             });
@@ -317,16 +312,16 @@
                     'order_items_id': order_items_id,
                     'unit_id': unit_id
                 },
-                success: function (data) {
+                success: function(data) {
                     toastr.success('تم تعديل الوحدة بنجاح')
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
+                error: function(jqXHR, textStatus, errorThrown) {
                     alert('error');
                 }
             });
         }
 
-        function create_order_items_ajax(product_id,unit_id) {
+        function create_order_items_ajax(product_id, unit_id) {
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
             var headers = {
                 "X-CSRF-Token": csrfToken
@@ -338,19 +333,18 @@
                 data: {
                     'order_id': {{ $order->id }},
                     'product_id': product_id,
-                    'unit_id':unit_id
+                    'unit_id': unit_id
                 },
-                success: function (data) {
-                    if(data.success == 'true'){
+                success: function(data) {
+                    if (data.success == 'true') {
                         toastr.success(data.message);
                         search_table_storekeeper_ajax(page)
                         order_items_table_ajax();
-                    }
-                    else if(data.success == 'true'){
+                    } else if (data.success == 'true') {
                         toastr.error('تم تعديل الوحدة بنجاح')
                     }
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
+                error: function(jqXHR, textStatus, errorThrown) {
                     alert('error');
                 }
             });
@@ -365,15 +359,15 @@
                 url: '{{ url('orders/deleteItems') }}' + '/' + order_items_id,
                 method: 'get',
                 headers: headers,
-                {{--data: {--}}
-                    {{--    'order_id': {{ $order->id }},--}}
-                    {{--    'order_items_id': order_items_id,--}}
-                    {{--},--}}
-                success: function (data) {
+                {{-- data: { --}}
+                {{--    'order_id': {{ $order->id }}, --}}
+                {{--    'order_items_id': order_items_id, --}}
+                {{-- }, --}}
+                success: function(data) {
                     document.getElementById('delete_tr_' + index).remove();
                     toastr.success('تم الحذف بنجاح')
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
+                error: function(jqXHR, textStatus, errorThrown) {
                     alert('error');
                 }
             });
@@ -383,7 +377,7 @@
         var units = {!! json_encode($unit) !!};
 
         function selectedUnit(product_id) {
-            var selectedProduct = products.find(function (product) {
+            var selectedProduct = products.find(function(product) {
                 return product.id == product_id;
             });
 
@@ -403,11 +397,12 @@
                 }));
 
                 // Add the options for each unit
-                units.forEach(function (unit) {
+                units.forEach(function(unit) {
                     unitsSelect.append($('<option>', {
                         value: unit.id,
                         text: unit.unit_name,
-                        selected: unit.id == selectedUnitId // Select the unit linked to the selected product
+                        selected: unit.id ==
+                            selectedUnitId // Select the unit linked to the selected product
                     }));
                 });
 
@@ -439,6 +434,7 @@
                 }
             });
         }
+
         function search_product(search_product, page = 1) {
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
             var headers = {
@@ -474,7 +470,7 @@
                 method: 'post',
                 headers: headers,
                 data: {
-                    'id':{{ $order->id }},
+                    'id': {{ $order->id }},
                     'st_notes': value,
                 },
                 success: function(data) {
@@ -486,21 +482,19 @@
             });
         }
 
-        $(document).ready(function () {
-            if($('#exampleInputFile').val() === ''){
-                $('#submit_attachment').css('display','none');
-            }
-            else{
-                $('#submit_attachment').css('display','block');
+        $(document).ready(function() {
+            if ($('#exampleInputFile').val() === '') {
+                $('#submit_attachment').css('display', 'none');
+            } else {
+                $('#submit_attachment').css('display', 'block');
             }
         });
 
-        $('#exampleInputFile').on('change',function () {
-            if($(this).val() === ''){
-                $('#submit_attachment').css('display','none');
-            }
-            else{
-                $('#submit_attachment').css('display','block');
+        $('#exampleInputFile').on('change', function() {
+            if ($(this).val() === '') {
+                $('#submit_attachment').css('display', 'none');
+            } else {
+                $('#submit_attachment').css('display', 'block');
             }
         })
 
@@ -515,9 +509,11 @@
     </script>
 
     <script>
-        $(function () {
+        $(function() {
             $("#example1").DataTable({
-                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
                 // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
             $('#example2').DataTable({
@@ -533,7 +529,7 @@
     </script>
 
     <script>
-        $(function () {
+        $(function() {
             var Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -541,78 +537,78 @@
                 timer: 3000
             });
 
-            $('.swalDefaultSuccess').click(function () {
+            $('.swalDefaultSuccess').click(function() {
                 Toast.fire({
                     icon: 'success',
                     title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.swalDefaultInfo').click(function () {
+            $('.swalDefaultInfo').click(function() {
                 Toast.fire({
                     icon: 'info',
                     title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.swalDefaultError').click(function () {
+            $('.swalDefaultError').click(function() {
                 Toast.fire({
                     icon: 'error',
                     title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.swalDefaultWarning').click(function () {
+            $('.swalDefaultWarning').click(function() {
                 Toast.fire({
                     icon: 'warning',
                     title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.swalDefaultQuestion').click(function () {
+            $('.swalDefaultQuestion').click(function() {
                 Toast.fire({
                     icon: 'question',
                     title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
 
-            $('.toastrDefaultSuccess').click(function () {
+            $('.toastrDefaultSuccess').click(function() {
                 toastr.success('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
             });
-            $('.toastrDefaultInfo').click(function () {
+            $('.toastrDefaultInfo').click(function() {
                 toastr.info('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
             });
-            $('.toastrDefaultError').click(function () {
+            $('.toastrDefaultError').click(function() {
                 toastr.error('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
             });
-            $('.toastrDefaultWarning').click(function () {
+            $('.toastrDefaultWarning').click(function() {
                 toastr.warning('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
             });
 
-            $('.toastsDefaultDefault').click(function () {
+            $('.toastsDefaultDefault').click(function() {
                 $(document).Toasts('create', {
                     title: 'Toast Title',
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.toastsDefaultTopLeft').click(function () {
+            $('.toastsDefaultTopLeft').click(function() {
                 $(document).Toasts('create', {
                     title: 'Toast Title',
                     position: 'topLeft',
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.toastsDefaultBottomRight').click(function () {
+            $('.toastsDefaultBottomRight').click(function() {
                 $(document).Toasts('create', {
                     title: 'Toast Title',
                     position: 'bottomRight',
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.toastsDefaultBottomLeft').click(function () {
+            $('.toastsDefaultBottomLeft').click(function() {
                 $(document).Toasts('create', {
                     title: 'Toast Title',
                     position: 'bottomLeft',
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.toastsDefaultAutohide').click(function () {
+            $('.toastsDefaultAutohide').click(function() {
                 $(document).Toasts('create', {
                     title: 'Toast Title',
                     autohide: true,
@@ -620,14 +616,14 @@
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.toastsDefaultNotFixed').click(function () {
+            $('.toastsDefaultNotFixed').click(function() {
                 $(document).Toasts('create', {
                     title: 'Toast Title',
                     fixed: false,
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.toastsDefaultFull').click(function () {
+            $('.toastsDefaultFull').click(function() {
                 $(document).Toasts('create', {
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.',
                     title: 'Toast Title',
@@ -635,7 +631,7 @@
                     icon: 'fas fa-envelope fa-lg',
                 })
             });
-            $('.toastsDefaultFullImage').click(function () {
+            $('.toastsDefaultFullImage').click(function() {
                 $(document).Toasts('create', {
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.',
                     title: 'Toast Title',
@@ -644,7 +640,7 @@
                     imageAlt: 'User Picture',
                 })
             });
-            $('.toastsDefaultSuccess').click(function () {
+            $('.toastsDefaultSuccess').click(function() {
                 $(document).Toasts('create', {
                     class: 'bg-success',
                     title: 'Toast Title',
@@ -652,7 +648,7 @@
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.toastsDefaultInfo').click(function () {
+            $('.toastsDefaultInfo').click(function() {
                 $(document).Toasts('create', {
                     class: 'bg-info',
                     title: 'Toast Title',
@@ -660,7 +656,7 @@
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.toastsDefaultWarning').click(function () {
+            $('.toastsDefaultWarning').click(function() {
                 $(document).Toasts('create', {
                     class: 'bg-warning',
                     title: 'Toast Title',
@@ -668,7 +664,7 @@
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.toastsDefaultDanger').click(function () {
+            $('.toastsDefaultDanger').click(function() {
                 $(document).Toasts('create', {
                     class: 'bg-danger',
                     title: 'Toast Title',
@@ -676,7 +672,7 @@
                     body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
                 })
             });
-            $('.toastsDefaultMaroon').click(function () {
+            $('.toastsDefaultMaroon').click(function() {
                 $(document).Toasts('create', {
                     class: 'bg-maroon',
                     title: 'Toast Title',
@@ -685,11 +681,10 @@
                 })
             });
         });
-
     </script>
 
     <script>
-        $(function () {
+        $(function() {
             //Initialize Select2 Elements
             $('.select2').select2()
 
@@ -699,9 +694,13 @@
             })
 
             //Datemask dd/mm/yyyy
-            $('#datemask').inputmask('dd/mm/yyyy', {'placeholder': 'dd/mm/yyyy'})
+            $('#datemask').inputmask('dd/mm/yyyy', {
+                'placeholder': 'dd/mm/yyyy'
+            })
             //Datemask2 mm/dd/yyyy
-            $('#datemask2').inputmask('mm/dd/yyyy', {'placeholder': 'mm/dd/yyyy'})
+            $('#datemask2').inputmask('mm/dd/yyyy', {
+                'placeholder': 'mm/dd/yyyy'
+            })
             //Money Euro
             $('[data-mask]').inputmask()
 
@@ -711,7 +710,11 @@
             });
 
             //Date and time picker
-            $('#reservationdatetime').datetimepicker({icons: {time: 'far fa-clock'}});
+            $('#reservationdatetime').datetimepicker({
+                icons: {
+                    time: 'far fa-clock'
+                }
+            });
 
             //Date range picker
             $('#reservation').daterangepicker()
@@ -724,21 +727,22 @@
                 }
             })
             //Date range as a button
-            $('#daterange-btn').daterangepicker(
-                {
+            $('#daterange-btn').daterangepicker({
                     ranges: {
                         'Today': [moment(), moment()],
                         'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
                         'Last 7 Days': [moment().subtract(6, 'days'), moment()],
                         'Last 30 Days': [moment().subtract(29, 'days'), moment()],
                         'This Month': [moment().startOf('month'), moment().endOf('month')],
-                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
+                            'month').endOf('month')]
                     },
                     startDate: moment().subtract(29, 'days'),
                     endDate: moment()
                 },
-                function (start, end) {
-                    $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+                function(start, end) {
+                    $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
+                        'MMMM D, YYYY'))
                 }
             )
 
@@ -755,17 +759,17 @@
             //color picker with addon
             $('.my-colorpicker2').colorpicker()
 
-            $('.my-colorpicker2').on('colorpickerChange', function (event) {
+            $('.my-colorpicker2').on('colorpickerChange', function(event) {
                 $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
             })
 
-            $("input[data-bootstrap-switch]").each(function () {
+            $("input[data-bootstrap-switch]").each(function() {
                 $(this).bootstrapSwitch('state', $(this).prop('checked'));
             })
 
         })
         // BS-Stepper Init
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             window.stepper = new Stepper(document.querySelector('.bs-stepper'))
         })
 
@@ -789,19 +793,19 @@
             clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files.
         })
 
-        myDropzone.on("addedfile", function (file) {
+        myDropzone.on("addedfile", function(file) {
             // Hookup the start button
-            file.previewElement.querySelector(".start").onclick = function () {
+            file.previewElement.querySelector(".start").onclick = function() {
                 myDropzone.enqueueFile(file)
             }
         })
 
         // Update the total progress bar
-        myDropzone.on("totaluploadprogress", function (progress) {
+        myDropzone.on("totaluploadprogress", function(progress) {
             document.querySelector("#total-progress .progress-bar").style.width = progress + "%"
         })
 
-        myDropzone.on("sending", function (file) {
+        myDropzone.on("sending", function(file) {
             // Show the total progress bar when upload starts
             document.querySelector("#total-progress").style.opacity = "1"
             // And disable the start button
@@ -809,21 +813,19 @@
         })
 
         // Hide the total progress bar when nothing's uploading anymore
-        myDropzone.on("queuecomplete", function (progress) {
+        myDropzone.on("queuecomplete", function(progress) {
             document.querySelector("#total-progress").style.opacity = "0"
         })
 
         // Setup the buttons for all transfers
         // The "add files" button doesn't need to be setup because the config
         // `clickable` has already been specified.
-        document.querySelector("#actions .start").onclick = function () {
+        document.querySelector("#actions .start").onclick = function() {
             myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED))
         }
-        document.querySelector("#actions .cancel").onclick = function () {
+        document.querySelector("#actions .cancel").onclick = function() {
             myDropzone.removeAllFiles(true)
         }
         // DropzoneJS Demo Code End
     </script>
-
 @endsection
-

@@ -25,15 +25,14 @@
     </style>
 @endsection
 @section('content')
-
     <input type="hidden" id="received_id">
     <div class="row mt-2">
         <div class="col-md-12">
             <div class="row">
-{{--                <div class="col-md-12">--}}
-{{--                    <buttn class="btn btn-dark">صفحة الرسائل الواردة</buttn>--}}
-{{--                    <buttn class="btn btn-dark">صفحة الرسائل المرسلة</buttn>--}}
-{{--                </div>--}}
+                {{--                <div class="col-md-12"> --}}
+                {{--                    <buttn class="btn btn-dark">صفحة الرسائل الواردة</buttn> --}}
+                {{--                    <buttn class="btn btn-dark">صفحة الرسائل المرسلة</buttn> --}}
+                {{--                </div> --}}
                 <div class="col-md-12 mt-2">
                     <div class="card">
                         <div class="card-body row">
@@ -41,7 +40,8 @@
                                 @csrf
                                 <div class="row">
                                     <div class="col-3 text-center">
-                                        <input id="search_input" onkeyup="list_users_ajax()" type="text" class="form-control" style="font-size: 14px" placeholder="بحث عن مستخدم">
+                                        <input id="search_input" onkeyup="list_users_ajax()" type="text"
+                                            class="form-control" style="font-size: 14px" placeholder="بحث عن مستخدم">
                                         <div style="width:100%" id="list_users_ajax" class="">
                                         </div>
                                     </div>
@@ -49,13 +49,16 @@
                                         <div class="scroll" id="list_message">
 
                                         </div>
-                                        <input style="display: none" id="text_message" type="text" class="form-control mt-2" placeholder="نص الرسالة">
+                                        <input style="display: none" id="text_message" type="text"
+                                            class="form-control mt-2" placeholder="نص الرسالة">
                                     </div>
                                     <div class="col">
                                         <div class="row text-center">
                                             <div class="col-md-12">
                                                 <h6 class="">طلبيات الشراء</h6>
-                                                <input onkeyup="orders_table_ajax()" id="order_search" class="form-control text-center" type="text" placeholder="بحث عن الرقم المرجعي">
+                                                <input onkeyup="orders_table_ajax()" id="order_search"
+                                                    class="form-control text-center" type="text"
+                                                    placeholder="بحث عن الرقم المرجعي">
                                             </div>
                                         </div>
                                         <div class="row mt-2">
@@ -82,8 +85,7 @@
     <script src="{{ asset('assets/plugins/select2/js/select2.full.min.js') }}"></script>
 
     <script>
-
-        $(document).ready(function(){
+        $(document).ready(function() {
             list_users_ajax();
             // orders_table_ajax();
             list_orders_for_tag();
@@ -117,13 +119,14 @@
             var headers = {
                 "X-CSRF-Token": csrfToken
             };
-            document.getElementById('list_users_ajax').innerHTML = '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
+            document.getElementById('list_users_ajax').innerHTML =
+                '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
             $.ajax({
                 url: '{{ route('message.list_users_ajax') }}',
                 method: 'post',
                 headers: headers,
                 data: {
-                    'search_input':$('#search_input').val()
+                    'search_input': $('#search_input').val()
                 },
                 success: function(data) {
                     $('#list_users_ajax').html(data.view)
@@ -139,7 +142,7 @@
         // Attach scroll event listener to save scroll position
         setInterval(function() {
             var received_id = $('#received_id').val();
-            if(received_id) {
+            if (received_id) {
                 list_message_ajax(received_id);
             }
         }, 3000);
@@ -147,7 +150,7 @@
 
         var scrollPosition = scrollDiv.scrollHeight * 10;
 
-        function click_button_to_show_message_and_order(id){
+        function click_button_to_show_message_and_order(id) {
             $('#received_id').val(id);
             orders_table_ajax();
             list_message_ajax(id);
@@ -160,28 +163,28 @@
             };
             // scrollPosition = scrollDiv.scrollTop;
 
-                $.ajax({
-                    url: '{{ route('message.list_message_ajax') }}',
-                    method: 'post',
-                    headers: headers,
-                    data: {
-                        'reciver': id
-                    },
-                    success: function(data) {
-                        if (data.success === 'true') {
-                            $('#list_message').html(data.view);
-                            $('#text_message').css('display', 'inline');
+            $.ajax({
+                url: '{{ route('message.list_message_ajax') }}',
+                method: 'post',
+                headers: headers,
+                data: {
+                    'reciver': id
+                },
+                success: function(data) {
+                    if (data.success === 'true') {
+                        $('#list_message').html(data.view);
+                        $('#text_message').css('display', 'inline');
 
-                            // Restore scroll position after updating
-                            scrollDiv.scrollTop = scrollPosition;
+                        // Restore scroll position after updating
+                        scrollDiv.scrollTop = scrollPosition;
 
-                            on_select_user = true;
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(xhr.responseText);
+                        on_select_user = true;
                     }
-                });
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
 
         }
 
@@ -191,17 +194,18 @@
             var headers = {
                 "X-CSRF-Token": csrfToken
             };
-            document.getElementById('order_table').innerHTML = '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
+            document.getElementById('order_table').innerHTML =
+                '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
             $.ajax({
                 url: '{{ route('message.orders_table_ajax') }}',
                 method: 'post',
                 headers: headers,
                 data: {
-                    'order_search':$('#order_search').val(),
-                    'reciver':$('#received_id').val(),
+                    'order_search': $('#order_search').val(),
+                    'reciver': $('#received_id').val(),
                 },
                 success: function(data) {
-                    if(data.success === 'true'){
+                    if (data.success === 'true') {
                         $('#order_table').html(data.view);
                     }
                 },
@@ -218,16 +222,17 @@
             var headers = {
                 "X-CSRF-Token": csrfToken
             };
-            document.getElementById('orders_table_for_tag').innerHTML = '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
+            document.getElementById('orders_table_for_tag').innerHTML =
+                '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
             $.ajax({
                 url: '{{ route('message.list_orders_for_tag') }}',
                 method: 'post',
                 headers: headers,
                 data: {
-                    'order_search_for_tag':$('#order_search_for_tag').val(),
+                    'order_search_for_tag': $('#order_search_for_tag').val(),
                 },
                 success: function(data) {
-                    if(data.success === 'true'){
+                    if (data.success === 'true') {
                         $('#orders_table_for_tag').html(data.view);
                     }
                 },
@@ -247,17 +252,17 @@
             var headers = {
                 "X-CSRF-Token": csrfToken
             };
-            if ($('#text_message').val() != ''){
+            if ($('#text_message').val() != '') {
                 $.ajax({
                     url: '{{ route('message.create_message_ajax') }}',
                     method: 'post',
                     headers: headers,
                     data: {
-                        'reciver':$('#received_id').val(),
-                        'message':text,
+                        'reciver': $('#received_id').val(),
+                        'message': text,
                     },
                     success: function(data) {
-                        if(data.success === 'true'){
+                        if (data.success === 'true') {
                             list_message_ajax($('#received_id').val());
                             $('#text_message').val('');
                             scrollDiv.scrollTop = scrollDiv.scrollHeight * 10;
@@ -271,8 +276,8 @@
             // document.getElementById('list_message').innerHTML = '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
         }
 
-        $('#text_message').keypress(function(e){
-            if(e.which == 13){
+        $('#text_message').keypress(function(e) {
+            if (e.which == 13) {
                 create_message_ajax($(this).val());
             }
         });
@@ -288,11 +293,11 @@
                 method: 'post',
                 headers: headers,
                 data: {
-                    'chat_message_id':$('#chat_message_id').val(),
-                    'order_tag':data.id
+                    'chat_message_id': $('#chat_message_id').val(),
+                    'order_tag': data.id
                 },
                 success: function(data) {
-                    if(data.success === 'true'){
+                    if (data.success === 'true') {
                         $('#select_tag_fro_order_modal').modal('hide');
                         list_message_ajax($('#received_id').val());
                         orders_table_ajax();
@@ -306,10 +311,9 @@
 
         function delete_message_tag(chat_id) {
             var confiirm_message = confirm('هل تريد حذف التاغ للطلبية في المحادثة الحالية ؟');
-            if (!confiirm_message){
-                return ;
-            }
-            else {
+            if (!confiirm_message) {
+                return;
+            } else {
                 var csrfToken = $('meta[name="csrf-token"]').attr('content');
                 var headers = {
                     "X-CSRF-Token": csrfToken
@@ -320,10 +324,10 @@
                     method: 'post',
                     headers: headers,
                     data: {
-                        'id':chat_id,
+                        'id': chat_id,
                     },
                     success: function(data) {
-                        if(data.success === 'true'){
+                        if (data.success === 'true') {
                             $('#select_tag_fro_order_modal').modal('hide');
                             list_message_ajax($('#received_id').val());
                             orders_table_ajax();
@@ -336,14 +340,14 @@
             }
         }
 
-        function open_modal_for_order_tag(data){
+        function open_modal_for_order_tag(data) {
             $('#chat_message_id').val(data.id);
             $('#select_tag_fro_order_modal').modal('show')
         }
     </script>
 
     <script>
-        $(function () {
+        $(function() {
             $('.select2bs4').select2({
                 theme: 'bootstrap4'
             })
