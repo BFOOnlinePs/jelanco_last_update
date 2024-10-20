@@ -43,7 +43,6 @@
 </head>
 
 <body>
-
     @foreach ($anchor as $key)
         @if ($key->id == $price_offer)
             <div class="col-md-12 col-sm-6 col-12">

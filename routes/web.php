@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EvaluationOrderController;
 use App\Models\OrderAttachmentModel;
 use App\Models\SystemSettingModel;
 use Illuminate\Support\Facades\Route;
@@ -515,6 +516,7 @@ Route::group(['middleware' => 'auth',], function () {
         Route::post('update_evaluation_status_ajax',[App\Http\Controllers\EvaluationOrderController::class, 'update_evaluation_status_ajax'])->name('evaluation.update_evaluation_status_ajax');
         Route::post('update_notes_ajax',[App\Http\Controllers\EvaluationOrderController::class, 'update_notes_ajax'])->name('evaluation.update_notes_ajax');
         Route::get('evaluation_order_pdf/{id}',[App\Http\Controllers\EvaluationOrderController::class, 'evaluation_order_pdf'])->name('evaluation.evaluation_order_pdf');
+        Route::post('delete-image', [EvaluationOrderController::class, 'delete_image'])->name('evaluation.delete_image');
     });
 
     Route::get('generate', function () {

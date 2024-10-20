@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CriteriaModel;
+use App\Models\EvaluationAttachmentModel;
 use App\Models\EvaluationCriteriaModel;
 use App\Models\EvaluationModel;
 use App\Models\OrderModel;
@@ -14,6 +15,7 @@ use App\Models\UserCategoryModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use PDF;
 
 class EvaluationOrderController extends Controller
@@ -121,45 +123,50 @@ class EvaluationOrderController extends Controller
             return response()->view('admin.evaluation_orders.ajax.orders_list', ['data' => $data,'order_status'=>$order_status,'users'=>$users,'view'=>'admin']);
     }
 
-    public function create_evaluation(Request $request){
-        // Use firstOrCreate to find an existing evaluation or create a new one
-        $data = EvaluationModel::firstOrCreate(
+    public function create_evaluation(Request $request)
+{
+    // البحث عن التقييم أو إنشائه
+    $data = EvaluationModel::firstOrCreate(
+        [
+            'order_id' => $request->order_id,
+            'user_id' => auth()->user()->id,
+        ],
+        [
+            'notes' => $request->notes,
+            'insert_at' => Carbon::now(),
+            'status' => 'rated',
+        ]
+    );
+
+    // معالجة الملفات المتعددة
+    if ($request->hasFile('files')) {
+        foreach ($request->file('files') as $file) {
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '.' . uniqid() . '.' . $extension;
+            $file->storeAs('evaluation_file', $filename, 'public');
+            // حفظ اسم الملف في قاعدة البيانات
+            EvaluationAttachmentModel::create([
+                'evaluation_id' => $request->evaluation_id,
+                'attachment' => $filename,
+            ]);
+        }
+    }
+
+    // تحديث أو إنشاء المعايير التقييمية
+    foreach ($request->criteria as $key => $value) {
+        EvaluationCriteriaModel::updateOrCreate(
             [
-                'order_id' => $request->order_id,
-                'user_id' => auth()->user()->id,
+                'evaluation_id' => $data->id,
+                'criteria_id' => $key,
             ],
             [
-                'notes' => $request->notes,
-                'insert_at' => Carbon::now(),
-                'status' => 'rated',
+                'value' => $value,
             ]
         );
-    
-        // Handle file upload if present
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $extension = $file->getClientOriginalExtension();
-            $filename = time() . '.' . $extension;
-            $file->storeAs('evaluation_file', $filename, 'public');
-            $data->file = $filename;
-            $data->save(); // Save the updated file information
-        }
-    
-        // Create or update evaluation criteria
-        foreach ($request->criteria as $key => $value) {
-            EvaluationCriteriaModel::updateOrCreate(
-                [
-                    'evaluation_id' => $data->id,
-                    'criteria_id' => $key,
-                ],
-                [
-                    'value' => $value,
-                ]
-            );
-        }
-    
-        return redirect()->back()->with(['success' => 'تم اضافة البيانات بنجاح']);
     }
+
+    return redirect()->back()->with(['success' => 'تم إضافة البيانات بنجاح']);
+}
 
     public function update_evaluation_status_ajax(Request $request){
         $data = EvaluationModel::where('id',$request->id)->first();
@@ -206,7 +213,7 @@ class EvaluationOrderController extends Controller
             }
         }
         else{
-            $data = EvaluationModel::with('evaluation_criteria','evaluation_criteria.criteria' , 'evaluation_criteria.evaluation' , 'evaluation_criteria.evaluation.user' , 'evaluation_criteria.evaluation.user.role')->where('order_id',$id)->where('user_id',auth()->user()->id)->get();
+            $data = EvaluationModel::with('evaluation_criteria','evaluation_criteria.criteria' , 'evaluation_criteria.evaluation' , 'evaluation_criteria.evaluation.user' , 'evaluation_criteria.evaluation.user.priceOffer' , 'evaluation_criteria.evaluation.user.role')->where('order_id',$id)->where('user_id',auth()->user()->id)->get();
             foreach($data as $key){
                 $key->evaluation_value = EvaluationCriteriaModel::where('evaluation_id' , $key->id)->sum('value');
                 foreach($key->evaluation_criteria as $key2){
@@ -218,4 +225,20 @@ class EvaluationOrderController extends Controller
 
         return $pdf->stream('document.pdf');
     }
+
+    public function delete_image(Request $request)
+{
+    $file = EvaluationAttachmentModel::find($request->id);
+    if ($file) {
+        // حذف الملف من التخزين
+        Storage::disk('public')->delete('evaluation_file/' . $file->attachment);
+
+        // حذف السجل من قاعدة البيانات
+        $file->delete();
+
+        return response()->json(['success' => 'تم حذف الصورة بنجاح']);
+    }
+
+    return response()->json(['error' => 'الصورة غير موجودة'], 404);
+}
 }

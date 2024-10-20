@@ -21,4 +21,9 @@ class EvaluationModel extends Model
     public function user(){
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
+    public function files()
+    {
+        return $this->hasMany(EvaluationAttachmentModel::class, 'evaluation_id');
+    }
 }

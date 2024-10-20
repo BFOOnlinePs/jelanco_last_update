@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class CriteriaController extends Controller
 {
     public function index(){
-        $criteria = CriteriaModel::get();
+        $criteria = CriteriaModel::orderBy('id','desc')->get();
         $users = User::where('user_role',2)->where('user_role',9)->where('user_role',10)->get();
         return view('admin.criteria.index',['criteria'=>$criteria , 'users'=>$users]);
     }
