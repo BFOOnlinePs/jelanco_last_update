@@ -86,7 +86,7 @@
                             </td>
                             <td>
                                 @if (auth()->user()->user_role != 9)
-                                    <select
+                                    <select disabled
                                         style="background-color: {{ $key['order_status_color']->status_color ?? 'white' }};color: {{ $key['order_status_color']->status_text_color ?? 'black' }};"
                                         class="" name="" id="order_status_{{ $key->id }}">
                                         @foreach ($order_status as $status)

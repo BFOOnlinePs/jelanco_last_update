@@ -175,9 +175,8 @@
                                                                 class="custom-control-input"
                                                                 id="customSwitch{{ $evaluation->id }}">
                                                             <label class="custom-control-label"
-                                                                for="customSwitch{{ $evaluation->id }}">
-                                                                حالة التقييم
-                                                            </label>
+                                                                for="customSwitch{{ $evaluation->id }}">حالة
+                                                                التقييم</label>
                                                         </div>
                                                     </div>
                                                 @endif
@@ -204,7 +203,7 @@
                                                         @for ($i = 1; $i <= 5; $i++)
                                                             <td>
                                                                 <input @if (
-                                                                    $evaluation->status == 'rated' &&
+                                                                    $evaluation->status == 'rated' ||
                                                                         (auth()->user()->role_id == 2 || auth()->user()->role_id == 9 || auth()->user()->role_id == 10)) disabled @endif
                                                                     required type="radio"
                                                                     name="criteria[{{ $key->criteria->id }}]"
@@ -224,20 +223,36 @@
                                             <label for="">الملفات</label>
                                             <div id="imageFields">
                                                 <div class="image-upload">
-                                                    <input type="file" id="imageInput{{ $evaluation->id }}"
-                                                        name="files[]" class="image-input"
-                                                        accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" multiple>
+                                                    <input @if (
+                                                        $evaluation->status == 'rated' ||
+                                                            (auth()->user()->role_id == 2 || auth()->user()->role_id == 9 || auth()->user()->role_id == 10)) disabled @endif type="file"
+                                                        id="imageInput{{ $evaluation->id }}" name="files[]"
+                                                        class="image-input" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+                                                        multiple>
                                                 </div>
                                             </div>
                                             <div id="imagePreviewContainer{{ $evaluation->id }}"
                                                 style="display: flex; flex-wrap: wrap; gap: 10px;" class="mt-2"></div>
 
                                             @foreach ($evaluation->files as $file)
-                                                <div class="image-box p-1"
-                                                    style="display:inline-block; position: relative;">
-                                                    <img src="{{ asset('storage/evaluation_file/' . $file->attachment) }}"
-                                                        alt="Image"
-                                                        style="width:100px; height:100px; object-fit:cover;">
+                                                <div class="file-box p-2"
+                                                    style="display: inline-block; position: relative; text-align: center;">
+                                                    <!-- التحقق مما إذا كان الملف صورة -->
+                                                    @if (in_array(pathinfo($file->attachment, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif']))
+                                                        <img src="{{ asset('storage/evaluation_file/' . $file->attachment) }}"
+                                                            alt="Image"
+                                                            style="width: 100px; height: 100px; object-fit: cover; margin-bottom: 5px;">
+                                                    @else
+                                                        <!-- إذا كان ملف غير صورة، عرض أيقونة الملف -->
+                                                        <a href="{{ asset('storage/evaluation_file/' . $file->attachment) }}"
+                                                            target="_blank" download>
+                                                            <i class="fa fa-file"
+                                                                style="font-size: 100%; color: #000; margin-bottom: 5px;width: 100px; height: 100px;">
+                                                                <span
+                                                                    style="font-size: 15px">{{ $file->attachment }}</span>
+                                                            </i>
+                                                        </a>
+                                                    @endif
                                                     <button @if (
                                                         $evaluation->status == 'rated' ||
                                                             (auth()->user()->role_id == 2 || auth()->user()->role_id == 9 || auth()->user()->role_id == 10)) disabled @endif
@@ -246,6 +261,9 @@
                                                         onclick="deleteImage({{ $file->id }})">X</button>
                                                 </div>
                                             @endforeach
+
+
+
                                         </div>
                                     </div>
 
