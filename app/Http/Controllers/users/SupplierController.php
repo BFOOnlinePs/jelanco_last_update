@@ -63,7 +63,7 @@ class SupplierController extends Controller
         $data->user_notes = $request->user_notes;
         $data->user_website = $request->user_website;
         $data->user_address = $request->user_address;
-        $data->user_category = $request->user_category;
+        $data->user_category = json_encode($request->user_category);
         $data->user_account_number = $request->user_account_number;
         $data->user_bank_name = $request->user_bank_name;
         $data->user_bank_address = $request->user_bank_address;
