@@ -88,7 +88,7 @@
             @foreach ($data as $key)
                 <tr>
                     <td>
-                        <img src="{{ asset('storage/product/'.$key['product']->product_photo) }}" style="width: 30px" alt="">
+                        <img src="{{ asset('storage/product/'.$key['product']->product_photo) ?? asset('img/no_img.jpeg')}}" style="width: 30px" alt="">
                     </td>
                     <td>{{ $key['product']->product_name_ar }}</td>
                     <td>{{ $key->qty }}</td>
