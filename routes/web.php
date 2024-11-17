@@ -73,6 +73,7 @@ Route::group(['middleware' => 'auth',], function () {
                     Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\ProductController::class, 'index'])->name('procurement_officer.orders.product.index');
                     Route::post('/create_order_items', [App\Http\Controllers\procurement_officer\ProductController::class, 'create_order_items'])->name('procurement_officer.orders.create_order_items');
                     Route::get('/product_list_pdf/{order_id}', [App\Http\Controllers\procurement_officer\ProductController::class, 'product_list_pdf'])->name('procurement_officer.orders.product.product_list_pdf');
+                    Route::get('/product_list_arabic_pdf/{order_id}', [App\Http\Controllers\procurement_officer\ProductController::class, 'product_list_arabic_pdf'])->name('procurement_officer.orders.product.product_list_arabic_pdf');
                     Route::post('/search_product_ajax', [App\Http\Controllers\procurement_officer\ProductController::class, 'search_product_ajax'])->name('procurement_officer.orders.product.search_product_ajax');
                     Route::post('/create_product_ajax', [App\Http\Controllers\procurement_officer\ProductController::class, 'create_product_ajax'])->name('procurement_officer.orders.product.create_product_ajax');
                     Route::post('/order_items_table', [App\Http\Controllers\procurement_officer\ProductController::class, 'order_items_table'])->name('procurement_officer.orders.product.order_items_table');

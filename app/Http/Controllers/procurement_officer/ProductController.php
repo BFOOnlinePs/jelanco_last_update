@@ -110,6 +110,17 @@ class ProductController extends Controller
         return $pdf->stream('products.pdf');
     }
 
+    public function product_list_arabic_pdf($order_id){
+        $order = OrderModel::where('id',$order_id)->first();
+        $data = OrderItemsModel::where('order_id',$order_id)->get();
+        foreach($data as $key){
+            $key->product = ProductModel::where('id',$key->product_id)->first();
+            $key->unit = UnitsModel::where('id',$key->unit_id)->first();
+        }
+        $pdf = PDF::loadView('admin.orders.procurement_officer.product.pdf.poduct_list_arabic', ['data' => $data,'order'=>$order]);
+        return $pdf->stream('products.pdf');
+    }
+
     public function search_product_ajax(Request $request){
         $order_id = $request->order_id;
         $order = OrderModel::find($order_id);

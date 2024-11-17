@@ -159,9 +159,13 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="text-center">الاصناف <a target="_blank"
+                    <h4 class="text-center">الاصناف 
+                        <a target="_blank"
                                                        href="{{ route('procurement_officer.orders.product.product_list_pdf', ['order_id' => $order->id]) }}"><span
-                                style="float: left;font-size:20px" class="fa fa-download btn btn-dark"></span></a></h4>
+                                style="float: left;font-size:20px" class="fa fa-download btn btn-dark"></span></a>
+                        <a target="_blank"
+                                                       href="{{ route('procurement_officer.orders.product.product_list_arabic_pdf', ['order_id' => $order->id]) }}"><span
+                                style="float: left;font-size:20px" class="fa fa-print btn btn-warning mr-1"></span></a></h4>
                 </div>
                 <div class="card-body">
                     <div class="row p-2">

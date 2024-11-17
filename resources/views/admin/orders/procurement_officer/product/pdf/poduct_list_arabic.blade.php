@@ -1,11 +1,11 @@
-<html>
+<html dir="rtl">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>تقرير مورد مفصل</title>
+    <title>تفاصيل اصناف طلبية</title>
     <style>
         html {
             position: relative;
@@ -79,19 +79,19 @@
     <table style="width: 100%;border: none;text-align: center">
         <thead>
             <tr>
-                <th>Product ar</th>
-                <th>Product en</th>
-                <th>Qty</th>
-                <th>Unit</th>
+                <th></th>
+                <th>اسم الصنف</th>
+                <th>الكمية</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($data as $key)
                 <tr>
+                    <td>
+                        <img src="{{ asset('storage/product/'.$key['product']->product_photo) }}" style="width: 30px" alt="">
+                    </td>
                     <td>{{ $key['product']->product_name_ar }}</td>
-                    <td>{{ $key['product']->product_name_en }}</td>
                     <td>{{ $key->qty }}</td>
-                    <td>{{ $key['unit']->unit_name ?? '' }}</td>
                 </tr>
             @endforeach
         </tbody>
