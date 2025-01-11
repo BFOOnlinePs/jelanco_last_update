@@ -304,7 +304,7 @@ class ProcurmentOfficerController extends Controller
             $key->user = User::find($key->user_id);
             $key->to_user = User::where('id', $key->to_user)->first();
             $key->supplier = PriceOffersModel::where('order_id', $key->id)->get();
-            $key->expected_arrival_date = ShippingPriceOfferModel::where('order_id',$key->id)->first()->expected_arrival_date ?? '';
+            $key->expected_arrival_date = ShippingPriceOfferModel::where('order_id',$key->id)->where('award_status',1)->first()->expected_arrival_date ?? '';
             foreach ($key->supplier as $child) {
                 $child->name = User::find($child->supplier_id);
                 $userCategoryIds = json_decode($child->name->user_category, true);

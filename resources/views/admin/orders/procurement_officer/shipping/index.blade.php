@@ -127,8 +127,7 @@
 {{--                                    <a class="btn btn-dark btn-sm"--}}
 {{--                                       href="{{ route('procurement_officer.orders.shipping.details',['id'=>$key->id]) }}">تفاصيل</a>--}}
                                     @if($key->award_status == 0)
-                                        <button type="button" onclick="getId({{ $key->id }})" class="btn btn-warning btn-sm"
-                                                data-toggle="modal" data-target="#modal-lg-award_shipping">
+                                        <button type="button" onclick="getId({{ $key->id }})" class="btn btn-warning btn-sm">
                                             ترسية
                                         </button>
                                     @else
@@ -526,6 +525,7 @@
 
     <script>
         function getId(id) {
+            openModel();
             document.getElementById('id').value = id;
         }
     </script>
@@ -543,6 +543,10 @@
                 $('#container_charge').show();
                 $('#partial_charge').hide();
             }
+        }
+
+        function openModel() {
+            $('#modal-lg-award_shipping').modal('show');
         }
     </script>
 

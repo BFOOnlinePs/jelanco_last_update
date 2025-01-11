@@ -85,7 +85,7 @@
                     </span>
                 </td>
                 <td>{{ $key->qty }}</td>
-                <td>{{ $key->unit->unit_name ?? '' }}</td>
+                <td>{{ $key->unit->unit_name_en ?? '' }}</td>
                 <td></td>
             </tr>
         @endforeach

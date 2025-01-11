@@ -177,6 +177,9 @@ class ShippingController extends Controller
     {
         $data = ShippingPriceOfferModel::find($id);
         $data->award_status = 0;
+        $data->shipping_reservation_date = null;
+        $data->expected_exit_date = null;
+        $data->expected_arrival_date = null;
         if ($data->save()) {
             return redirect()->back()->with(['success' => 'تم الغاء الترسية بنجاح']);
         } else {
