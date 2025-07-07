@@ -86,7 +86,7 @@
                                         <label for="">الملفات</label>
                                         <div id="imageFields" class="mb-2">
                                             <div class="image-upload">
-                                                <input type="file" name="imageInput" name="files[]" class="image-input"
+                                                <input type="file" name="files[]" class="image-input"
                                                     accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" multiple>
                                             </div>
                                         </div>
