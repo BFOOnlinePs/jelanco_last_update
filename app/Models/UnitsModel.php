@@ -10,4 +10,6 @@ class UnitsModel extends Model
     use HasFactory;
 
     protected $table = 'units';
+
+    protected $fillable = ['unit_name','status'];
 }
