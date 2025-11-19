@@ -58,7 +58,7 @@
                                 @endforeach
                             </td>
                             <td>
-                                @if ($view == 'officer_view' || (auth()->user()->user_role == 9) || (auth()->user()->user_role == 11))
+                                @if ($view == 'officer_view' || (auth()->user()->user_role == 9) || (auth()->user()->user_role == 11) || (auth()->user()->user_role == 2))
                                     <select disabled onchange="updateToUser({{ $key->id }} , this.value)"
                                         class="" name="" id="">
                                         @foreach ($users as $user)

@@ -1033,11 +1033,20 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="">متابعة بواسطة</label>
-                        <select onchange="getOrderTable()" class="select2bs4 form-control supplier_select2" name="to_user"
-                            id="to_user">
+                        <select @if(auth()->user()->user_role == 2) disabled @endif  onchange="getOrderTable()" class="select2bs4 form-control supplier_select2" name="to_user"
+                                id="to_user">
                             <option value="">جميع المستخدمين</option>
                             @foreach ($users as $key)
-                                <option value="{{ $key->id }}">{{ $key->name }}</option>
+                                <option
+                                        @if(auth()->user()->user_role == 2)
+                                            value="{{ auth()->user()->id }}"
+                                        {{ $key->id == auth()->user()->id ? 'selected' : '' }}
+                                        @else
+                                            value="{{ $key->id }}"
+                                        @endif
+                                >
+                                    {{ $key->name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
