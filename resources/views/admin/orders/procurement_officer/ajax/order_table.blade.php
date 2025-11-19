@@ -112,8 +112,10 @@
                             </td>
                             <td>
                                 <a target="_blank" data-toggle="tooltip" data-placement="top" title="التفاصيل"
-                                    @if ((auth()->user()->user_role == 9) && (auth()->user()->user_role == 11)) href="{{ route('orders.order_items.index', ['order_id' => $key->id]) }}"  @else href="{{ route('procurement_officer.orders.product.index', ['order_id' => $key->id]) }}" @endif
+                                    @if ((auth()->user()->user_role == 9)) href="{{ route('orders.order_items.index', ['order_id' => $key->id]) }}" @elseif(auth()->user()->user_role == 11)  href="{{ route('procurement_officer.orders.shipping.index', ['order_id' => $key->id]) }}" @else href="{{ route('procurement_officer.orders.product.index', ['order_id' => $key->id]) }}" @endif
                                     class="btn btn-dark btn-sm"><span class="fa fa-search"></span></a>
+
+
                                 {{--                        <button type="button" onclick="getReferenceNumber({{ $key->order_id }})" class="btn btn-success btn-sm" data-toggle="modals" data-target="#modals-reference_number"> --}}
                                 {{--                            تعديل الرقم المرجعي --}}
                                 {{--                        </button> --}}
