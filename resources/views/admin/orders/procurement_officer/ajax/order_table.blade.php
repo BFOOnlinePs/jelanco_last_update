@@ -30,14 +30,14 @@
                                 {{ ($data->currentpage() - 1) * $data->perpage() + $loop->index + 1 }}
                             </td>
                             <td>{{ $key->reference_number }}
-                                @if (auth()->user()->user_role != 3 && auth()->user()->user_role != 9)
+                                @if (auth()->user()->user_role != 3 && auth()->user()->user_role != 9 && auth()->user()->user_role != 11)
                                     <span onclick="getReferenceNumber({{ $key->id }})"
                                         class="fa fa-edit text-success" style="float: left" data-toggle="modal"
                                         data-target="#modal-reference_number"></span>
                                 @endif
                             </td>
                             <td>
-                                @if ($view == 'officer_view' || auth()->user()->user_role == 9)
+                                @if ($view == 'officer_view' || ((auth()->user()->user_role == 9) || (auth()->user()->user_role == 11)))
                                     @foreach ($key->supplier as $child)
                                         <span>{{ $child['name']->name }},</span>
                                     @endforeach
@@ -58,7 +58,7 @@
                                 @endforeach
                             </td>
                             <td>
-                                @if ($view == 'officer_view' || auth()->user()->user_role == 9)
+                                @if ($view == 'officer_view' || (auth()->user()->user_role == 9) || (auth()->user()->user_role == 11))
                                     <select disabled onchange="updateToUser({{ $key->id }} , this.value)"
                                         class="" name="" id="">
                                         @foreach ($users as $user)
@@ -78,7 +78,7 @@
                             </td>
                             <td>
                                 {{ $key->inserted_at }}
-                                @if (auth()->user()->user_role != 9)
+                                @if ((auth()->user()->user_role != 9) && (auth()->user()->user_role != 11))
                                     <span onclick="showDueDate({{ $key->id }})" class="fa fa-edit text-success"
                                         style="float: left" data-toggle="modal"
                                         data-target="#modal-show_due_date"></span>
@@ -89,7 +89,7 @@
                                 @endif
                             </td>
                             <td>
-                                @if (auth()->user()->user_role != 9)
+                                @if ((auth()->user()->user_role != 9) && (auth()->user()->user_role != 11))
                                     <select
                                         style="background-color: {{ $key['order_status_color']->status_color ?? 'white' }};color: {{ $key['order_status_color']->status_text_color ?? 'black' }};"
                                         onchange="updateOrderStatus({{ $key->id }} , this.value)" class=""
@@ -112,12 +112,12 @@
                             </td>
                             <td>
                                 <a target="_blank" data-toggle="tooltip" data-placement="top" title="التفاصيل"
-                                    @if (auth()->user()->user_role == 9) href="{{ route('orders.order_items.index', ['order_id' => $key->id]) }}"  @else href="{{ route('procurement_officer.orders.product.index', ['order_id' => $key->id]) }}" @endif
+                                    @if ((auth()->user()->user_role == 9) && (auth()->user()->user_role == 11)) href="{{ route('orders.order_items.index', ['order_id' => $key->id]) }}"  @else href="{{ route('procurement_officer.orders.product.index', ['order_id' => $key->id]) }}" @endif
                                     class="btn btn-dark btn-sm"><span class="fa fa-search"></span></a>
                                 {{--                        <button type="button" onclick="getReferenceNumber({{ $key->order_id }})" class="btn btn-success btn-sm" data-toggle="modals" data-target="#modals-reference_number"> --}}
                                 {{--                            تعديل الرقم المرجعي --}}
                                 {{--                        </button> --}}
-                                @if (auth()->user()->user_role != 3 && auth()->user()->user_role != 9)
+                                @if ((auth()->user()->user_role != 3) && (auth()->user()->user_role != 9) && (auth()->user()->user_role != 11))
                                     <a data-toggle="tooltip" data-placement="top" title="حذف"
                                         href="{{ route('orders.procurement_officer.delete_order', ['id' => $key->id]) }}"
                                         onclick="return confirm('هل انت متاكد من عملية الحذف علما انه بعد الحذف سوف يتم نقله لسلة المحذوفات')"

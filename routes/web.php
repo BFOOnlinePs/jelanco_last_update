@@ -320,6 +320,15 @@ Route::group(['middleware' => 'auth',], function () {
             Route::get('details/{id}', [App\Http\Controllers\users\InsuranceCompaniesController::class, 'details'])->name('users.insurance_companies.details');
         });
 
+        Route::group(['prefix' => 'shipping_manager'], function () {
+            Route::get('/index', [App\Http\Controllers\users\ShippingManagerController::class, 'index'])->name('users.shipping_manager.index');
+            Route::get('/add', [App\Http\Controllers\users\ShippingManagerController::class, 'add'])->name('users.shipping_manager.add');
+            Route::post('create', [App\Http\Controllers\users\ShippingManagerController::class, 'create'])->name('users.shipping_manager.create');
+            Route::get('edit/{id}', [App\Http\Controllers\users\ShippingManagerController::class, 'edit'])->name('users.shipping_manager.edit');
+            Route::post('update/{id}', [App\Http\Controllers\users\ShippingManagerController::class, 'update'])->name('users.shipping_manager.update');
+            Route::get('details/{id}', [App\Http\Controllers\users\ShippingManagerController::class, 'details'])->name('users.shipping_manager.details');
+        });
+
     });
 
     Route::group(['prefix' => 'company_contact_person'], function () {

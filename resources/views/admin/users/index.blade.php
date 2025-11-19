@@ -103,6 +103,17 @@
                 </div>
             </a>
         </div>
+        <div class="col-md-3 col-sm-6 col-12">
+            <a href="{{ route('users.shipping_manager.index') }}" style="text-decoration: none" class="text-dark">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">مدير الشحن</span>
+                        {{--                        <span class="info-box-number">None</span>--}}
+                    </div>
+                </div>
+            </a>
+        </div>
         {{--    <div class="col-md-3 col-sm-6 col-12">--}}
         {{--        <div class="info-box shadow-none">--}}
         {{--            <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>--}}

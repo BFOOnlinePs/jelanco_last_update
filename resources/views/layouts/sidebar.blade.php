@@ -185,6 +185,7 @@
                             </p>
                         </a>
                     </li>
+
                 @elseif(auth()->user()->user_role == 3)
                     <li class="nav-item has-treeview menu-open">
                         <a href="{{ route('orders.procurement_officer.order_index') }}" class="nav-link">
@@ -219,6 +220,16 @@
                             <p>
                                 التقويم
                                 {{--                            <span class="right badge badge-danger">New</span> --}}
+                            </p>
+                        </a>
+                    </li>
+                @elseif(auth()->user()->user_role == 11)
+                    <li class="nav-item has-treeview menu-open">
+                        <a href="{{ route('orders.procurement_officer.order_index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>
+                                طلبات الشراء
+                                {{--                            <i class="right fas fa-angle-left"></i> --}}
                             </p>
                         </a>
                     </li>

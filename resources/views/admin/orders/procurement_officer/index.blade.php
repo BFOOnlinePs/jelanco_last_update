@@ -968,7 +968,7 @@
     @include('admin.messge_alert.success')
     @include('admin.messge_alert.fail')
 
-    @if (auth()->user()->user_role != 3 && auth()->user()->user_role != 9)
+    @if (auth()->user()->user_role != 3 && auth()->user()->user_role != 9 && auth()->user()->user_role != 11)
         <button type="button" class="btn btn-dark mb-2" data-toggle="modal" data-target="#modal-default"><span
                 class="fa fa-plus"></span> طببية جديدة
         </button>
