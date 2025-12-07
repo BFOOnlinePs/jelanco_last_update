@@ -68,13 +68,12 @@
                 @csrf
                 <input type="hidden" value="{{ $data->id }}" name="id">
                 <div class="row">
-                    @csrf
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="">شركة الشحن</label>
                             <select class="form-control select2bs4" name="shipping_company_id" id="">
                                 @foreach($user as $key)
-                                    <option @if($key->shipping_company_id == $data->shipping_company_id) selected
+                                    <option @if($key->id == $data->shipping_company_id) selected
                                             @endif value="{{ $key->id }}">{{ $key->name }}</option>
                                 @endforeach
                             </select>
@@ -95,7 +94,7 @@
                             <select class="form-control select2bs4" name="currency_id"
                                     placeholder="يرجى اختيار العملية" id="">
                                 @foreach($currency as $key)
-                                    <option @if($key->currency_id == $data->currency_id) selected
+                                    <option @if($key->id == $data->currency_id) selected
                                             @endif value="{{ $key->id }}">{{ $key->currency_name }}</option>
                                 @endforeach
                             </select>
