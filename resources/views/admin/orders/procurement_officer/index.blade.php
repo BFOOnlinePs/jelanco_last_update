@@ -1231,6 +1231,7 @@
         </div>
     </div>
     @include('admin.orders.procurement_officer.modals.print_order_modal')
+    @include('admin.orders.procurement_officer.modals.add_new_date')
 @endsection()
 
 @section('script')
@@ -1472,6 +1473,57 @@
             $('#to_input').val();
             $('#to_user_input').val();
             $('#user_category_input').val();
+        }
+
+        $('#ajaxDateForm').on('submit', function(e) {
+            e.preventDefault(); // منع تحديث الصفحة التقليدي
+
+            var form = $(this);
+            var url = form.attr('action');
+            var formData = form.serialize(); // جلب البيانات (token + order_id + date)
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        // 1. إغلاق المودال
+                        $('#AddNewDate').modal('hide');
+
+                        // 2. تحديث محتوى الـ div الخاص بالطلبية المحددة لعرض التاريخ الجديد
+                        var newHtml = `
+                        <span class="badge badge-warning text-dark" style="font-size: 11px;">
+                            ${response.new_date}
+                        </span>
+                        <a href="javascript:void(0)"
+                           data-toggle="modal"
+                           data-target="#AddNewDate"
+                           onclick="setOrderIdForDate(${response.order_id})"
+                           title="تعديل التاريخ"
+                           class="text-dark ml-1">
+                            <i class="fa fa-edit" style="font-size: 10px;"></i>
+                        </a>
+                    `;
+
+                        $('#date_container_' + response.order_id).html(newHtml);
+
+                    } else {
+                        alert('حدث خطأ أثناء الحفظ');
+                    }
+                },
+                error: function() {
+                    alert('خطأ في الاتصال بالسيرفر');
+                }
+            });
+        });
+
+        function setOrderIdForDate(id) {
+            $('#modal_order_id').val(id);
+
+            $('#new_date').val('');
+
+            $('#AddNewDate').modal('show');
         }
 
         var page = 1;
@@ -1834,5 +1886,23 @@
             myDropzone.removeAllFiles(true)
         }
         // DropzoneJS Demo Code End
+
+
+        function toggleDateButton(orderId, statusValue) {
+            var btn = $('#btn_add_date_' + orderId);
+
+            // إذا وجد الزر (يعني لا يوجد تاريخ محفوظ)، نتحكم في ظهوره
+            if (btn.length > 0) {
+                if (statusValue == '5') {
+                    btn.show();
+                } else {
+                    btn.hide();
+                }
+            }
+        }
+
+        $(function() {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
     </script>
 @endsection

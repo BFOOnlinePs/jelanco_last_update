@@ -89,26 +89,61 @@
                                 @endif
                             </td>
                             <td>
+                                {{-- كود الـ Select (كما هو بدون تغيير) --}}
                                 @if ((auth()->user()->user_role != 9) && (auth()->user()->user_role != 11))
                                     <select
-                                        style="background-color: {{ $key['order_status_color']->status_color ?? 'white' }};color: {{ $key['order_status_color']->status_text_color ?? 'black' }};"
-                                        onchange="updateOrderStatus({{ $key->id }} , this.value)" class=""
-                                        name="" id="order_status_{{ $key->id }}">
+                                            style="background-color: {{ $key['order_status_color']->status_color ?? 'white' }};color: {{ $key['order_status_color']->status_text_color ?? 'black' }};"
+                                            onchange="updateOrderStatus({{ $key->id }} , this.value); toggleDateButton({{ $key->id }}, this.value);"
+                                            id="order_status_{{ $key->id }}">
                                         @foreach ($order_status as $status)
                                             <option @if ($status->id == $key->order_status) selected @endif
-                                                value="{{ $status->id }}">{{ $status->name }}</option>
+                                            value="{{ $status->id }}">{{ $status->name }}</option>
                                         @endforeach
                                     </select>
                                 @else
                                     <select disabled
-                                        style="background-color: {{ $key['order_status_color']->status_color ?? 'white' }};color: {{ $key['order_status_color']->status_text_color ?? 'black' }};"
-                                        class="" name="" id="order_status_{{ $key->id }}">
+                                            style="background-color: {{ $key['order_status_color']->status_color ?? 'white' }};color: {{ $key['order_status_color']->status_text_color ?? 'black' }};"
+                                            id="order_status_{{ $key->id }}">
                                         @foreach ($order_status as $status)
                                             <option @if ($status->id == $key->order_status) selected @endif
-                                                value="{{ $status->id }}">{{ $status->name }}</option>
+                                            value="{{ $status->id }}">{{ $status->name }}</option>
                                         @endforeach
                                     </select>
                                 @endif
+
+                                {{-- ================================================= --}}
+                                {{-- منطقة التاريخ (التي سيتم تحديثها بـ AJAX) --}}
+                                {{-- ================================================= --}}
+                                <div id="date_container_{{ $key->id }}" style="margin-top: 5px; text-align: center;">
+
+                                    @if(!empty($key->order_in_production_upon_arrival))
+                                        {{-- حالة وجود تاريخ --}}
+                                        <span class="badge badge-warning text-dark" style="font-size: 11px;">
+                {{ $key->order_in_production_upon_arrival }}
+            </span>
+                                        <a href="javascript:void(0)"
+                                           data-toggle="modal"
+                                           data-target="#AddNewDate"
+                                           onclick="setOrderIdForDate({{ $key->id }})"
+                                           title="تعديل التاريخ"
+                                           class="text-dark ml-1">
+                                            <i class="fa fa-edit" style="font-size: 10px;"></i>
+                                        </a>
+
+                                    @else
+                                        {{-- حالة عدم وجود تاريخ (يظهر الزر فقط اذا الحالة 5) --}}
+                                        <div id="btn_add_date_{{ $key->id }}"
+                                             style="display: {{ $key->order_status == 5 ? 'block' : 'none' }};">
+                                            <a href="javascript:void(0)"
+                                               data-toggle="modal"
+                                               data-target="#AddNewDate"
+                                               onclick="setOrderIdForDate({{ $key->id }})"
+                                               title="إضافة تاريخ جديد">
+                                                <i class="fa fa-plus-circle text-primary" style="font-size: 18px;"></i>
+                                            </a>
+                                        </div>
+                                    @endif
+                                </div>
                             </td>
                             <td>
                                 <a target="_blank" data-toggle="tooltip" data-placement="top" title="التفاصيل"

@@ -322,6 +322,27 @@ class ProcurmentOfficerController extends Controller
         return response()->view('admin.orders.procurement_officer.ajax.order_table', ['data' => $data,'order_status'=>$order_status,'users'=>$users,'view'=>'admin']);
     }
 
+    public function update_order_production_date(Request $request)
+    {
+        $data = OrderModel::find($request->order_id);
+        $data->order_in_production_upon_arrival = $request->expected_arrival_date;
+
+        if ($data->save()) {
+            // إرجاع JSON ليقرأه الجافاسكربت
+            return response()->json([
+                'success' => true,
+                'message' => 'تم تحديث التاريخ بنجاح',
+                'order_id' => $data->id,
+                'new_date' => $data->order_in_production_upon_arrival
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'فشلت العملية'
+            ]);
+        }
+    }
+
     public function update_reference_number(Request $request)
     {
         $data = OrderModel::find($request->order_id);

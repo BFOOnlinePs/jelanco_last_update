@@ -69,6 +69,7 @@ return array(
     'App\\Http\\Controllers\\users\\LocalCarriersController' => $baseDir . '/app/Http/Controllers/users/LocalCarriersController.php',
     'App\\Http\\Controllers\\users\\ProcurmentOfficerController' => $baseDir . '/app/Http/Controllers/users/ProcurmentOfficerController.php',
     'App\\Http\\Controllers\\users\\SecretarialController' => $baseDir . '/app/Http/Controllers/users/SecretarialController.php',
+    'App\\Http\\Controllers\\users\\ShippingManagerController' => $baseDir . '/app/Http/Controllers/users/ShippingManagerController.php',
     'App\\Http\\Controllers\\users\\StorekeeperController' => $baseDir . '/app/Http/Controllers/users/StorekeeperController.php',
     'App\\Http\\Controllers\\users\\SupplierController' => $baseDir . '/app/Http/Controllers/users/SupplierController.php',
     'App\\Http\\Kernel' => $baseDir . '/app/Http/Kernel.php',

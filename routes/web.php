@@ -63,6 +63,8 @@ Route::group(['middleware' => 'auth',], function () {
                 Route::post('/updateOrderStatus', [App\Http\Controllers\users\ProcurmentOfficerController::class, 'updateOrderStatus'])->name('orders.procurement_officer.updateOrderStatus');
                 Route::post('/updateToUser', [App\Http\Controllers\users\ProcurmentOfficerController::class, 'updateToUser'])->name('orders.procurement_officer.updateToUser');
                 Route::post('/print_order_pdf', [App\Http\Controllers\users\ProcurmentOfficerController::class, 'print_order_pdf'])->name('orders.procurement_officer.print_order_pdf');
+                Route::post('update_production_date', [App\Http\Controllers\users\ProcurmentOfficerController::class, 'update_order_production_date'])->name('orders.update_order_production_date');
+
                 Route::group(['prefix'=>'order_archive'],function(){
                     Route::get('index', [App\Http\Controllers\OrderArchiveController::class, 'index'])->name('order_archive.index');
                     Route::post('archive_order_table', [App\Http\Controllers\OrderArchiveController::class, 'archive_order_table'])->name('order_archive.archive_order_table');
