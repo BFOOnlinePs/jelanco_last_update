@@ -24,7 +24,7 @@ abstract class Text extends Base
      * @param int $indexSize  Determines how many words are considered for the generation of the next word.
      *                        The minimum is 1, and it produces a higher level of randomness, although the
      *                        generated text usually doesn't make sense. Higher index sizes (up to 5)
-     *                        produce more correct text, at the price_offer of less randomness.
+     *                        produce more correct text, at the price of less randomness.
      *
      * @return string
      */
@@ -47,7 +47,7 @@ abstract class Text extends Base
      * @param int $indexSize  Determines how many words are considered for the generation of the next word.
      *                        The minimum is 1, and it produces a higher level of randomness, although the
      *                        generated text usually doesn't make sense. Higher index sizes (up to 5)
-     *                        produce more correct text, at the price_offer of less randomness.
+     *                        produce more correct text, at the price of less randomness.
      *
      * @return string
      */

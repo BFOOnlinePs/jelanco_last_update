@@ -37,7 +37,7 @@
                                 @endif
                             </td>
                             <td>
-                                @if ($view == 'officer_view' || ((auth()->user()->user_role == 9) || (auth()->user()->user_role == 11)))
+                                @if ($view == 'officer_view' || (auth()->user()->user_role == 9 || auth()->user()->user_role == 11))
                                     @foreach ($key->supplier as $child)
                                         <span>{{ $child['name']->name }},</span>
                                     @endforeach
@@ -58,7 +58,11 @@
                                 @endforeach
                             </td>
                             <td>
-                                @if ($view == 'officer_view' || (auth()->user()->user_role == 9) || (auth()->user()->user_role == 11) || (auth()->user()->user_role == 2))
+                                @if (
+                                    $view == 'officer_view' ||
+                                        auth()->user()->user_role == 9 ||
+                                        auth()->user()->user_role == 11 ||
+                                        auth()->user()->user_role == 2)
                                     <select disabled onchange="updateToUser({{ $key->id }} , this.value)"
                                         class="" name="" id="">
                                         @foreach ($users as $user)
@@ -75,10 +79,18 @@
                                         @endforeach
                                     </select>
                                 @endif
+                                <div class="mt-1">
+    <button type="button" 
+            class="btn btn-xs btn-outline-secondary" 
+            onclick="openStorekeeperNotesModal({{ $key->id }})"
+            title="ملاحظات المستودع">
+        <i class="fas fa-sticky-note"></i> ملاحظات المستودع
+    </button>
+</div>
                             </td>
                             <td>
                                 {{ $key->inserted_at }}
-                                @if ((auth()->user()->user_role != 9) && (auth()->user()->user_role != 11))
+                                @if (auth()->user()->user_role != 9 && auth()->user()->user_role != 11)
                                     <span onclick="showDueDate({{ $key->id }})" class="fa fa-edit text-success"
                                         style="float: left" data-toggle="modal"
                                         data-target="#modal-show_due_date"></span>
@@ -90,23 +102,23 @@
                             </td>
                             <td>
                                 {{-- كود الـ Select (كما هو بدون تغيير) --}}
-                                @if ((auth()->user()->user_role != 9) && (auth()->user()->user_role != 11))
+                                @if (auth()->user()->user_role != 9 && auth()->user()->user_role != 11)
                                     <select
-                                            style="background-color: {{ $key['order_status_color']->status_color ?? 'white' }};color: {{ $key['order_status_color']->status_text_color ?? 'black' }};"
-                                            onchange="updateOrderStatus({{ $key->id }} , this.value); toggleDateButton({{ $key->id }}, this.value);"
-                                            id="order_status_{{ $key->id }}">
+                                        style="background-color: {{ $key['order_status_color']->status_color ?? 'white' }};color: {{ $key['order_status_color']->status_text_color ?? 'black' }};"
+                                        onchange="updateOrderStatus({{ $key->id }} , this.value); toggleDateButton({{ $key->id }}, this.value);"
+                                        id="order_status_{{ $key->id }}">
                                         @foreach ($order_status as $status)
                                             <option @if ($status->id == $key->order_status) selected @endif
-                                            value="{{ $status->id }}">{{ $status->name }}</option>
+                                                value="{{ $status->id }}">{{ $status->name }}</option>
                                         @endforeach
                                     </select>
                                 @else
                                     <select disabled
-                                            style="background-color: {{ $key['order_status_color']->status_color ?? 'white' }};color: {{ $key['order_status_color']->status_text_color ?? 'black' }};"
-                                            id="order_status_{{ $key->id }}">
+                                        style="background-color: {{ $key['order_status_color']->status_color ?? 'white' }};color: {{ $key['order_status_color']->status_text_color ?? 'black' }};"
+                                        id="order_status_{{ $key->id }}">
                                         @foreach ($order_status as $status)
                                             <option @if ($status->id == $key->order_status) selected @endif
-                                            value="{{ $status->id }}">{{ $status->name }}</option>
+                                                value="{{ $status->id }}">{{ $status->name }}</option>
                                         @endforeach
                                     </select>
                                 @endif
@@ -114,31 +126,26 @@
                                 {{-- ================================================= --}}
                                 {{-- منطقة التاريخ (التي سيتم تحديثها بـ AJAX) --}}
                                 {{-- ================================================= --}}
-                                <div id="date_container_{{ $key->id }}" style="margin-top: 5px; text-align: center;">
+                                <div id="date_container_{{ $key->id }}"
+                                    style="margin-top: 5px; text-align: center;">
 
-                                    @if(!empty($key->order_in_production_upon_arrival))
+                                    @if (!empty($key->order_in_production_upon_arrival))
                                         {{-- حالة وجود تاريخ --}}
                                         <span class="badge badge-warning text-dark" style="font-size: 11px;">
-                {{ $key->order_in_production_upon_arrival }}
-            </span>
-                                        <a href="javascript:void(0)"
-                                           data-toggle="modal"
-                                           data-target="#AddNewDate"
-                                           onclick="setOrderIdForDate({{ $key->id }})"
-                                           title="تعديل التاريخ"
-                                           class="text-dark ml-1">
+                                            {{ $key->order_in_production_upon_arrival }}
+                                        </span>
+                                        <a href="javascript:void(0)" data-toggle="modal" data-target="#AddNewDate"
+                                            onclick="setOrderIdForDate({{ $key->id }})" title="تعديل التاريخ"
+                                            class="text-dark ml-1">
                                             <i class="fa fa-edit" style="font-size: 10px;"></i>
                                         </a>
-
                                     @else
                                         {{-- حالة عدم وجود تاريخ (يظهر الزر فقط اذا الحالة 5) --}}
                                         <div id="btn_add_date_{{ $key->id }}"
-                                             style="display: {{ $key->order_status == 5 ? 'block' : 'none' }};">
-                                            <a href="javascript:void(0)"
-                                               data-toggle="modal"
-                                               data-target="#AddNewDate"
-                                               onclick="setOrderIdForDate({{ $key->id }})"
-                                               title="إضافة تاريخ جديد">
+                                            style="display: {{ $key->order_status == 5 ? 'block' : 'none' }};">
+                                            <a href="javascript:void(0)" data-toggle="modal" data-target="#AddNewDate"
+                                                onclick="setOrderIdForDate({{ $key->id }})"
+                                                title="إضافة تاريخ جديد">
                                                 <i class="fa fa-plus-circle text-primary" style="font-size: 18px;"></i>
                                             </a>
                                         </div>
@@ -147,14 +154,14 @@
                             </td>
                             <td>
                                 <a target="_blank" data-toggle="tooltip" data-placement="top" title="التفاصيل"
-                                    @if ((auth()->user()->user_role == 9)) href="{{ route('orders.order_items.index', ['order_id' => $key->id]) }}" @elseif(auth()->user()->user_role == 11)  href="{{ route('procurement_officer.orders.shipping.index', ['order_id' => $key->id]) }}" @else href="{{ route('procurement_officer.orders.product.index', ['order_id' => $key->id]) }}" @endif
+                                    @if (auth()->user()->user_role == 9) href="{{ route('orders.order_items.index', ['order_id' => $key->id]) }}" @elseif(auth()->user()->user_role == 11)  href="{{ route('procurement_officer.orders.shipping.index', ['order_id' => $key->id]) }}" @else href="{{ route('procurement_officer.orders.product.index', ['order_id' => $key->id]) }}" @endif
                                     class="btn btn-dark btn-sm"><span class="fa fa-search"></span></a>
 
 
                                 {{--                        <button type="button" onclick="getReferenceNumber({{ $key->order_id }})" class="btn btn-success btn-sm" data-toggle="modals" data-target="#modals-reference_number"> --}}
                                 {{--                            تعديل الرقم المرجعي --}}
                                 {{--                        </button> --}}
-                                @if ((auth()->user()->user_role != 3) && (auth()->user()->user_role != 9) && (auth()->user()->user_role != 11))
+                                @if (auth()->user()->user_role != 3 && auth()->user()->user_role != 9 && auth()->user()->user_role != 11)
                                     <a data-toggle="tooltip" data-placement="top" title="حذف"
                                         href="{{ route('orders.procurement_officer.delete_order', ['id' => $key->id]) }}"
                                         onclick="return confirm('هل انت متاكد من عملية الحذف علما انه بعد الحذف سوف يتم نقله لسلة المحذوفات')"

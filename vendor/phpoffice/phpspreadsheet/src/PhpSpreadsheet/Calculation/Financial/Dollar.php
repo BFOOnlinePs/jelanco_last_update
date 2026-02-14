@@ -37,8 +37,8 @@ class Dollar
     /**
      * DOLLARDE.
      *
-     * Converts a dollar price_offer expressed as an integer part and a fraction
-     *        part into a dollar price_offer expressed as a decimal number.
+     * Converts a dollar price expressed as an integer part and a fraction
+     *        part into a dollar price expressed as a decimal number.
      * Fractional dollar numbers are sometimes used for security prices.
      *
      * Excel Function:
@@ -85,7 +85,7 @@ class Dollar
     /**
      * DOLLARFR.
      *
-     * Converts a dollar price_offer expressed as a decimal number into a dollar price_offer
+     * Converts a dollar price expressed as a decimal number into a dollar price
      *        expressed as a fraction.
      * Fractional dollar numbers are sometimes used for security prices.
      *

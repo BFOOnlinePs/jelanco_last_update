@@ -47,8 +47,6 @@ trait AuthenticatesUsers
             if ($request->hasSession()) {
                 $request->session()->put('auth.password_confirmed_at', time());
             }
-            $user = Auth::user();
-            $user->createToken('token-name')->plainTextToken;
 
             return $this->sendLoginResponse($request);
         }

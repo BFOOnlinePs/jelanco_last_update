@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\EvaluationOrderController;
-use App\Models\OrderAttachmentModel;
 use App\Models\SystemSettingModel;
 use Illuminate\Support\Facades\Route;
 
@@ -10,14 +9,14 @@ use Illuminate\Support\Facades\Route;
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
+| Here is where you can registration web routes for your application. These
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "web" middleware group. Make something great!
 |
 */
 
 $company_name = SystemSettingModel::first('company_name')->company_name ?? 'اسم الشركة';
-define('company_name',$company_name);
+define('company_name', $company_name);
 
 Route::get('/', function () {
     if (\Illuminate\Support\Facades\Auth::check()) {
@@ -29,8 +28,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::group(['middleware' => 'auth',], function () {
-    Route::get('/home', [App\Http\Controllers\HomeController::class,'index'])->name('home');
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::group(['prefix' => 'users'], function () {
         Route::get('/index', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
         Route::post('/updateStatus', [App\Http\Controllers\UserController::class, 'updateStatus'])->name('users.updateStatus');
@@ -65,13 +64,13 @@ Route::group(['middleware' => 'auth',], function () {
                 Route::post('/print_order_pdf', [App\Http\Controllers\users\ProcurmentOfficerController::class, 'print_order_pdf'])->name('orders.procurement_officer.print_order_pdf');
                 Route::post('update_production_date', [App\Http\Controllers\users\ProcurmentOfficerController::class, 'update_order_production_date'])->name('orders.update_order_production_date');
 
-                Route::group(['prefix'=>'order_archive'],function(){
+                Route::group(['prefix' => 'order_archive'], function () {
                     Route::get('index', [App\Http\Controllers\OrderArchiveController::class, 'index'])->name('order_archive.index');
                     Route::post('archive_order_table', [App\Http\Controllers\OrderArchiveController::class, 'archive_order_table'])->name('order_archive.archive_order_table');
                     Route::post('update_reference_number', [App\Http\Controllers\OrderArchiveController::class, 'update_reference_number'])->name('order_archive.update_reference_number');
                     Route::post('update_due_date', [App\Http\Controllers\OrderArchiveController::class, 'update_due_date'])->name('order_archive.update_due_date');
                 });
-                Route::group(['prefix'=>'product'],function(){
+                Route::group(['prefix' => 'product'], function () {
                     Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\ProductController::class, 'index'])->name('procurement_officer.orders.product.index');
                     Route::post('/create_order_items', [App\Http\Controllers\procurement_officer\ProductController::class, 'create_order_items'])->name('procurement_officer.orders.create_order_items');
                     Route::get('/product_list_pdf/{order_id}', [App\Http\Controllers\procurement_officer\ProductController::class, 'product_list_pdf'])->name('procurement_officer.orders.product.product_list_pdf');
@@ -85,8 +84,8 @@ Route::group(['middleware' => 'auth',], function () {
                     Route::post('/upload_image', [App\Http\Controllers\procurement_officer\ProductController::class, 'upload_image'])->name('procurement_officer.orders.product.upload_image');
                     Route::post('/add_notes_for_product_ajax', [App\Http\Controllers\procurement_officer\ProductController::class, 'add_notes_for_product_ajax'])->name('procurement_officer.orders.product.add_notes_for_product_ajax');
                 });
-                Route::group(['prefix'=>'price_offer'],function(){
-                    Route::get('index/{order_id}',[App\Http\Controllers\procurement_officer\PriceOfferController::class, 'index'])->name('procurement_officer.orders.price_offer.index');
+                Route::group(['prefix' => 'price_offer'], function () {
+                    Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\PriceOfferController::class, 'index'])->name('procurement_officer.orders.price_offer.index');
                     Route::post('create_price_offer', [App\Http\Controllers\procurement_officer\PriceOfferController::class, 'create_price_offer'])->name('procurement_officer.orders.price_offer.create_price_offer');
                     Route::get('edit_price_offer/{id}', [App\Http\Controllers\procurement_officer\PriceOfferController::class, 'edit_price_offer'])->name('procurement_officer.orders.price_offer.edit_price_offer');
                     Route::post('update_price_offer/{id}', [App\Http\Controllers\procurement_officer\PriceOfferController::class, 'update_price_offer'])->name('procurement_officer.orders.price_offer.update_price_offer');
@@ -97,8 +96,8 @@ Route::group(['middleware' => 'auth',], function () {
                     Route::post('price_offer_import', [App\Http\Controllers\procurement_officer\PriceOfferController::class, 'importExcel'])->name('procurement_officer.orders.price_offer.importExcel');
                     Route::post('get_product_for_other_orders', [App\Http\Controllers\procurement_officer\PriceOfferController::class, 'get_product_for_other_orders'])->name('procurement_officer.orders.price_offer.get_product_for_other_orders');
                 });
-                Route::group(['prefix'=>'anchor'],function(){
-                    Route::get('index/{order_id}',[App\Http\Controllers\procurement_officer\AnchorController::class, 'index'])->name('procurement_officer.orders.anchor.index');
+                Route::group(['prefix' => 'anchor'], function () {
+                    Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\AnchorController::class, 'index'])->name('procurement_officer.orders.anchor.index');
                     Route::post('create_anchor', [App\Http\Controllers\procurement_officer\AnchorController::class, 'create_anchor'])->name('procurement_officer.orders.anchor.create_anchor');
                     Route::get('delete_anchor/{id}', [App\Http\Controllers\procurement_officer\AnchorController::class, 'delete_anchor'])->name('procurement_officer.orders.anchor.delete_anchor');
                     Route::post('updateNotesForAnchor', [App\Http\Controllers\procurement_officer\AnchorController::class, 'updateNotesForAnchor'])->name('procurement_officer.orders.anchor.updateNotesForAnchor');
@@ -107,48 +106,48 @@ Route::group(['middleware' => 'auth',], function () {
                     Route::post('upload_image', [App\Http\Controllers\procurement_officer\AnchorController::class, 'upload_image'])->name('procurement_officer.orders.anchor.upload_image');
                     Route::get('delete_attachment/{id}', [App\Http\Controllers\procurement_officer\AnchorController::class, 'delete_attachment'])->name('procurement_officer.orders.anchor.delete_attachment');
                 });
-                Route::group(['prefix'=>'financial_file'],function(){
-                    Route::get('index/{order_id}',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'index'])->name('procurement_officer.orders.financial_file.index');
-                    Route::post('create_cash_payment',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'create_cash_payment'])->name('procurement_officer.orders.financial_file.create_cash_payment');
-                    Route::post('create_letter_bank',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'create_letter_bank'])->name('procurement_officer.orders.financial_file.create_letter_bank');
-                    Route::get('edit_cash_payment/{id}',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'edit_cash_payment'])->name('procurement_officer.orders.financial_file.edit_cash_payment');
-                    Route::post('update_cash_payment',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'update_cash_payment'])->name('procurement_officer.orders.financial_file.update_cash_payment');
-                    Route::get('delete_cash_payment/{id}',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'delete_cash_payment'])->name('procurement_officer.orders.financial_file.delete_cash_payment');
-                    Route::get('edit_letter_bank/{id}',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'edit_letter_bank'])->name('procurement_officer.orders.financial_file.edit_letter_bank');
-                    Route::post('update_letter_bank',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'update_letter_bank'])->name('procurement_officer.orders.financial_file.update_letter_bank');
-                    Route::get('delete_letter_bank/{id}',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'delete_letter_bank'])->name('procurement_officer.orders.financial_file.delete_letter_bank');
-                    Route::get('extension_index/{letter_bank_id}',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'index_extension'])->name('procurement_officer.orders.financial_file.index_extension');
-                    Route::post('create_extension',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'create_extension'])->name('procurement_officer.orders.financial_file.create_extension');
-                    Route::get('edit_extension/{id}',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'edit_extension'])->name('procurement_officer.orders.financial_file.edit_extension');
-                    Route::post('update_extension',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'update_extension'])->name('procurement_officer.orders.financial_file.update_extension');
-                    Route::get('delete_extension/{id}',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'delete_extension'])->name('procurement_officer.orders.financial_file.delete_extension');
-                    Route::post('updatePaymentStatus',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'updatePaymentStatus'])->name('procurement_officer.orders.financial_file.updatePaymentStatus');
-                    Route::post('update_payment_status',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'update_payment_status'])->name('procurement_officer.orders.financial_file.update_payment_status');
-                    Route::post('delete_payment_status',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'delete_payment_status'])->name('procurement_officer.orders.financial_file.delete_payment_status');
-                    Route::post('paid_letter_bank',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'paid_letter_bank'])->name('procurement_officer.orders.financial_file.paid_letter_bank');
-                    Route::post('update_paid_letter_bank',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'update_paid_letter_bank'])->name('procurement_officer.orders.financial_file.update_paid_letter_bank');
-                    Route::post('delete_paid_letter_bank',[App\Http\Controllers\procurement_officer\FinancialFileController::class, 'delete_paid_letter_bank'])->name('procurement_officer.orders.financial_file.delete_paid_letter_bank');
+                Route::group(['prefix' => 'financial_file'], function () {
+                    Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'index'])->name('procurement_officer.orders.financial_file.index');
+                    Route::post('create_cash_payment', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'create_cash_payment'])->name('procurement_officer.orders.financial_file.create_cash_payment');
+                    Route::post('create_letter_bank', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'create_letter_bank'])->name('procurement_officer.orders.financial_file.create_letter_bank');
+                    Route::get('edit_cash_payment/{id}', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'edit_cash_payment'])->name('procurement_officer.orders.financial_file.edit_cash_payment');
+                    Route::post('update_cash_payment', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'update_cash_payment'])->name('procurement_officer.orders.financial_file.update_cash_payment');
+                    Route::get('delete_cash_payment/{id}', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'delete_cash_payment'])->name('procurement_officer.orders.financial_file.delete_cash_payment');
+                    Route::get('edit_letter_bank/{id}', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'edit_letter_bank'])->name('procurement_officer.orders.financial_file.edit_letter_bank');
+                    Route::post('update_letter_bank', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'update_letter_bank'])->name('procurement_officer.orders.financial_file.update_letter_bank');
+                    Route::get('delete_letter_bank/{id}', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'delete_letter_bank'])->name('procurement_officer.orders.financial_file.delete_letter_bank');
+                    Route::get('extension_index/{letter_bank_id}', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'index_extension'])->name('procurement_officer.orders.financial_file.index_extension');
+                    Route::post('create_extension', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'create_extension'])->name('procurement_officer.orders.financial_file.create_extension');
+                    Route::get('edit_extension/{id}', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'edit_extension'])->name('procurement_officer.orders.financial_file.edit_extension');
+                    Route::post('update_extension', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'update_extension'])->name('procurement_officer.orders.financial_file.update_extension');
+                    Route::get('delete_extension/{id}', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'delete_extension'])->name('procurement_officer.orders.financial_file.delete_extension');
+                    Route::post('updatePaymentStatus', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'updatePaymentStatus'])->name('procurement_officer.orders.financial_file.updatePaymentStatus');
+                    Route::post('update_payment_status', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'update_payment_status'])->name('procurement_officer.orders.financial_file.update_payment_status');
+                    Route::post('delete_payment_status', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'delete_payment_status'])->name('procurement_officer.orders.financial_file.delete_payment_status');
+                    Route::post('paid_letter_bank', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'paid_letter_bank'])->name('procurement_officer.orders.financial_file.paid_letter_bank');
+                    Route::post('update_paid_letter_bank', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'update_paid_letter_bank'])->name('procurement_officer.orders.financial_file.update_paid_letter_bank');
+                    Route::post('delete_paid_letter_bank', [App\Http\Controllers\procurement_officer\FinancialFileController::class, 'delete_paid_letter_bank'])->name('procurement_officer.orders.financial_file.delete_paid_letter_bank');
                 });
-                Route::group(['prefix'=>'shipping'],function(){
-                    Route::get('index/{order_id}',[App\Http\Controllers\procurement_officer\ShippingController::class, 'index'])->name('procurement_officer.orders.shipping.index');
-                    Route::post('create',[App\Http\Controllers\procurement_officer\ShippingController::class, 'create'])->name('procurement_officer.orders.shipping.create');
-                    Route::get('edit/{id}',[App\Http\Controllers\procurement_officer\ShippingController::class, 'edit'])->name('procurement_officer.orders.shipping.edit');
-                    Route::post('update',[App\Http\Controllers\procurement_officer\ShippingController::class, 'update'])->name('procurement_officer.orders.shipping.update');
-                    Route::get('delete/{id}',[App\Http\Controllers\procurement_officer\ShippingController::class, 'delete'])->name('procurement_officer.orders.shipping.delete');
-                    Route::get('details/{id}',[App\Http\Controllers\procurement_officer\ShippingController::class, 'details'])->name('procurement_officer.orders.shipping.details');
-                    Route::post('create_shipping_award',[App\Http\Controllers\procurement_officer\ShippingController::class, 'create_shipping_award'])->name('procurement_officer.orders.shipping.create_shipping_award');
-                    Route::get('shipping_award_status_disable/{id}',[App\Http\Controllers\procurement_officer\ShippingController::class, 'shipping_award_status_disable'])->name('procurement_officer.orders.shipping.shipping_award_status_disable');
-                    Route::get('edit_shipping_award/{id}',[App\Http\Controllers\procurement_officer\ShippingController::class, 'edit_shipping_award'])->name('procurement_officer.orders.shipping.edit_shipping_award');
-                    Route::post('update_shipping_award',[App\Http\Controllers\procurement_officer\ShippingController::class, 'update_shipping_award'])->name('procurement_officer.orders.shipping.update_shipping_award');
-                    Route::post('update_shipping_status',[App\Http\Controllers\procurement_officer\ShippingController::class, 'update_shipping_status'])->name('procurement_officer.orders.shipping.update_shipping_status');
+                Route::group(['prefix' => 'shipping'], function () {
+                    Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\ShippingController::class, 'index'])->name('procurement_officer.orders.shipping.index');
+                    Route::post('create', [App\Http\Controllers\procurement_officer\ShippingController::class, 'create'])->name('procurement_officer.orders.shipping.create');
+                    Route::get('edit/{id}', [App\Http\Controllers\procurement_officer\ShippingController::class, 'edit'])->name('procurement_officer.orders.shipping.edit');
+                    Route::post('update', [App\Http\Controllers\procurement_officer\ShippingController::class, 'update'])->name('procurement_officer.orders.shipping.update');
+                    Route::get('delete/{id}', [App\Http\Controllers\procurement_officer\ShippingController::class, 'delete'])->name('procurement_officer.orders.shipping.delete');
+                    Route::get('details/{id}', [App\Http\Controllers\procurement_officer\ShippingController::class, 'details'])->name('procurement_officer.orders.shipping.details');
+                    Route::post('create_shipping_award', [App\Http\Controllers\procurement_officer\ShippingController::class, 'create_shipping_award'])->name('procurement_officer.orders.shipping.create_shipping_award');
+                    Route::get('shipping_award_status_disable/{id}', [App\Http\Controllers\procurement_officer\ShippingController::class, 'shipping_award_status_disable'])->name('procurement_officer.orders.shipping.shipping_award_status_disable');
+                    Route::get('edit_shipping_award/{id}', [App\Http\Controllers\procurement_officer\ShippingController::class, 'edit_shipping_award'])->name('procurement_officer.orders.shipping.edit_shipping_award');
+                    Route::post('update_shipping_award', [App\Http\Controllers\procurement_officer\ShippingController::class, 'update_shipping_award'])->name('procurement_officer.orders.shipping.update_shipping_award');
+                    Route::post('update_shipping_status', [App\Http\Controllers\procurement_officer\ShippingController::class, 'update_shipping_status'])->name('procurement_officer.orders.shipping.update_shipping_status');
                 });
-                Route::group(['prefix'=>'calender'],function(){
-                    Route::get('index/{order_id}',[App\Http\Controllers\procurement_officer\CalenderController::class, 'index'])->name('procurement_officer.orders.calender.index');
-                    Route::get('getEvents/{order_id}',[App\Http\Controllers\procurement_officer\CalenderController::class, 'getEvents'])->name('procurement_officer.orders.calender.getEvents');
-                    Route::post('create',[App\Http\Controllers\procurement_officer\CalenderController::class, 'create'])->name('procurement_officer.orders.calender.create');
+                Route::group(['prefix' => 'calender'], function () {
+                    Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\CalenderController::class, 'index'])->name('procurement_officer.orders.calender.index');
+                    Route::get('getEvents/{order_id}', [App\Http\Controllers\procurement_officer\CalenderController::class, 'getEvents'])->name('procurement_officer.orders.calender.getEvents');
+                    Route::post('create', [App\Http\Controllers\procurement_officer\CalenderController::class, 'create'])->name('procurement_officer.orders.calender.create');
                 });
-                Route::group(['prefix'=>'notes'],function(){
-                    Route::get('index/{order_id}',[App\Http\Controllers\procurement_officer\OrderNotesController::class, 'index'])->name('procurement_officer.orders.notes.index');
+                Route::group(['prefix' => 'notes'], function () {
+                    Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\OrderNotesController::class, 'index'])->name('procurement_officer.orders.notes.index');
                     Route::post('create_order_notes', [App\Http\Controllers\procurement_officer\OrderNotesController::class, 'create_order_notes'])->name('procurement_officer.orders.notes.create_order_notes');
                     Route::get('edit_order_notes/{order_id}', [App\Http\Controllers\procurement_officer\OrderNotesController::class, 'edit_order_notes'])->name('procurement_officer.orders.notes.edit_order_notes');
                     Route::post('update_order_notes/{id}', [App\Http\Controllers\procurement_officer\OrderNotesController::class, 'update_order_notes'])->name('procurement_officer.orders.notes.update_order_notes');
@@ -165,25 +164,25 @@ Route::group(['middleware' => 'auth',], function () {
                     Route::post('edit_order_notes_note', [App\Http\Controllers\procurement_officer\OrderNotesController::class, 'edit_order_notes_note'])->name('procurement_officer.orders.notes.edit_order_notes_note');
                     Route::get('delete_note_from_order/{id}/{modal_name}', [App\Http\Controllers\users\ProcurmentOfficerController::class, 'delete_note_from_order'])->name('procurement_officer.orders.notes.delete_note_from_order');
                 });
-                Route::group(['prefix'=>'attachment'],function(){
+                Route::group(['prefix' => 'attachment'], function () {
                     Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\OrderAttachmentController::class, 'index'])->name('procurement_officer.orders.attachment.index');
                     Route::post('create_order_attachment', [App\Http\Controllers\procurement_officer\OrderAttachmentController::class, 'create_order_attachment'])->name('procurement_officer.orders.attachment.create_order_attachment');
                     Route::get('edit_order_attachment/{id}', [App\Http\Controllers\procurement_officer\OrderAttachmentController::class, 'edit_order_attachment'])->name('procurement_officer.orders.attachment.edit_order_attachment');
                     Route::get('delete_order_attachment/{id}', [App\Http\Controllers\procurement_officer\OrderAttachmentController::class, 'delete_order_attachment'])->name('procurement_officer.orders.attachment.delete_order_attachment');
                 });
-                Route::group(['prefix'=>'price_offer_items'],function(){
+                Route::group(['prefix' => 'price_offer_items'], function () {
                     Route::post('create', [App\Http\Controllers\procurement_officer\PriceOfferItemsController::class, 'create'])->name('procurement_officer.orders.price_offer_items.create');
                     Route::post('add_or_update_bonus', [App\Http\Controllers\procurement_officer\PriceOfferItemsController::class, 'add_or_update_bonus'])->name('procurement_officer.orders.price_offer_items.add_or_update_bonus');
                     Route::post('add_or_update_discount', [App\Http\Controllers\procurement_officer\PriceOfferItemsController::class, 'add_or_update_discount'])->name('procurement_officer.orders.price_offer_items.add_or_update_discount');
                 });
-                Route::group(['prefix'=>'insurance'],function(){
+                Route::group(['prefix' => 'insurance'], function () {
                     Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\OrderInsuranceController::class, 'index'])->name('procurement_officer.orders.insurance.index');
                     Route::post('create', [App\Http\Controllers\procurement_officer\OrderInsuranceController::class, 'create'])->name('procurement_officer.orders.insurance.create');
                     Route::get('edit/{id}', [App\Http\Controllers\procurement_officer\OrderInsuranceController::class, 'edit'])->name('procurement_officer.orders.insurance.edit');
                     Route::post('update', [App\Http\Controllers\procurement_officer\OrderInsuranceController::class, 'update'])->name('procurement_officer.orders.insurance.update');
                     Route::get('delete/{id}', [App\Http\Controllers\procurement_officer\OrderInsuranceController::class, 'delete'])->name('procurement_officer.orders.insurance.delete');
                 });
-                Route::group(['prefix'=>'clearance'],function(){
+                Route::group(['prefix' => 'clearance'], function () {
                     Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\ClearanceController::class, 'index'])->name('procurement_officer.orders.clearance.index');
                     Route::post('create', [App\Http\Controllers\procurement_officer\ClearanceController::class, 'create'])->name('procurement_officer.orders.clearance.create');
                     Route::post('create_order_clearance_attachment', [App\Http\Controllers\procurement_officer\ClearanceController::class, 'create_order_clearance_attachment'])->name('procurement_officer.orders.clearance.create_order_clearance_attachment');
@@ -195,7 +194,7 @@ Route::group(['middleware' => 'auth',], function () {
                     Route::post('update', [App\Http\Controllers\procurement_officer\ClearanceController::class, 'update'])->name('procurement_officer.orders.clearance.update');
                     Route::get('delete/{id}', [App\Http\Controllers\procurement_officer\ClearanceController::class, 'delete'])->name('procurement_officer.orders.clearance.delete');
                 });
-                Route::group(['prefix'=>'delivery'],function(){
+                Route::group(['prefix' => 'delivery'], function () {
                     Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\DeliveryController::class, 'index'])->name('procurement_officer.orders.delivery.index');
                     Route::post('create', [App\Http\Controllers\procurement_officer\DeliveryController::class, 'create'])->name('procurement_officer.orders.delivery.create');
                     Route::get('edit/{id}', [App\Http\Controllers\procurement_officer\DeliveryController::class, 'edit'])->name('procurement_officer.orders.delivery.edit');
@@ -207,13 +206,13 @@ Route::group(['middleware' => 'auth',], function () {
                     Route::get('delete/{id}', [App\Http\Controllers\procurement_officer\DeliveryController::class, 'delete'])->name('procurement_officer.orders.delivery.delete');
                 });
 
-                Route::group(['prefix'=>'forms'],function(){
+                Route::group(['prefix' => 'forms'], function () {
                     Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\FormsController::class, 'index'])->name('procurement_officer.orders.forms.index');
                     Route::post('product_supplier_pdf', [App\Http\Controllers\procurement_officer\FormsController::class, 'product_supplier_pdf'])->name('procurement_officer.orders.forms.product_supplier_pdf');
                     Route::get('order_summery/{order_id}', [App\Http\Controllers\procurement_officer\FormsController::class, 'order_summery'])->name('procurement_officer.orders.forms.order_summery');
                 });
 
-                Route::group(['prefix'=>'chat_message'],function(){
+                Route::group(['prefix' => 'chat_message'], function () {
                     Route::get('index/{order_id}', [App\Http\Controllers\procurement_officer\ChatMessageController::class, 'index'])->name('procurement_officer.orders.chat_message.index');
                 });
             });
@@ -227,8 +226,8 @@ Route::group(['middleware' => 'auth',], function () {
             Route::post('update/{id}', [App\Http\Controllers\users\StorekeeperController::class, 'update'])->name('users.storekeeper.update');
             Route::get('details/{id}', [App\Http\Controllers\users\StorekeeperController::class, 'details'])->name('users.storekeeper.details');
             Route::get('personal_account/{id}', [App\Http\Controllers\users\StorekeeperController::class, 'personal_account'])->name('users.storekeeper.personal_account');
-            Route::group(['prefix'=>'orders'],function(){
-                Route::get('index',[App\Http\Controllers\storekeeper\OrderController::class,'index'])->name('users.storekeeper.orders.index');
+            Route::group(['prefix' => 'orders'], function () {
+                Route::get('index', [App\Http\Controllers\storekeeper\OrderController::class, 'index'])->name('users.storekeeper.orders.index');
                 Route::post('search_table_storekeeper_ajax', [App\Http\Controllers\OrdersController::class, 'search_table_storekeeper_ajax'])->name('users.storekeeper.search_table_storekeeper_ajax');
                 Route::post('order_items_table_ajax', [App\Http\Controllers\OrdersController::class, 'order_items_table_ajax'])->name('users.storekeeper.order_items_table_ajax');
                 Route::get('shipping_details/{order_id}', [App\Http\Controllers\users\StorekeeperController::class, 'shipping_details'])->name('users.storekeeper.shipping_details');
@@ -265,6 +264,7 @@ Route::group(['middleware' => 'auth',], function () {
             Route::post('product_search_ajax', [App\Http\Controllers\users\SupplierController::class, 'product_search_ajax'])->name('users.supplier.product_search_ajax');
             Route::post('product_list_ajax', [App\Http\Controllers\users\SupplierController::class, 'product_list_ajax'])->name('users.supplier.product_list_ajax');
             Route::post('add_to_product_supplier_ajax', [App\Http\Controllers\users\SupplierController::class, 'add_to_product_supplier_ajax'])->name('users.supplier.add_to_product_supplier_ajax');
+            Route::post('update_potential_status', [App\Http\Controllers\users\SupplierController::class, 'updatePotentialStatus'])->name('users.supplier.updatePotentialStatus');
             Route::group(['prefix' => 'company_contact_person'], function () {
                 Route::get('edit/{id}', [App\Http\Controllers\users\SupplierController::class, 'contact_person_edit'])->name('users.supplier.contact_person_edit');
                 Route::post('update', [App\Http\Controllers\users\SupplierController::class, 'contact_person_update'])->name('users.supplier.contact_person_update');
@@ -389,6 +389,8 @@ Route::group(['middleware' => 'auth',], function () {
         Route::post('updateOrderStatus/{order_id}', [App\Http\Controllers\OrdersController::class, 'updateOrderStatus'])->name('orders.updateOrderStatus');
         Route::get('/deleteItems/{order_item_id}', [App\Http\Controllers\users\ProcurmentOfficerController::class, 'deleteItems'])->name('orders.deleteItems');
         Route::post('create_supplier_for_order', [App\Http\Controllers\OrdersController::class, 'create_supplier_for_order'])->name('orders.create_supplier_for_order');
+        Route::get('get-order-comments', [App\Http\Controllers\OrdersController::class, 'getOrderComments'])->name('orders.comments.get');
+        Route::post('create-order-comment', [App\Http\Controllers\OrdersController::class, 'createOrderComment'])->name('orders.comments.create');
     });
 
     Route::group(['prefix' => 'tasks'], function () {
@@ -405,129 +407,129 @@ Route::group(['middleware' => 'auth',], function () {
         Route::post('update', [App\Http\Controllers\TaskTypeController::class, 'update'])->name('tasks_type.update');
     });
 
-    Route::group(['prefix'=>'calender'],function(){
-        Route::get('index',[App\Http\Controllers\CalendarController::class, 'index'])->name('calendar.index');
-        Route::get('getEvents',[App\Http\Controllers\CalendarController::class, 'getEvents'])->name('calendar.getEvents');
-        Route::post('create',[App\Http\Controllers\CalendarController::class, 'create'])->name('calendar.create');
-        Route::post('updateEventDrop',[App\Http\Controllers\CalendarController::class, 'updateEventDrop'])->name('calendar.updateEventDrop');
-        Route::post('update',[App\Http\Controllers\CalendarController::class, 'update'])->name('calendar.update');
+    Route::group(['prefix' => 'calender'], function () {
+        Route::get('index', [App\Http\Controllers\CalendarController::class, 'index'])->name('calendar.index');
+        Route::get('getEvents', [App\Http\Controllers\CalendarController::class, 'getEvents'])->name('calendar.getEvents');
+        Route::post('create', [App\Http\Controllers\CalendarController::class, 'create'])->name('calendar.create');
+        Route::post('updateEventDrop', [App\Http\Controllers\CalendarController::class, 'updateEventDrop'])->name('calendar.updateEventDrop');
+        Route::post('update', [App\Http\Controllers\CalendarController::class, 'update'])->name('calendar.update');
     });
 
-    Route::group(['prefix'=>'bank'],function(){
-        Route::get('index',[App\Http\Controllers\BankController::class, 'index'])->name('bank.index');
-        Route::post('create',[App\Http\Controllers\BankController::class, 'create'])->name('bank.create');
-        Route::get('edit/{id}',[App\Http\Controllers\BankController::class, 'edit'])->name('bank.edit');
-        Route::post('update/{id}',[App\Http\Controllers\BankController::class, 'update'])->name('bank.update');
+    Route::group(['prefix' => 'bank'], function () {
+        Route::get('index', [App\Http\Controllers\BankController::class, 'index'])->name('bank.index');
+        Route::post('create', [App\Http\Controllers\BankController::class, 'create'])->name('bank.create');
+        Route::get('edit/{id}', [App\Http\Controllers\BankController::class, 'edit'])->name('bank.edit');
+        Route::post('update/{id}', [App\Http\Controllers\BankController::class, 'update'])->name('bank.update');
     });
 
-    Route::group(['prefix'=>'shipping_methods'],function(){
-        Route::get('index',[App\Http\Controllers\ShippingMethodController::class, 'index'])->name('shipping_methods.index');
-        Route::post('create',[App\Http\Controllers\ShippingMethodController::class, 'create'])->name('shipping_methods.create');
-        Route::get('edit/{id}',[App\Http\Controllers\ShippingMethodController::class, 'edit'])->name('shipping_methods.edit');
-        Route::post('update/{id}',[App\Http\Controllers\ShippingMethodController::class, 'update'])->name('shipping_methods.update');
+    Route::group(['prefix' => 'shipping_methods'], function () {
+        Route::get('index', [App\Http\Controllers\ShippingMethodController::class, 'index'])->name('shipping_methods.index');
+        Route::post('create', [App\Http\Controllers\ShippingMethodController::class, 'create'])->name('shipping_methods.create');
+        Route::get('edit/{id}', [App\Http\Controllers\ShippingMethodController::class, 'edit'])->name('shipping_methods.edit');
+        Route::post('update/{id}', [App\Http\Controllers\ShippingMethodController::class, 'update'])->name('shipping_methods.update');
     });
 
-    Route::group(['prefix'=>'clearance_attachment'],function(){
-        Route::get('index',[App\Http\Controllers\ClearanceAttachmentController::class, 'index'])->name('clearance_attachment.index');
-        Route::post('create',[App\Http\Controllers\ClearanceAttachmentController::class, 'create'])->name('clearance_attachment.create');
-        Route::get('edit/{id}',[App\Http\Controllers\ClearanceAttachmentController::class, 'edit'])->name('clearance_attachment.edit');
-        Route::post('update',[App\Http\Controllers\ClearanceAttachmentController::class, 'update'])->name('clearance_attachment.update');
+    Route::group(['prefix' => 'clearance_attachment'], function () {
+        Route::get('index', [App\Http\Controllers\ClearanceAttachmentController::class, 'index'])->name('clearance_attachment.index');
+        Route::post('create', [App\Http\Controllers\ClearanceAttachmentController::class, 'create'])->name('clearance_attachment.create');
+        Route::get('edit/{id}', [App\Http\Controllers\ClearanceAttachmentController::class, 'edit'])->name('clearance_attachment.edit');
+        Route::post('update', [App\Http\Controllers\ClearanceAttachmentController::class, 'update'])->name('clearance_attachment.update');
     });
 
-    Route::group(['prefix'=>'estimation_cost_element'],function(){
-        Route::get('index',[App\Http\Controllers\EstimationCostElementController::class, 'index'])->name('estimation_cost_element.index');
-        Route::post('create',[App\Http\Controllers\EstimationCostElementController::class, 'create'])->name('estimation_cost_element.create');
-        Route::get('edit/{id}',[App\Http\Controllers\EstimationCostElementController::class, 'edit'])->name('estimation_cost_element.edit');
-        Route::post('update',[App\Http\Controllers\EstimationCostElementController::class, 'update'])->name('estimation_cost_element.update');
+    Route::group(['prefix' => 'estimation_cost_element'], function () {
+        Route::get('index', [App\Http\Controllers\EstimationCostElementController::class, 'index'])->name('estimation_cost_element.index');
+        Route::post('create', [App\Http\Controllers\EstimationCostElementController::class, 'create'])->name('estimation_cost_element.create');
+        Route::get('edit/{id}', [App\Http\Controllers\EstimationCostElementController::class, 'edit'])->name('estimation_cost_element.edit');
+        Route::post('update', [App\Http\Controllers\EstimationCostElementController::class, 'update'])->name('estimation_cost_element.update');
     });
 
-    Route::group(['prefix'=>'trash'],function(){
-        Route::get('index',[App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
-        Route::get('updateOrderStatus/{id}',[App\Http\Controllers\TrashController::class, 'updateOrderStatus'])->name('trash.updateOrderStatus');
+    Route::group(['prefix' => 'trash'], function () {
+        Route::get('index', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
+        Route::get('updateOrderStatus/{id}', [App\Http\Controllers\TrashController::class, 'updateOrderStatus'])->name('trash.updateOrderStatus');
     });
 
-    Route::group(['prefix'=>'order_status'],function(){
-        Route::get('index',[App\Http\Controllers\OrderStatusController::class, 'index'])->name('order_status.index');
-        Route::post('create',[App\Http\Controllers\OrderStatusController::class, 'create'])->name('order_status.create');
-        Route::get('edit/{id}',[App\Http\Controllers\OrderStatusController::class, 'edit'])->name('order_status.edit');
-        Route::post('update',[App\Http\Controllers\OrderStatusController::class, 'update'])->name('order_status.update');
+    Route::group(['prefix' => 'order_status'], function () {
+        Route::get('index', [App\Http\Controllers\OrderStatusController::class, 'index'])->name('order_status.index');
+        Route::post('create', [App\Http\Controllers\OrderStatusController::class, 'create'])->name('order_status.create');
+        Route::get('edit/{id}', [App\Http\Controllers\OrderStatusController::class, 'edit'])->name('order_status.edit');
+        Route::post('update', [App\Http\Controllers\OrderStatusController::class, 'update'])->name('order_status.update');
     });
 
-    Route::group(['prefix'=>'reports'],function(){
-        Route::get('index',[App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
-        Route::group(['prefix'=>'suppliers'],function (){
-            Route::get('suppliers_report',[App\Http\Controllers\ReportController::class, 'suppliers_report'])->name('reports.suppliers.suppliers_report');
-            Route::post('supplier_report',[App\Http\Controllers\ReportController::class, 'supplier_report'])->name('reports.suppliers.supplier_report');
-            Route::post('details_supplier_report',[App\Http\Controllers\ReportController::class, 'details_supplier_report'])->name('reports.suppliers.details_supplier_report');
+    Route::group(['prefix' => 'reports'], function () {
+        Route::get('index', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+        Route::group(['prefix' => 'suppliers'], function () {
+            Route::get('suppliers_report', [App\Http\Controllers\ReportController::class, 'suppliers_report'])->name('reports.suppliers.suppliers_report');
+            Route::post('supplier_report', [App\Http\Controllers\ReportController::class, 'supplier_report'])->name('reports.suppliers.supplier_report');
+            Route::post('details_supplier_report', [App\Http\Controllers\ReportController::class, 'details_supplier_report'])->name('reports.suppliers.details_supplier_report');
         });
-        Route::group(['prefix'=>'products'],function (){
-            Route::get('products_report',[App\Http\Controllers\ReportController::class, 'products_report'])->name('reports.products.products_report');
-            Route::post('products_to_the_company_report',[App\Http\Controllers\ReportController::class, 'products_to_the_company_report'])->name('reports.products.products_to_the_company_report');
+        Route::group(['prefix' => 'products'], function () {
+            Route::get('products_report', [App\Http\Controllers\ReportController::class, 'products_report'])->name('reports.products.products_report');
+            Route::post('products_to_the_company_report', [App\Http\Controllers\ReportController::class, 'products_to_the_company_report'])->name('reports.products.products_to_the_company_report');
         });
-        Route::group(['prefix'=>'orders'],function (){
-            Route::get('order_index',[App\Http\Controllers\ReportController::class, 'order_index'])->name('reports.orders.order_index');
-            Route::post('order_table',[App\Http\Controllers\ReportController::class, 'order_table'])->name('reports.orders.order_table');
+        Route::group(['prefix' => 'orders'], function () {
+            Route::get('order_index', [App\Http\Controllers\ReportController::class, 'order_index'])->name('reports.orders.order_index');
+            Route::post('order_table', [App\Http\Controllers\ReportController::class, 'order_table'])->name('reports.orders.order_table');
         });
-        Route::group(['prefix'=>'financial_report'],function (){
-            Route::get('index',[App\Http\Controllers\ReportController::class, 'financial_report_index'])->name('reports.financial_report.financial_report_index');
-            Route::post('financial_report_PDF',[App\Http\Controllers\ReportController::class, 'financial_report_PDF'])->name('reports.financial_report.financial_report_PDF');
-            Route::post('financial_report_data_filter_ajax',[App\Http\Controllers\ReportController::class, 'financial_report_data_filter_ajax'])->name('reports.financial_report.financial_report_data_filter_ajax');
-        });
-    });
-
-    Route::group(['prefix'=>'setting'],function(){
-        Route::get('index',[App\Http\Controllers\SettingController::class, 'index'])->name('setting.index');
-        Route::group(['prefix'=>'system_setting'],function(){
-            Route::get('index',[App\Http\Controllers\SystemSettingController::class, 'index'])->name('setting.system_setting.index');
-            Route::post('create',[App\Http\Controllers\SystemSettingController::class, 'create'])->name('setting.system_setting.create');
-        });
-        Route::group(['prefix'=>'user_category'],function(){
-            Route::get('index',[App\Http\Controllers\UserCategoryController::class, 'index'])->name('setting.user_category.index');
-            Route::post('create',[App\Http\Controllers\UserCategoryController::class, 'create'])->name('setting.user_category.create');
-            Route::get('edit/{id}',[App\Http\Controllers\UserCategoryController::class, 'edit'])->name('setting.user_category.edit');
-            Route::post('update',[App\Http\Controllers\UserCategoryController::class, 'update'])->name('setting.user_category.update');
+        Route::group(['prefix' => 'financial_report'], function () {
+            Route::get('index', [App\Http\Controllers\ReportController::class, 'financial_report_index'])->name('reports.financial_report.financial_report_index');
+            Route::post('financial_report_PDF', [App\Http\Controllers\ReportController::class, 'financial_report_PDF'])->name('reports.financial_report.financial_report_PDF');
+            Route::post('financial_report_data_filter_ajax', [App\Http\Controllers\ReportController::class, 'financial_report_data_filter_ajax'])->name('reports.financial_report.financial_report_data_filter_ajax');
         });
     });
 
-    Route::group(['prefix'=>'message'], function () {
-        Route::get('send_message_page',[App\Http\Controllers\ChatMessageController::class, 'send_message_page'])->name('message.send_message_page');
-        Route::post('send_message',[App\Http\Controllers\ChatMessageController::class, 'send_message'])->name('message.send_message');
-        Route::post('list_users_ajax',[App\Http\Controllers\ChatMessageController::class, 'list_users_ajax'])->name('message.list_users_ajax');
-        Route::post('list_message_ajax',[App\Http\Controllers\ChatMessageController::class, 'list_message_ajax'])->name('message.list_message_ajax');
-        Route::post('create_message_ajax',[App\Http\Controllers\ChatMessageController::class, 'create_message_ajax'])->name('message.create_message_ajax');
-        Route::post('orders_table_ajax',[App\Http\Controllers\ChatMessageController::class, 'orders_table_ajax'])->name('message.orders_table_ajax');
-        Route::post('list_orders_for_tag',[App\Http\Controllers\ChatMessageController::class, 'list_orders_for_tag'])->name('message.list_orders_for_tag');
-        Route::post('create_tag_for_message',[App\Http\Controllers\ChatMessageController::class, 'create_tag_for_message'])->name('message.create_tag_for_message');
-        Route::post('delete_message_tag',[App\Http\Controllers\ChatMessageController::class, 'delete_message_tag'])->name('message.delete_message_tag');
+    Route::group(['prefix' => 'setting'], function () {
+        Route::get('index', [App\Http\Controllers\SettingController::class, 'index'])->name('setting.index');
+        Route::group(['prefix' => 'system_setting'], function () {
+            Route::get('index', [App\Http\Controllers\SystemSettingController::class, 'index'])->name('setting.system_setting.index');
+            Route::post('create', [App\Http\Controllers\SystemSettingController::class, 'create'])->name('setting.system_setting.create');
+        });
+        Route::group(['prefix' => 'user_category'], function () {
+            Route::get('index', [App\Http\Controllers\UserCategoryController::class, 'index'])->name('setting.user_category.index');
+            Route::post('create', [App\Http\Controllers\UserCategoryController::class, 'create'])->name('setting.user_category.create');
+            Route::get('edit/{id}', [App\Http\Controllers\UserCategoryController::class, 'edit'])->name('setting.user_category.edit');
+            Route::post('update', [App\Http\Controllers\UserCategoryController::class, 'update'])->name('setting.user_category.update');
+        });
     });
 
-    Route::group(['prefix'=>'note_book'], function () {
-        Route::get('index',[App\Http\Controllers\NoteBookController::class, 'index'])->name('note_book.index');
-        Route::post('create',[App\Http\Controllers\NoteBookController::class, 'create'])->name('note_book.create');
-        Route::post('update',[App\Http\Controllers\NoteBookController::class, 'update'])->name('note_book.update');
-        Route::post('update_status',[App\Http\Controllers\NoteBookController::class, 'update_status'])->name('note_book.update_status');
-        Route::post('note_book_table_ajax',[App\Http\Controllers\NoteBookController::class, 'note_book_table_ajax'])->name('note_book.note_book_table_ajax');
-        Route::get('archive_note_book_index',[App\Http\Controllers\NoteBookController::class, 'archive_note_book_index'])->name('note_book.archive_note_book_index');
-        Route::post('archive_note_book_table_ajax',[App\Http\Controllers\NoteBookController::class, 'archive_note_book_table_ajax'])->name('note_book.archive_note_book_table_ajax');
-        Route::get('note_book_pdf',[App\Http\Controllers\NoteBookController::class, 'note_book_pdf'])->name('note_book.note_book_pdf');
+    Route::group(['prefix' => 'message'], function () {
+        Route::get('send_message_page', [App\Http\Controllers\ChatMessageController::class, 'send_message_page'])->name('message.send_message_page');
+        Route::post('send_message', [App\Http\Controllers\ChatMessageController::class, 'send_message'])->name('message.send_message');
+        Route::post('list_users_ajax', [App\Http\Controllers\ChatMessageController::class, 'list_users_ajax'])->name('message.list_users_ajax');
+        Route::post('list_message_ajax', [App\Http\Controllers\ChatMessageController::class, 'list_message_ajax'])->name('message.list_message_ajax');
+        Route::post('create_message_ajax', [App\Http\Controllers\ChatMessageController::class, 'create_message_ajax'])->name('message.create_message_ajax');
+        Route::post('orders_table_ajax', [App\Http\Controllers\ChatMessageController::class, 'orders_table_ajax'])->name('message.orders_table_ajax');
+        Route::post('list_orders_for_tag', [App\Http\Controllers\ChatMessageController::class, 'list_orders_for_tag'])->name('message.list_orders_for_tag');
+        Route::post('create_tag_for_message', [App\Http\Controllers\ChatMessageController::class, 'create_tag_for_message'])->name('message.create_tag_for_message');
+        Route::post('delete_message_tag', [App\Http\Controllers\ChatMessageController::class, 'delete_message_tag'])->name('message.delete_message_tag');
     });
 
-    Route::group(['prefix'=>'criteria'], function () {
-        Route::get('index',[App\Http\Controllers\CriteriaController::class, 'index'])->name('criteria.index');
-        Route::post('create',[App\Http\Controllers\CriteriaController::class, 'create'])->name('criteria.create');
-        Route::get('edit/{id}',[App\Http\Controllers\CriteriaController::class, 'edit'])->name('criteria.edit');
-        Route::post('update',[App\Http\Controllers\CriteriaController::class, 'update'])->name('criteria.update');
-        Route::post('update_role_id',[App\Http\Controllers\CriteriaController::class, 'update_role_id'])->name('criteria.update_role_id');
+    Route::group(['prefix' => 'note_book'], function () {
+        Route::get('index', [App\Http\Controllers\NoteBookController::class, 'index'])->name('note_book.index');
+        Route::post('create', [App\Http\Controllers\NoteBookController::class, 'create'])->name('note_book.create');
+        Route::post('update', [App\Http\Controllers\NoteBookController::class, 'update'])->name('note_book.update');
+        Route::post('update_status', [App\Http\Controllers\NoteBookController::class, 'update_status'])->name('note_book.update_status');
+        Route::post('note_book_table_ajax', [App\Http\Controllers\NoteBookController::class, 'note_book_table_ajax'])->name('note_book.note_book_table_ajax');
+        Route::get('archive_note_book_index', [App\Http\Controllers\NoteBookController::class, 'archive_note_book_index'])->name('note_book.archive_note_book_index');
+        Route::post('archive_note_book_table_ajax', [App\Http\Controllers\NoteBookController::class, 'archive_note_book_table_ajax'])->name('note_book.archive_note_book_table_ajax');
+        Route::get('note_book_pdf', [App\Http\Controllers\NoteBookController::class, 'note_book_pdf'])->name('note_book.note_book_pdf');
     });
-    
-    Route::group(['prefix'=>'evaluation'], function () {
-        Route::get('index',[App\Http\Controllers\EvaluationOrderController::class, 'index'])->name('evaluation.index');
-        Route::post('orders_list',[App\Http\Controllers\EvaluationOrderController::class, 'orders_list'])->name('evaluation.orders_list');
-        Route::get('details/{order_id}',[App\Http\Controllers\EvaluationOrderController::class, 'details'])->name('evaluation.details');
-        Route::post('create_evaluation',[App\Http\Controllers\EvaluationOrderController::class, 'create_evaluation'])->name('evaluation.create_evaluation');
-        Route::post('update_evaluation_status_ajax',[App\Http\Controllers\EvaluationOrderController::class, 'update_evaluation_status_ajax'])->name('evaluation.update_evaluation_status_ajax');
-        Route::post('update_notes_ajax',[App\Http\Controllers\EvaluationOrderController::class, 'update_notes_ajax'])->name('evaluation.update_notes_ajax');
-        Route::get('evaluation_order_pdf/{id}',[App\Http\Controllers\EvaluationOrderController::class, 'evaluation_order_pdf'])->name('evaluation.evaluation_order_pdf');
+
+    Route::group(['prefix' => 'criteria'], function () {
+        Route::get('index', [App\Http\Controllers\CriteriaController::class, 'index'])->name('criteria.index');
+        Route::post('create', [App\Http\Controllers\CriteriaController::class, 'create'])->name('criteria.create');
+        Route::get('edit/{id}', [App\Http\Controllers\CriteriaController::class, 'edit'])->name('criteria.edit');
+        Route::post('update', [App\Http\Controllers\CriteriaController::class, 'update'])->name('criteria.update');
+        Route::post('update_role_id', [App\Http\Controllers\CriteriaController::class, 'update_role_id'])->name('criteria.update_role_id');
+    });
+
+    Route::group(['prefix' => 'evaluation'], function () {
+        Route::get('index', [App\Http\Controllers\EvaluationOrderController::class, 'index'])->name('evaluation.index');
+        Route::post('orders_list', [App\Http\Controllers\EvaluationOrderController::class, 'orders_list'])->name('evaluation.orders_list');
+        Route::get('details/{order_id}', [App\Http\Controllers\EvaluationOrderController::class, 'details'])->name('evaluation.details');
+        Route::post('create_evaluation', [App\Http\Controllers\EvaluationOrderController::class, 'create_evaluation'])->name('evaluation.create_evaluation');
+        Route::post('update_evaluation_status_ajax', [App\Http\Controllers\EvaluationOrderController::class, 'update_evaluation_status_ajax'])->name('evaluation.update_evaluation_status_ajax');
+        Route::post('update_notes_ajax', [App\Http\Controllers\EvaluationOrderController::class, 'update_notes_ajax'])->name('evaluation.update_notes_ajax');
+        Route::get('evaluation_order_pdf/{id}', [App\Http\Controllers\EvaluationOrderController::class, 'evaluation_order_pdf'])->name('evaluation.evaluation_order_pdf');
         Route::post('delete-image', [EvaluationOrderController::class, 'delete_image'])->name('evaluation.delete_image');
     });
 
@@ -538,11 +540,11 @@ Route::group(['middleware' => 'auth',], function () {
 
 });
 
-Route::group(['prefix'=>'global_function'],function(){
-    Route::post('update_notes_for_view_attachment_modal_ajax',[App\Http\Controllers\GlobalController::class, 'update_notes_for_view_attachment_modal_ajax'])->name('global.update_notes_for_view_attachment_modal_ajax');
+Route::group(['prefix' => 'global_function'], function () {
+    Route::post('update_notes_for_view_attachment_modal_ajax', [App\Http\Controllers\GlobalController::class, 'update_notes_for_view_attachment_modal_ajax'])->name('global.update_notes_for_view_attachment_modal_ajax');
 });
 
-Route::get('/update-checkbox-state/{productId}', [\App\Http\Controllers\PaginationController::class,'updateCheckboxState'])->name('update-checkbox-state');
+Route::get('/update-checkbox-state/{productId}', [\App\Http\Controllers\PaginationController::class, 'updateCheckboxState'])->name('update-checkbox-state');
 
 Route::get('migration', function () {
     \Illuminate\Support\Facades\Artisan::call('migrate');
@@ -555,5 +557,3 @@ Route::get('key_generate', function () {
 });
 
 //Build By Mohamad Maraqa
-
-

@@ -20,7 +20,7 @@ class Yields
      *                              is traded to the buyer.
      * @param mixed $maturity The security's maturity date.
      *                            The maturity date is the date when the security expires.
-     * @param mixed $price The security's price_offer per $100 face value
+     * @param mixed $price The security's price per $100 face value
      * @param mixed $redemption The security's redemption value per $100 face value
      * @param mixed $basis The type of day count to use.
      *                       0 or omitted    US (NASD) 30/360
@@ -83,7 +83,7 @@ class Yields
      *                            The maturity date is the date when the security expires.
      * @param mixed $issue The security's issue date
      * @param mixed $rate The security's interest rate at date of issue
-     * @param mixed $price The security's price_offer per $100 face value
+     * @param mixed $price The security's price per $100 face value
      * @param mixed $basis The type of day count to use.
      *                       0 or omitted    US (NASD) 30/360
      *                       1               Actual/actual

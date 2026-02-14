@@ -46,7 +46,7 @@
                             </div>
                             <div class="col-md-4">
                                 <select onchange="supplier_table()" required class="form-control select2bs4"
-                                        name="potential_suppliers" id="potential_suppliers">
+                                    name="potential_suppliers" id="potential_suppliers">
                                     <option value="">جميع الموردين المعتمدين وغير المعتمدين</option>
                                     <option value="certified">موردين معتمدين</option>
                                     <option value="not_supported">موردين غير معتمدين</option>
@@ -139,6 +139,36 @@
             });
         }
 
+        function updatePotentialStatus(id) {
+            // إظهار مؤشر تحميل بسيط (اختياري)
+            $.ajax({
+                url: "{{ route('users.supplier.updatePotentialStatus') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: id
+                },
+                beforeSend: function() {
+                    // يمكنك هنا تعطيل السويتش حتى ينتهي الطلب لمنع النقرات المتعددة
+                    $("#potentialSwitch" + id).prop('disabled', true);
+                },
+                success: function(response) {
+                    $("#potentialSwitch" + id).prop('disabled', false);
+                    if (response.success) {
+                        // إذا كنت تستخدم Toastr
+                        toastr.success('تم تحديث حالة المورد بنجاح');
+                    } else {
+                        toastr.error('حدث خطأ أثناء التحديث');
+                    }
+                },
+                error: function(xhr) {
+                    $("#potentialSwitch" + id).prop('disabled', false);
+                    $("#potentialSwitch" + id).prop('checked', !$("#potentialSwitch" + id).is(':checked'));
+                    alert('عذراً، تعذر الاتصال بالسيرفر');
+                }
+            });
+        }
+
         function supplier_table() {
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
             var headers = {
@@ -173,7 +203,6 @@
             supplier_table();
         });
 
-        //to load script again
         function loadScript(src, callback) {
             var script = document.createElement('script');
             script.src = src;

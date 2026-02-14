@@ -530,7 +530,7 @@ class Financial
      * Returns the discount rate for a security.
      *
      * Excel Function:
-     *        DISC(settlement,maturity,price_offer,redemption[,basis])
+     *        DISC(settlement,maturity,price,redemption[,basis])
      *
      * @deprecated 1.18.0
      *      Use the discount() method in the Financial\Securities\Rates class instead
@@ -541,7 +541,7 @@ class Financial
      *                                date when the security is traded to the buyer.
      * @param mixed $maturity The security's maturity date.
      *                                The maturity date is the date when the security expires.
-     * @param mixed $price The security's price_offer per $100 face value
+     * @param mixed $price The security's price per $100 face value
      * @param int $redemption The security's redemption value per $100 face value
      * @param int $basis The type of day count to use.
      *                                        0 or omitted    US (NASD) 30/360
@@ -560,8 +560,8 @@ class Financial
     /**
      * DOLLARDE.
      *
-     * Converts a dollar price_offer expressed as an integer part and a fraction
-     *        part into a dollar price_offer expressed as a decimal number.
+     * Converts a dollar price expressed as an integer part and a fraction
+     *        part into a dollar price expressed as a decimal number.
      * Fractional dollar numbers are sometimes used for security prices.
      *
      * Excel Function:
@@ -584,7 +584,7 @@ class Financial
     /**
      * DOLLARFR.
      *
-     * Converts a dollar price_offer expressed as a decimal number into a dollar price_offer
+     * Converts a dollar price expressed as a decimal number into a dollar price
      *        expressed as a fraction.
      * Fractional dollar numbers are sometimes used for security prices.
      *
@@ -956,10 +956,10 @@ class Financial
     /**
      * PRICE.
      *
-     * Returns the price_offer per $100 face value of a security that pays periodic interest.
+     * Returns the price per $100 face value of a security that pays periodic interest.
      *
      * @deprecated 1.18.0
-     *      Use the price_offer() method in the Financial\Securities\Price class instead
+     *      Use the price() method in the Financial\Securities\Price class instead
      * @see Financial\Securities\Price::price()
      *
      * @param mixed $settlement The security's settlement date.
@@ -991,7 +991,7 @@ class Financial
     /**
      * PRICEDISC.
      *
-     * Returns the price_offer per $100 face value of a discounted security.
+     * Returns the price per $100 face value of a discounted security.
      *
      * @deprecated 1.18.0
      *      Use the priceDiscounted() method in the Financial\Securities\Price class instead
@@ -1021,7 +1021,7 @@ class Financial
     /**
      * PRICEMAT.
      *
-     * Returns the price_offer per $100 face value of a security that pays interest at maturity.
+     * Returns the price per $100 face value of a security that pays interest at maturity.
      *
      * @deprecated 1.18.0
      *      Use the priceAtMaturity() method in the Financial\Securities\Price class instead
@@ -1226,10 +1226,10 @@ class Financial
     /**
      * TBILLPRICE.
      *
-     * Returns the price_offer per $100 face value for a Treasury bill.
+     * Returns the price per $100 face value for a Treasury bill.
      *
      * @deprecated 1.18.0
-     *      Use the price_offer() method in the Financial\TreasuryBill class instead
+     *      Use the price() method in the Financial\TreasuryBill class instead
      * @see Financial\TreasuryBill::price()
      *
      * @param mixed $settlement The Treasury bill's settlement date.
@@ -1260,7 +1260,7 @@ class Financial
      *                                    when the Treasury bill is traded to the buyer.
      * @param mixed $maturity The Treasury bill's maturity date.
      *                                The maturity date is the date when the Treasury bill expires.
-     * @param mixed $price The Treasury bill's price_offer per $100 face value
+     * @param mixed $price The Treasury bill's price per $100 face value
      *
      * @return float|mixed|string
      */
@@ -1340,7 +1340,7 @@ class Financial
      *                              is traded to the buyer.
      * @param mixed $maturity The security's maturity date.
      *                            The maturity date is the date when the security expires.
-     * @param mixed $price The security's price_offer per $100 face value
+     * @param mixed $price The security's price per $100 face value
      * @param int $redemption The security's redemption value per $100 face value
      * @param int $basis The type of day count to use.
      *                                        0 or omitted    US (NASD) 30/360
@@ -1372,7 +1372,7 @@ class Financial
      *                            The maturity date is the date when the security expires.
      * @param mixed $issue The security's issue date
      * @param mixed $rate The security's interest rate at date of issue
-     * @param mixed $price The security's price_offer per $100 face value
+     * @param mixed $price The security's price per $100 face value
      * @param int $basis The type of day count to use.
      *                       0 or omitted    US (NASD) 30/360
      *                       1               Actual/actual

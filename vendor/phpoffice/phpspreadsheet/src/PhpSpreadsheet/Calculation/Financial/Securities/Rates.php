@@ -16,14 +16,14 @@ class Rates
      * Returns the discount rate for a security.
      *
      * Excel Function:
-     *        DISC(settlement,maturity,price_offer,redemption[,basis])
+     *        DISC(settlement,maturity,price,redemption[,basis])
      *
      * @param mixed $settlement The security's settlement date.
      *                              The security settlement date is the date after the issue
      *                                  date when the security is traded to the buyer.
      * @param mixed $maturity The security's maturity date.
      *                            The maturity date is the date when the security expires.
-     * @param mixed $price The security's price_offer per $100 face value
+     * @param mixed $price The security's price per $100 face value
      * @param mixed $redemption The security's redemption value per $100 face value
      * @param mixed $basis The type of day count to use.
      *                         0 or omitted    US (NASD) 30/360
