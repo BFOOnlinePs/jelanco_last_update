@@ -393,14 +393,14 @@
 
     <script>
         // ======================= دوال الملاحظات (الجديدة) =======================
-        function openStorekeeperNotesModal(id) {
+        window.openStorekeeperNotesModal = function(id) {
             $('#comment_order_id').val(id);
             $('#new_comment_text').val('');
             $('#modal-order-comments').modal('show');
-            loadComments(id);
+            window.loadStorekeeperComments(id);
         }
 
-        function loadComments(id) {
+        window.loadStorekeeperComments = function(id) {
             $('#comments_history').html('<div class="text-center text-muted mt-5"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>');
 
             $.ajax({
@@ -438,7 +438,7 @@
             });
         }
 
-        function saveOrderComment() {
+        window.saveOrderComment = function() {
             var id = $('#comment_order_id').val();
             var comment = $('#new_comment_text').val();
             
@@ -463,7 +463,7 @@
                     if(response.success) {
                         toastr.success('تمت الإضافة');
                         $('#new_comment_text').val('');
-                        loadComments(id);
+                        window.loadStorekeeperComments(id);
                     }
                 },
                 error: function() {
