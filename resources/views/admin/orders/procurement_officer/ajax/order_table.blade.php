@@ -80,13 +80,13 @@
                                     </select>
                                 @endif
                                 <div class="mt-1">
-    <button type="button" 
-            class="btn btn-xs btn-outline-secondary" 
-            onclick="openStorekeeperNotesModal({{ $key->id }})"
-            title="ملاحظات المستودع">
-        <i class="fas fa-sticky-note"></i> ملاحظات المستودع
-    </button>
-</div>
+                                    <button type="button" 
+                                            class="btn btn-xs btn-outline-secondary" 
+                                            onclick="openStorekeeperNotesModal({{ $key->id }})"
+                                            title="ملاحظات المستودع">
+                                        <i class="fas fa-sticky-note"></i> ملاحظات المستودع
+                                    </button>
+                                </div>
                             </td>
                             <td>
                                 {{ $key->inserted_at }}
