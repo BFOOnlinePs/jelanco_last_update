@@ -232,7 +232,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">تعديل الرقم المرجعي</h4>
-                        <h4 class="modal-title">تعديل الرقم المرجعي</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -282,7 +281,35 @@
 
         </div>
     </div>
-
+    <div class="modal fade" id="modal-order-comments">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">سجل ملاحظات الطلبية</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="comment_order_id">
+                    <div class="comments-container mb-3" style="background: #f4f6f9; padding: 15px; border-radius: 5px; height: 300px; overflow-y: auto; border: 1px solid #ddd;">
+                        <div id="comments_history">
+                            <div class="text-center text-muted mt-5"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>
+                        </div>
+                    </div>
+                    <label>إضافة ملاحظة جديدة:</label>
+                    <div class="input-group">
+                        <textarea id="new_comment_text" class="form-control" rows="2" placeholder="اكتب ملاحظتك هنا..."></textarea>
+                        <div class="input-group-append">
+                            <button class="btn btn-success" type="button" onclick="saveOrderComment()">
+                                <i class="fas fa-paper-plane"></i> إرسال
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection()
 
 @section('script')
@@ -502,6 +529,88 @@
         function myFunction() {
             alert('load');
         }
+
+        // ======================= دوال الملاحظات (الجديدة) =======================
+        window.openStorekeeperNotesModal = function(id) {
+            $('#comment_order_id').val(id);
+            $('#new_comment_text').val('');
+            $('#modal-order-comments').modal('show');
+            window.loadStorekeeperComments(id);
+        }
+
+        window.loadStorekeeperComments = function(id) {
+            $('#comments_history').html('<div class="text-center text-muted mt-5"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>');
+
+            $.ajax({
+                url: "{{ route('orders.comments.get') }}",
+                type: "GET",
+                data: { order_id: id },
+                success: function(comments) {
+                    var html = '';
+                    if(comments.length > 0) {
+                        comments.forEach(function(comment) {
+                            var date = new Date(comment.created_at).toLocaleString('en-GB');
+                            var isMe = comment.user_id == "{{ auth()->id() }}";
+                            var bgClass = isMe ? 'alert-info' : 'alert-secondary';
+                            
+                            html += `
+                                <div class="comment-item mb-2 p-2 rounded ${bgClass}">
+                                    <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
+                                        <strong style="font-size:13px;">
+                                            <i class="fas fa-user-circle"></i> ${comment.user.name ?? 'Unknown'}
+                                        </strong>
+                                        <small class="text-dark" style="font-size:11px;">${date}</small>
+                                    </div>
+                                    <p class="mb-0" style="font-size:14px; white-space: pre-wrap;">${comment.comment}</p>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        html = '<div class="text-center text-muted mt-5">لا توجد ملاحظات سابقة، كن أول من يكتب!</div>';
+                    }
+                    $('#comments_history').html(html);
+                },
+                error: function() {
+                    $('#comments_history').html('<p class="text-danger text-center">حدث خطأ في جلب البيانات</p>');
+                }
+            });
+        }
+
+        window.saveOrderComment = function() {
+            var id = $('#comment_order_id').val();
+            var comment = $('#new_comment_text').val();
+            
+            if(!comment.trim()) {
+                toastr.warning('الرجاء كتابة نص الملاحظة');
+                return;
+            }
+
+            var btn = event.target;
+            $(btn).prop('disabled', true);
+
+            $.ajax({
+                url: "{{ route('orders.comments.create') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    order_id: id,
+                    comment: comment
+                },
+                success: function(response) {
+                    $(btn).prop('disabled', false);
+                    if(response.success) {
+                        toastr.success('تمت الإضافة');
+                        $('#new_comment_text').val('');
+                        window.loadStorekeeperComments(id);
+                    }
+                },
+                error: function() {
+                    $(btn).prop('disabled', false);
+                    toastr.error('فشل الحفظ');
+                }
+            });
+        }
+        // ======================= نهاية دوال الملاحظات =======================
 
     </script>
 
