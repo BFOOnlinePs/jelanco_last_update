@@ -73,8 +73,8 @@
                                         <a href="{{ route('orders.order_items.index',['order_id'=>$key->id]) }}"
                                            class="btn btn-dark btn-sm">عرض الطلبية</a>
                                         <button type="button" 
-                                                class="btn btn-xs btn-outline-secondary" 
-                                                onclick="openStorekeeperNotesModal({{ $key->id }})"
+                                                class="btn btn-xs btn-outline-secondary storekeeper-notes-btn" 
+                                                data-order-id="{{ $key->id }}"
                                                 title="ملاحظات المستودع">
                                             <i class="fas fa-sticky-note"></i> ملاحظات المستودع
                                         </button>
@@ -472,6 +472,12 @@
                 }
             });
         }
+        // ربط الزر بالحدث (بدون onclick inline)
+        $(document).on('click', '.storekeeper-notes-btn', function() {
+            var id = $(this).data('order-id');
+            openStorekeeperNotesModal(id);
+        });
+
         // ======================= نهاية دوال الملاحظات =======================
     </script>
 
