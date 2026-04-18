@@ -203,6 +203,12 @@ class OrdersController extends Controller
 
     public function getOrderComments(Request $request)
     {
+        // Mark unseen comments from other users as seen
+        OrderComment::where('order_id', $request->order_id)
+            ->where('user_id', '!=', auth()->id())
+            ->where('is_seen', 0)
+            ->update(['is_seen' => 1]);
+
         // جلب الملاحظات مرتبة من الأحدث للأقدم مع بيانات المستخدم
         $comments = OrderComment::where('order_id', $request->order_id)
             ->with('user:id,name,user_role') // جلب الاسم والدور فقط

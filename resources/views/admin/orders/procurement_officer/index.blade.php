@@ -477,6 +477,11 @@
             $('#new_comment_text').val('');
             $('#modal-order-comments').modal('show');
             loadComments(id);
+            // إخفاء مؤشر الرسائل الجديدة عند فتح المودال وتحديث لون الزر
+            $('#order_table button[onclick="openStorekeeperNotesModal(' + id + ')"]')
+                .removeClass('btn-danger')
+                .addClass('btn-outline-secondary')
+                .find('.badge').remove();
         }
 
         function loadComments(id) {
@@ -503,6 +508,9 @@
                                         <small class="text-dark" style="font-size:11px;">${date}</small>
                                     </div>
                                     <p class="mb-0" style="font-size:14px; white-space: pre-wrap;">${comment.comment}</p>
+                                    ${isMe ? 
+                                        (comment.is_seen ? '<div class="text-right mt-1"><i class="fas fa-check-double text-primary" title="مقروءة" style="font-size:12px;"></i> <span style="font-size:10px;">مقروءة</span></div>' : '<div class="text-right mt-1"><i class="fas fa-check text-secondary" title="غير مقروءة" style="font-size:12px;"></i> <span style="font-size:10px;">غير مقروءة</span></div>') 
+                                        : ''}
                                 </div>
                             `;
                         });

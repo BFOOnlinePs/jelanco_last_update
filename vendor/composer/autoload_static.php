@@ -717,6 +717,7 @@ class ComposerStaticInit414aed78903e201fb85c9673fd9dad3b
         'App\\Models\\OrderAttachmentModel' => __DIR__ . '/../..' . '/app/Models/OrderAttachmentModel.php',
         'App\\Models\\OrderClearanceAttachmentModel' => __DIR__ . '/../..' . '/app/Models/OrderClearanceAttachmentModel.php',
         'App\\Models\\OrderClearanceModel' => __DIR__ . '/../..' . '/app/Models/OrderClearanceModel.php',
+        'App\\Models\\OrderComment' => __DIR__ . '/../..' . '/app/Models/OrderComment.php',
         'App\\Models\\OrderInsuranceModel' => __DIR__ . '/../..' . '/app/Models/OrderInsuranceModel.php',
         'App\\Models\\OrderItemsModel' => __DIR__ . '/../..' . '/app/Models/OrderItemsModel.php',
         'App\\Models\\OrderLocalDeliveryItemsModel' => __DIR__ . '/../..' . '/app/Models/OrderLocalDeliveryItemsModel.php',

@@ -104,6 +104,7 @@ return array(
     'App\\Models\\OrderAttachmentModel' => $baseDir . '/app/Models/OrderAttachmentModel.php',
     'App\\Models\\OrderClearanceAttachmentModel' => $baseDir . '/app/Models/OrderClearanceAttachmentModel.php',
     'App\\Models\\OrderClearanceModel' => $baseDir . '/app/Models/OrderClearanceModel.php',
+    'App\\Models\\OrderComment' => $baseDir . '/app/Models/OrderComment.php',
     'App\\Models\\OrderInsuranceModel' => $baseDir . '/app/Models/OrderInsuranceModel.php',
     'App\\Models\\OrderItemsModel' => $baseDir . '/app/Models/OrderItemsModel.php',
     'App\\Models\\OrderLocalDeliveryItemsModel' => $baseDir . '/app/Models/OrderLocalDeliveryItemsModel.php',

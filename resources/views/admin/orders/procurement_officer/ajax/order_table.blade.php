@@ -80,11 +80,20 @@
                                     </select>
                                 @endif
                                 <div class="mt-1">
+                                    @php
+                                        $unseen_count = \App\Models\OrderComment::where('order_id', $key->id)
+                                                                                  ->where('user_id', '!=', auth()->id())
+                                                                                  ->where('is_seen', 0)
+                                                                                  ->count();
+                                    @endphp
                                     <button type="button" 
-                                            class="btn btn-xs btn-outline-secondary" 
+                                            class="btn btn-xs {{ $unseen_count > 0 ? 'btn-danger' : 'btn-outline-secondary' }}" 
                                             onclick="openStorekeeperNotesModal({{ $key->id }})"
                                             title="ملاحظات المستودع">
                                         <i class="fas fa-sticky-note"></i> ملاحظات المستودع
+                                        @if($unseen_count > 0)
+                                            <span class="badge badge-light badge-pill ml-1">{{ $unseen_count }}</span>
+                                        @endif
                                     </button>
                                 </div>
                             </td>
