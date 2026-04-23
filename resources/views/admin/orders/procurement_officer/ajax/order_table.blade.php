@@ -81,18 +81,31 @@
                                 @endif
                                 <div class="mt-1">
                                     @php
+                                        $total_count = \App\Models\OrderComment::where('order_id', $key->id)->count();
                                         $unseen_count = \App\Models\OrderComment::where('order_id', $key->id)
                                                                                   ->where('user_id', '!=', auth()->id())
                                                                                   ->where('is_seen', 0)
                                                                                   ->count();
+
+                                        if ($unseen_count > 0) {
+                                            $btn_class = 'btn-danger'; // رسائل جديدة لم تُقرأ
+                                            $icon_class = 'fas fa-bell';
+                                        } elseif ($total_count > 0) {
+                                            $btn_class = 'btn-info text-white'; // يوجد رسائل لكن مقروءة
+                                            $icon_class = 'fas fa-envelope-open-text';
+                                        } else {
+                                            $btn_class = 'btn-outline-secondary'; // لا توجد رسائل اطلاقاً
+                                            $icon_class = 'far fa-comment-dots';
+                                        }
                                     @endphp
                                     <button type="button" 
-                                            class="btn btn-xs {{ $unseen_count > 0 ? 'btn-danger' : 'btn-outline-secondary' }}" 
+                                            class="btn btn-sm {{ $btn_class }} rounded-pill shadow-sm mt-2 px-3" 
                                             onclick="openStorekeeperNotesModal({{ $key->id }})"
-                                            title="ملاحظات المستودع">
-                                        <i class="fas fa-sticky-note"></i> ملاحظات المستودع
+                                            title="ملاحظات المستودع"
+                                            style="font-size: 12px; font-weight: bold; transition: all 0.2s;">
+                                        <i class="{{ $icon_class }} ml-1"></i> ملاحظات المستودع
                                         @if($unseen_count > 0)
-                                            <span class="badge badge-light badge-pill ml-1">{{ $unseen_count }}</span>
+                                            <span class="badge badge-light badge-pill text-danger shadow-sm mr-1">{{ $unseen_count }}</span>
                                         @endif
                                     </button>
                                 </div>
