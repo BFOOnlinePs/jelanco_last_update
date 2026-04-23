@@ -136,7 +136,7 @@
                                 {{-- منطقة التاريخ (التي سيتم تحديثها بـ AJAX) --}}
                                 {{-- ================================================= --}}
                                 <div id="date_container_{{ $key->id }}"
-                                    style="margin-top: 5px; text-align: center;">
+                                    style="margin-top: 5px; text-align: center; display: {{ $key->order_status == 5 ? 'block' : 'none' }};">
 
                                     @if (!empty($key->order_in_production_upon_arrival))
                                         {{-- حالة وجود تاريخ --}}
@@ -149,9 +149,8 @@
                                             <i class="fa fa-edit" style="font-size: 10px;"></i>
                                         </a>
                                     @else
-                                        {{-- حالة عدم وجود تاريخ (يظهر الزر فقط اذا الحالة 5) --}}
-                                        <div id="btn_add_date_{{ $key->id }}"
-                                            style="display: {{ $key->order_status == 5 ? 'block' : 'none' }};">
+                                        {{-- حالة عدم وجود تاريخ --}}
+                                        <div id="btn_add_date_{{ $key->id }}">
                                             <a href="javascript:void(0)" data-toggle="modal" data-target="#AddNewDate"
                                                 onclick="setOrderIdForDate({{ $key->id }})"
                                                 title="إضافة تاريخ جديد">
@@ -191,4 +190,12 @@
     $(function() {
         $('[data-toggle="tooltip"]').tooltip()
     })
+
+    function toggleDateButton(order_id, status_val) {
+        if (status_val == 5) {
+            $('#date_container_' + order_id).show();
+        } else {
+            $('#date_container_' + order_id).hide();
+        }
+    }
 </script>

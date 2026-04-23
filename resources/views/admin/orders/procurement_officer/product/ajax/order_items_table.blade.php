@@ -61,12 +61,9 @@
                                 style="width: 80%;" data-select2-id="{{ $loop->index }}"
                                 tabindex="-1" aria-hidden="true">
                                     @foreach ($unit as $unit_key)
-                                    <option @if (old(
-                                            'unit_id',
-                                            App\Models\OrderItemsModel::where('order_id', $order->id)->where('product_id', $key['product']->id)->value('unit_id')) == $unit_key->id) selected @endif
+                                    <option @if (old('unit_id', $key->unit_id) == $unit_key->id) selected @endif
                                             value="{{ $unit_key->id }}">{{ $unit_key->unit_name }}
                                     </option>
-
                                     @endforeach
                             </select>
                         </td>
