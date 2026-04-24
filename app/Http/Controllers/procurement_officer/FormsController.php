@@ -44,6 +44,7 @@ class FormsController extends Controller
 //        $pdf->SetDefaultBodyCSS('background', asset('img/background/jelanco-background.jpg'));
         $pdf = PDF::loadView('admin.orders.procurement_officer.pdf.product_supplier',['data'=>$data,'company'=>$company,'order'=>$order]);
         // $pdf->getMpdf()->setFooter('<div style="text-align: center; font-size: 10px;">Page {PAGENO} of {nbpg}</div>');
+        \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'export_product_supplier_pdf', 'تم تصدير نموذج عرض سعر للمورد');
         return $pdf->stream('product_supplier_pdf.pdf');
     }
 
@@ -88,6 +89,7 @@ class FormsController extends Controller
         $banks = BankModel::get();
 
         $pdf = PDF::loadView('admin.orders.procurement_officer.forms.order_summary', ['anchor' => $anchor, 'order' => $order, 'offer_price_anchor' => $offer_price_anchor, 'order_items' => $order_items, 'query' => $query,'cash_payment' => $cash_payment, 'banks' => $banks, 'letter_bank' => $letter_bank]);
+        \App\Models\OrderActivityLogModel::logActivity($order_id, 'export_order_summary_pdf', 'تم تصدير ملخص الطلبية PDF');
         return $pdf->stream('anchor.pdf');
     }
 

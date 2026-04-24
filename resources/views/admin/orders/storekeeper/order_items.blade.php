@@ -63,6 +63,9 @@
         <a href="{{ route('users.storekeeper.shipping_details', ['order_id' => $order->id]) }}"
             class="mb-2 btn btn-info">تفاصيل الشحنة</a>
     @endif
+    <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#modal-activity_log">
+        <i class="fa fa-history"></i> سجل النشاطات
+    </button>
     <div class="card">
         <div class="card-header">
             <h3 class="text-center">طلب شراء</h3>
@@ -221,6 +224,52 @@
                 </div>
             </form>
 
+        </div>
+    </div>
+    
+    <div class="modal fade" id="modal-activity_log">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h4 class="modal-title">سجل نشاطات الطلبية</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <th>نوع العملية</th>
+                                    <th>الموظف</th>
+                                    <th>التفاصيل</th>
+                                    <th>التاريخ والوقت</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!isset($activity_logs) || $activity_logs->isEmpty())
+                                    <tr>
+                                        <td colspan="4">لا توجد نشاطات مسجلة لهذه الطلبية</td>
+                                    </tr>
+                                @else
+                                    @foreach ($activity_logs as $log)
+                                        <tr>
+                                            <td>{{ $log->action }}</td>
+                                            <td>{{ $log->user->name ?? 'غير معروف' }}</td>
+                                            <td>{{ $log->description }}</td>
+                                            <td style="direction: ltr;">{{ $log->created_at->format('Y-m-d h:i A') }}</td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

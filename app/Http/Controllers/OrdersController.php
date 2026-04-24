@@ -38,8 +38,9 @@ class OrdersController extends Controller
         $product = ProductModel::get();
         $unit = UnitsModel::get();
         $salesman = User::where('user_role', 2)->get();
+        $activity_logs = \App\Models\OrderActivityLogModel::where('order_id', $order_id)->with('user')->orderBy('id', 'desc')->get();
 
-        return view('admin.orders.storekeeper.order_items', ['data' => $data, 'order' => $order, 'product' => $product, 'unit' => $unit, 'salesman' => $salesman]);
+        return view('admin.orders.storekeeper.order_items', ['data' => $data, 'order' => $order, 'product' => $product, 'unit' => $unit, 'salesman' => $salesman, 'activity_logs' => $activity_logs]);
     }
 
     public function create_order()
@@ -63,6 +64,7 @@ class OrdersController extends Controller
         $data->notes = $request->notes;
         $data->status = 1;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_item', 'إضافة بيانات للأصناف');
             return redirect()->route('orders.order_items.index', ['order_id' => $request->order_id])->with(['success' => 'تم اضافة البيانات بنجاح']);
         } else {
             return redirect()->route('orders.order_items.index', ['order_id' => $request->order_id])->with(['fail' => 'هناك خطا ما لم يتم اضافة البيانات']);
@@ -96,15 +98,21 @@ class OrdersController extends Controller
     public function updateQtyForOrder_items(Request $request)
     {
         $data = OrderItemsModel::where(['order_id' => $request->order_id, 'id' => $request->order_items_id])->first();
+        $old_qty = $data->qty;
         $data->qty = $request->qty;
-        $data->save();
+        if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'update_qty', 'تعديل الكمية للصنف', $old_qty, $data->qty);
+        }
     }
 
     public function updateUnitOrder_items(Request $request)
     {
         $data = OrderItemsModel::where(['order_id' => $request->order_id, 'id' => $request->order_items_id])->first();
+        $old_unit = $data->unit_id;
         $data->unit_id = $request->unit_id;
-        $data->save();
+        if ($data->save()) {
+             \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'update_unit', 'تعديل الوحدة للصنف', $old_unit, $data->unit_id);
+        }
     }
 
     public function selectedUnit(Request $request)
@@ -124,6 +132,7 @@ class OrdersController extends Controller
         $data->order_status = 1;
         $data->to_user = $request->to_user;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($order_id, 'update_status', 'تم تحويل واعتماد الطلبية إلى الحساب المستخدم');
             return redirect()->route('orders.index');
         }
     }
@@ -231,7 +240,30 @@ class OrdersController extends Controller
             'comment' => $request->comment,
             'type' => 'general', // يمكن تغييرها لاحقاً حسب الصلاحية
         ]);
+        
+        \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_comment', 'إضافة ملاحظة على الطلبية');
 
         return response()->json(['success' => true]);
+    }
+
+    public function getActivityLogs($order_id)
+    {
+        $logs = \App\Models\OrderActivityLogModel::where('order_id', $order_id)
+            ->with('user:id,name') // جلب الاسم فقط
+            ->latest()
+            ->get();
+            
+        $logs->transform(function($log) {
+            return [
+                'action' => $log->action,
+                'user' => $log->user->name ?? 'غير معروف',
+                'description' => $log->description,
+                'old_value' => $log->old_value,
+                'new_value' => $log->new_value,
+                'created_at' => $log->created_at->format('Y-m-d h:i A')
+            ];
+        });
+
+        return response()->json($logs);
     }
 }

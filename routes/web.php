@@ -391,6 +391,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('create_supplier_for_order', [App\Http\Controllers\OrdersController::class, 'create_supplier_for_order'])->name('orders.create_supplier_for_order');
         Route::get('get-order-comments', [App\Http\Controllers\OrdersController::class, 'getOrderComments'])->name('orders.comments.get');
         Route::post('create-order-comment', [App\Http\Controllers\OrdersController::class, 'createOrderComment'])->name('orders.comments.create');
+        Route::get('get-activity-logs/{order_id}', [App\Http\Controllers\OrdersController::class, 'getActivityLogs'])->name('orders.activity_logs.get');
     });
 
     Route::group(['prefix' => 'tasks'], function () {

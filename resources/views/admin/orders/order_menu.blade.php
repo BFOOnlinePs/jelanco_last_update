@@ -87,6 +87,10 @@
             </i>
             محادثات
         </a>
+        <a class="btn btn-app bg-gradient-info text-white" onclick="fetchActivityLogs({{ $order->id }})">
+            <i class="fa fa-history"></i>
+            سجل النشاطات
+        </a>
         {{--    <a target="_blank" class="btn btn-app bg-gradient-info text-white" href="{{ route('procurement_officer.orders.forms.order_summery',['order_id'=>$order->id]) }}">--}}
         {{--        <i class="fa fa-file-circle-check">--}}
 
@@ -95,3 +99,78 @@
         {{--    </a>--}}
     </div>
 @endif
+
+    <!-- Activity Log Modal -->
+    <div class="modal fade" id="modal-activity_log">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title text-white">سجل نشاطات الطلبية</h4>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <th>النشاط</th>
+                                    <th>الموظف</th>
+                                    <th>التفاصيل</th>
+                                    <th>التاريخ والوقت</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activity_log_body">
+                                <tr><td colspan="4" class="text-center">يتم التحميل...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function fetchActivityLogs(orderId) {
+        $('#modal-activity_log').modal('show');
+        $('#activity_log_body').html('<tr><td colspan="4" class="text-center">يتم التحميل...</td></tr>');
+        
+        $.ajax({
+            url: '/orders/get-activity-logs/' + orderId,
+            method: 'GET',
+            success: function(response) {
+                let html = '';
+                if(response.length === 0) {
+                    html = '<tr><td colspan="4">لا توجد سجلات. تفاعل مع الطلبية أولاً</td></tr>';
+                } else {
+                    response.forEach(function(log) {
+                        let details = log.description || '';
+                        if (log.old_value !== null || log.new_value !== null) {
+                            let oldVal = log.old_value !== null ? String(log.old_value).replace(/\n/g, '<br>') : 'فارغ';
+                            let newVal = log.new_value !== null ? String(log.new_value).replace(/\n/g, '<br>') : 'فارغ';
+                            details += `<div class="mt-1" style="font-size: 11px; padding: 5px; background: #f8f9fa; border-radius: 4px; border: 1px solid #ddd;">
+                                <span class="text-danger"><strong>القديمة:</strong> ${oldVal}</span> 
+                                <i class="fa fa-arrow-left mx-1 text-muted"></i> 
+                                <span class="text-success"><strong>الجديدة:</strong> ${newVal}</span>
+                            </div>`;
+                        }
+                        html += `<tr>
+                            <td>${log.action}</td>
+                            <td>${log.user}</td>
+                            <td>${details}</td>
+                            <td style="direction: ltr;">${log.created_at}</td>
+                        </tr>`;
+                    });
+                }
+                $('#activity_log_body').html(html);
+            },
+            error: function() {
+                $('#activity_log_body').html('<tr><td colspan="4" class="text-danger">حدث خطأ أثناء جلب البيانات</td></tr>');
+            }
+        });
+    }
+    </script>

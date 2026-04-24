@@ -78,6 +78,7 @@ class PriceOfferController extends Controller
             $data->notes = $request->notes;
             $data->status = 0;
             if ($data->save()) {
+                \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_price_offer', 'تم اضافة عرض سعر');
                 return redirect()->route('procurement_officer.orders.price_offer.index', ['order_id' => $request->order_id])->with(['success' => 'تم اضافة البيانات بنجاح', 'tab_id' => 2]);
             } else {
                 return redirect()->route('procurement_officer.orders.price_offer.index', ['order_id' => $request->order_id])->with(['fail' => 'هناك خلل ما لم يتم اضافة البيانات']);
@@ -96,6 +97,7 @@ class PriceOfferController extends Controller
     public function update_price_offer($id, Request $request)
     {
         $data = PriceOffersModel::find($id);
+        $old_price = $data->price;
         $data->supplier_id = $request->supplier_id;
         $data->price = $request->price;
         if ($request->attachment != '') {
@@ -109,6 +111,7 @@ class PriceOfferController extends Controller
         }
         $data->notes = $request->notes;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_price_offer', 'تم تعديل تفاصيل عرض السعر', $old_price, $data->price);
             return redirect()->route('procurement_officer.orders.price_offer.index', ['order_id' => $data->order_id])->with(['success' => 'تم تعديل البيانات بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.price_offer.index', ['order_id' => $data->order_id])->with(['fail' => 'لم يتم التعديل هناك خلل ما']);
@@ -126,6 +129,7 @@ class PriceOfferController extends Controller
         $data = PriceOffersModel::where('id',$id);
         $order = PriceOffersModel::where('id',$id)->first();
         if ($data->delete()) {
+            \App\Models\OrderActivityLogModel::logActivity($order->order_id, 'delete_price_offer', 'تم حذف عرض السعر');
             return redirect()->route('procurement_officer.orders.price_offer.index', ['order_id' => $order->order_id])->with(['success' => 'تم حذف البيانات بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.price_offer.index', ['order_id' => $order->order_id])->with(['fail' => 'لم بتم حذف الباينات هناك خلل ما']);
@@ -136,6 +140,7 @@ class PriceOfferController extends Controller
         $data = PriceOffersModel::where('order_id',$request->order_id)->where('supplier_id',$request->supplier_id)->first();
         $data->currency_id = $request->currency_id;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'update_currency', 'تم تعديل العملة المعتمدة للاصناف التابعة لعرض السعر');
             return response()->json([
                 'data'=>$data,
                 'success'=>'true'
@@ -151,6 +156,7 @@ class PriceOfferController extends Controller
 
     public function importExcel(Request $request){
         Excel::import(new PriceOffersImport($request->order_id,$request->supplier_id),$request->file('file'));
+        \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'import_price_offer', 'تم استيراد أسعار الاصناف من ملف Excel');
         return redirect()->back()->with(['success'=> 'تم تعديل البيانات بنجاح']);
     }
 
@@ -158,6 +164,7 @@ class PriceOfferController extends Controller
         $data = PriceOffersModel::where('id',$request->note_id)->first();
         $data->notes = $request->note_text;
         if($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_price_offer_note', 'تم تعديل ملاحظات عرض السعر');
             return redirect()->back()->with(['success'=>'تم التعديل بنجاح']);
         }
         else{

@@ -20,6 +20,7 @@ class PriceOfferItemsController extends Controller
             $data->price = $request->price;
             $data->qty = $request->qty;
             if ($data->save()){
+                \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_price_offer_item', 'اضافة تفاصيل لصنف عرض السعر', null, $request->price);
                 return response()->json([
                     'success'=>'true',
                     'msg'=>'تم اضافة البيانات بنجاح'
@@ -33,8 +34,10 @@ class PriceOfferItemsController extends Controller
             }
         }
         else{
+            $old_price = $check_if_find->price;
             $check_if_find->price = $request->price;
             if ($check_if_find->save()){
+                \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'update_price_offer_item', 'تعديل سعر المورد للصنف', $old_price, $request->price);
                 return response()->json([
                     'success'=>'true',
                     'msg'=>'تم تعديل البيانات بنجاح'
@@ -59,6 +62,7 @@ class PriceOfferItemsController extends Controller
             $data->bonus = $request->bonus;
             $data->qty = $request->qty;
             if ($data->save()){
+                \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_bonus', 'إضافة علاوة لصنف عرض السعر', null, $request->bonus);
                 return response()->json([
                     'success'=>'true',
                     'msg'=>'تم اضافة البيانات بنجاح'
@@ -72,8 +76,10 @@ class PriceOfferItemsController extends Controller
             }
         }
         else{
+            $old_bonus = $check_if_find->bonus;
             $check_if_find->bonus = $request->bonus;
             if ($check_if_find->save()){
+                \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'update_bonus', 'تعديل علاوة صنف عرض السعر', $old_bonus, $request->bonus);
                 return response()->json([
                     'success'=>'true',
                     'msg'=>'تم تعديل البيانات بنجاح'
@@ -97,6 +103,7 @@ class PriceOfferItemsController extends Controller
             $data->product_id = $request->product_id;
             $data->discount_present = $request->discount_present;
             if ($data->save()){
+                \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_discount', 'إضافة خصم لصنف عرض السعر', null, $request->discount_present);
                 return response()->json([
                     'success'=>'true',
                     'msg'=>'تم اضافة البيانات بنجاح'
@@ -110,8 +117,10 @@ class PriceOfferItemsController extends Controller
             }
         }
         else{
+            $old_discount = $check_if_find->discount_present;
             $check_if_find->discount_present = $request->discount_present;
             if ($check_if_find->save()){
+                \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'update_discount', 'تعديل خصم صنف عرض السعر', $old_discount, $request->discount_present);
                 return response()->json([
                     'success'=>'true',
                     'msg'=>'تم تعديل البيانات بنجاح'

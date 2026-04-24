@@ -91,6 +91,7 @@ class ProductController extends Controller
             }
 
             if ($if_save == 1){
+                \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_product', 'تم إضافة صنف/أصناف للطلبية');
                 return redirect()->route('procurement_officer.orders.product.index',['order_id'=>$request->order_id])->with(['success'=>'تم اضافة البيانات بنجاح']);
             }
             else{
@@ -107,6 +108,7 @@ class ProductController extends Controller
             $key->unit = UnitsModel::where('id',$key->unit_id)->first();
         }
         $pdf = PDF::loadView('admin.orders.procurement_officer.product.pdf.product_list', ['data' => $data,'order'=>$order]);
+        \App\Models\OrderActivityLogModel::logActivity($order_id, 'export_product_list_pdf', 'تم تصدير ملف PDF بقائمة الأصناف');
         return $pdf->stream('products.pdf');
     }
 
@@ -118,6 +120,7 @@ class ProductController extends Controller
             $key->unit = UnitsModel::where('id',$key->unit_id)->first();
         }
         $pdf = PDF::loadView('admin.orders.procurement_officer.product.pdf.poduct_list_arabic', ['data' => $data,'order'=>$order]);
+        \App\Models\OrderActivityLogModel::logActivity($order_id, 'export_product_list_pdf', 'تم تصدير ملف PDF بقائمة الأصناف (عربي)');
         return $pdf->stream('products.pdf');
     }
 
@@ -148,6 +151,7 @@ class ProductController extends Controller
         $data->unit_id = $request->unit_id;
         $data->status = 1;
         if($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_product', 'تم إضافة صنف للطلبية');
             return response()->json('true');
         }
     }
@@ -192,6 +196,7 @@ class ProductController extends Controller
         $data->status = 1;
         $data->target = 'order_product';
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_product_attachment', 'تم إضافة مرفق للأصناف المنتجات');
             return redirect()->route('procurement_officer.orders.product.index',['order_id'=>$request->order_id])->with(['success'=>'تم حفظ البيانات بنجاح']);
         }
         else{
@@ -203,6 +208,7 @@ class ProductController extends Controller
         $data = OrderAttachmentModel::where('id',$id)->first();
         $order_id = $data->order_id;
         if ($data->delete()){
+            \App\Models\OrderActivityLogModel::logActivity($order_id, 'delete_product_attachment', 'تم حذف مرفق أصناف المنتجات');
             return redirect()->route('procurement_officer.orders.product.index',['order_id'=>$order_id])->with(['success'=>'تم حذف البيانات بنجاح']);
         }
         else{
@@ -259,6 +265,7 @@ class ProductController extends Controller
         $data = OrderItemsModel::where('id',$request->id)->first();
         $data->notes = $request->notes;
         if($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_product_note', 'تم تعديل ملاحظات الصنف');
             return response()->json([
                 'success' => true,
                 'message' => 'تم تعديل الملاحظة بنجاح'

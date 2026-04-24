@@ -45,6 +45,7 @@ class ClearanceController extends Controller
             $check_progress_status->save();
         }
         if ($order_clearance->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_clearance', 'تم إضافة بيانات التخليص');
             return redirect()->route('procurement_officer.orders.clearance.index', ['order_id' => $request->order_id])->with(['success' => 'تم اضافة البيانات بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.clearance.index', ['order_id' => $request->order_id])->with(['fail' => 'لم يتم اضافة البيانات هناك خلل ما']);
@@ -57,6 +58,8 @@ class ClearanceController extends Controller
         $order_clearance_attachment->order_clearance_id = $request->order_clearance_id;
         $order_clearance_attachment->attachment_type = $request->attachment_type;
         $order_clearance_attachment->save();
+        $clearance = \App\Models\OrderClearanceModel::find($request->order_clearance_id);
+        if($clearance) \App\Models\OrderActivityLogModel::logActivity($clearance->order_id, 'add_clearance_attachment', 'تم إضافة مرفق تخليص');
         $data = OrderClearanceAttachmentModel::where('order_clearance_id', $order_clearance_attachment->order_clearance_id)->get();
 //        foreach ($data as $key){
 //            $key->company = User::where('id',$key->order_clearance_company_id)->first();
@@ -95,6 +98,8 @@ class ClearanceController extends Controller
         }
 
         if ($data->save()) {
+            $clearance = \App\Models\OrderClearanceModel::find($request->order_clearance_id);
+            if($clearance) \App\Models\OrderActivityLogModel::logActivity($clearance->order_id, 'update_clearance_attachment_file', 'تم تعديل ملف مرفق التخليص');
             $query = OrderClearanceAttachmentModel::where('order_clearance_id', $request->order_clearance_id)->get();
             foreach ($query as $key) {
                 $key->attachment_type = ClearanceAttachmentModel::where('id', $key->attachment_type)->first();
@@ -106,7 +111,10 @@ class ClearanceController extends Controller
     public function delete_order_clearance_attachment(Request $request)
     {
         $query = OrderClearanceAttachmentModel::find($request->id);
+        $clearance_id = $query->order_clearance_id ?? null;
         if ($query->delete()) {
+            $clearance = \App\Models\OrderClearanceModel::find($clearance_id);
+            if($clearance) \App\Models\OrderActivityLogModel::logActivity($clearance->order_id, 'delete_clearance_attachment', 'تم حذف مرفق للتخليص');
             return response()->json([
                 'success' => 'true'
             ]);
@@ -122,6 +130,8 @@ class ClearanceController extends Controller
             $query->attachment_copy = '';
         }
         if ($query->save()) {
+            $clearance = \App\Models\OrderClearanceModel::find($request->order_clearance_id);
+            if($clearance) \App\Models\OrderActivityLogModel::logActivity($clearance->order_id, 'delete_clearance_attachment_file', 'تم تفريغ ملف مرفق التخليص');
             $query = OrderClearanceAttachmentModel::where('order_clearance_id', $request->order_clearance_id)->get();
             foreach ($query as $key) {
                 $key->attachment_type = ClearanceAttachmentModel::where('id', $key->attachment_type)->first();
@@ -135,6 +145,7 @@ class ClearanceController extends Controller
         $data = OrderClearanceModel::where('id', $request->id)->first();
         $data->status = $request->status;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_clearance_status', 'تم تغيير حالة التخليص');
             return response()->json(
                 [
                     'success' => 'true'
@@ -148,6 +159,7 @@ class ClearanceController extends Controller
         $data = OrderClearanceModel::where('id', $request->id)->first();
         $data->notes = $request->notes;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_clearance_note', 'تم تعديل ملاحظات التخليص');
             return response()->json(
                 [
                     'success' => 'true'
@@ -159,6 +171,7 @@ class ClearanceController extends Controller
     public function delete($id){
         $data = OrderClearanceModel::find($id);
         if ($data->delete   ()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'delete_clearance', 'تم حذف بيانات التخليص');
             return redirect()->route('procurement_officer.orders.clearance.index', ['order_id' => $data->order_id])->with(['success' => 'تم حذف البيانات بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.clearance.index', ['order_id' => $data->order_id])->with(['fail' => 'لم يتم حذف البيانات هناك خلل ما']);
@@ -169,6 +182,7 @@ class ClearanceController extends Controller
         $data = OrderClearanceModel::where('id',$request->note_id)->first();
         $data->notes = $request->note_text;
         if($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_clearance_note', 'تم تعديل ملاحظات التخليص');
             return redirect()->back()->with(['success'=>'تم التعديل بنجاح']);
         }
         else{

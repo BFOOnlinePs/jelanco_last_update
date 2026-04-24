@@ -50,6 +50,7 @@ class OrderInsuranceController extends Controller
         $data->insert_at = Carbon::now();
         $data->status = 0;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_insurance', 'تم إضافة بيانات تأمين للطلبية');
             return redirect()->route('procurement_officer.orders.insurance.index',['order_id'=>$request->order_id])->with(['success'=>'تم اضافة الباينات بنجاح']);
         }
         else{
@@ -75,6 +76,7 @@ class OrderInsuranceController extends Controller
         }
         $data->notes = $request->notes;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_insurance', 'تم تعديل بيانات التأمين');
             return redirect()->route('procurement_officer.orders.insurance.index',['order_id'=>$data->order_id])->with(['success'=>'تم تعديل البيانات بنجاح']);
         }
         else{
@@ -85,6 +87,7 @@ class OrderInsuranceController extends Controller
     public function delete($id){
         $data = OrderInsuranceModel::where('id',$id)->first();
         if ($data->delete()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'delete_insurance', 'تم حذف التأمين');
             return redirect()->route('procurement_officer.orders.insurance.index',['order_id'=>$data->order_id])->with(['success'=>'تم حذف البيانات بنجاح']);
         }
         else{
@@ -96,6 +99,7 @@ class OrderInsuranceController extends Controller
         $data = OrderInsuranceModel::where('id',$request->note_id)->first();
         $data->notes = $request->note_text;
         if($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_insurance_note', 'تم تعديل ملاحظات التأمين');
             return redirect()->back()->with(['success'=>'تم التعديل بنجاح']);
         }
         else{

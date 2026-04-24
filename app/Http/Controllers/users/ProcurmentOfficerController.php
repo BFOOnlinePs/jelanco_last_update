@@ -22,6 +22,7 @@ use App\Models\ShippingPriceOfferModel;
 use App\Models\UnitsModel;
 use App\Models\User;
 use App\Models\UserCategoryModel;
+use App\Models\OrderActivityLogModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -187,8 +188,10 @@ class ProcurmentOfficerController extends Controller
             $key->user = User::where('id', $key->user_id)->first();
         }
 
+        $activity_logs = OrderActivityLogModel::where('order_id', $order_id)->with('user')->orderBy('id', 'desc')->get();
+
         $currency = CurrencyModel::get();
-        return view('admin.orders.procurement_officer.order_items', ['data' => $data, 'order' => $order, 'unit' => $unit, 'product' => $product, 'users' => $users, 'offer_price' => $offer_price, 'anchor' => $anchor, 'offer_price_anchor' => $offer_price_anchor, 'order_notes' => $order_notes, 'order_attachment' => $order_attachment, 'currency' => $currency]);
+        return view('admin.orders.procurement_officer.order_items', ['data' => $data, 'order' => $order, 'unit' => $unit, 'product' => $product, 'users' => $users, 'offer_price' => $offer_price, 'anchor' => $anchor, 'offer_price_anchor' => $offer_price_anchor, 'order_notes' => $order_notes, 'order_attachment' => $order_attachment, 'currency' => $currency, 'activity_logs' => $activity_logs]);
     }
 
     public function create_order(Request $request)
@@ -205,6 +208,7 @@ class ProcurmentOfficerController extends Controller
         }
         $data->to_user = auth()->user()->id;
         $data->save();
+        OrderActivityLogModel::logActivity($data->id, 'create_order', 'إنشاء طلبية شراء جديد');
         for ($i = 0; $i < count($request->supplier); $i++) {
             $price_offer = new PriceOffersModel();
             $price_offer->order_id = $data->id;
@@ -229,6 +233,7 @@ class ProcurmentOfficerController extends Controller
         $data->notes = $request->notes;
         $data->status = 1;
         if ($data->save()) {
+            OrderActivityLogModel::logActivity($request->order_id, 'add_item', 'إضافة صنف للطلبية');
             return redirect()->route('orders.procurement_officer.order_items_index', ['order_id' => $request->order_id])->with(['success' => 'تم اضافة البيانات بنجاح', 'tab_id' => 1]);
         } else {
             return redirect()->route('orders.procurement_officer.order_items_index', ['order_id' => $request->order_id])->with(['fail' => 'هناك خطا ما لم يتم اضافة البيانات']);
@@ -237,11 +242,15 @@ class ProcurmentOfficerController extends Controller
 
     public function deleteItems($order_item_id)
     {
-        $data = OrderItemsModel::where('id', $order_item_id)->delete();
-        if ($data) {
-            return response()->json([
-                'success' => 'true'
-            ]);
+        $item = OrderItemsModel::find($order_item_id);
+        if ($item) {
+            $order_id = $item->order_id;
+            if ($item->delete()) {
+                OrderActivityLogModel::logActivity($order_id, 'delete_item', 'حذف صنف من الطلبية');
+                return response()->json([
+                    'success' => 'true'
+                ]);
+            }
         }
     }
 
@@ -328,6 +337,7 @@ class ProcurmentOfficerController extends Controller
         $data->order_in_production_upon_arrival = $request->expected_arrival_date;
 
         if ($data->save()) {
+            OrderActivityLogModel::logActivity($data->id, 'update_production_date', 'تحديث تاريخ الإنتاج: ' . $request->expected_arrival_date);
             // إرجاع JSON ليقرأه الجافاسكربت
             return response()->json([
                 'success' => true,
@@ -349,6 +359,7 @@ class ProcurmentOfficerController extends Controller
         $data->reference_number = $request->reference_number;
         if ($request->view == 'officer_view'){
             if ($data->save()) {
+                OrderActivityLogModel::logActivity($data->id, 'update_ref_number', 'تعديل الرقم المرجعي: ' . $request->reference_number);
                 return redirect()->route('orders.procurement_officer.listOrderForOfficerIndex')->with(['success' => 'تم اضافة البيانات بنجاح', 'tab_id' => 1]);
             } else {
                 return redirect()->route('orders.procurement_officer.listOrderForOfficerIndex')->with(['fail' => 'هناك خطا ما لم يتم اضافة البيانات']);
@@ -356,6 +367,7 @@ class ProcurmentOfficerController extends Controller
         }
         else{
             if ($data->save()) {
+                OrderActivityLogModel::logActivity($data->id, 'update_ref_number', 'تعديل الرقم المرجعي: ' . $request->reference_number);
                 return redirect()->route('orders.procurement_officer.order_index')->with(['success' => 'تم اضافة البيانات بنجاح', 'tab_id' => 1]);
             } else {
                 return redirect()->route('orders.procurement_officer.order_index')->with(['fail' => 'هناك خطا ما لم يتم اضافة البيانات']);
@@ -375,6 +387,7 @@ class ProcurmentOfficerController extends Controller
         $data->delete_status = 1;
 
         if ($data->update()) {
+            OrderActivityLogModel::logActivity($id, 'delete_order', 'نقل الطلبية لسلة المحذوفات');
             return redirect()->route('orders.procurement_officer.order_index')->with(['success' => 'تم حذف الفاتورة بنجاح']);
         } else {
             return redirect()->route('orders.procurement_officer.order_index')->with(['fail' => 'هناك خلل ما لم تتم عملية الحذف']);
@@ -394,6 +407,8 @@ class ProcurmentOfficerController extends Controller
         $data->order_status = $request->order_status_id;
         $order_status_color = OrderStatusModel::where('id',$data->order_status)->first();
         if ($data->save()){
+            $status_name = $order_status_color->name ?? $request->order_status_id;
+            OrderActivityLogModel::logActivity($request->order_id, 'update_status', 'تعديل حالة ومتابعة الطلبية إلى: ' . $status_name);
             return response()->json([
                 'success' => 'true',
                 'order_status_color'=>$order_status_color
@@ -411,6 +426,7 @@ class ProcurmentOfficerController extends Controller
         $data->inserted_at = $request->due_date;
         if ($request->view == 'officer_view'){
             if ($data->save()) {
+                OrderActivityLogModel::logActivity($data->id, 'update_due_date', 'تعديل تاريخ الطلبية: ' . $request->due_date);
                 return redirect()->route('orders.procurement_officer.listOrderForOfficerIndex')->with(['success' => 'تم تعديل البيانات بنجاح']);
             } else {
                 return redirect()->route('orders.procurement_officer.listOrderForOfficerIndex')->with(['fail' => 'هناك خطا ما لم يتم تعديل البيانات']);
@@ -418,6 +434,7 @@ class ProcurmentOfficerController extends Controller
         }
         else{
             if ($data->save()) {
+                OrderActivityLogModel::logActivity($data->id, 'update_due_date', 'تعديل تاريخ الطلبية: ' . $request->due_date);
                 return redirect()->route('orders.procurement_officer.order_index')->with(['success' => 'تم تعديل البيانات بنجاح']);
             } else {
                 return redirect()->route('orders.procurement_officer.order_index')->with(['fail' => 'هناك خطا ما لم يتم تعديل البيانات']);
@@ -429,6 +446,8 @@ class ProcurmentOfficerController extends Controller
         $data = OrderModel::where('id',$request->order_id)->first();
         $data->to_user = $request->to_user;
         if ($data->save()){
+            $user = User::find($request->to_user);
+            OrderActivityLogModel::logActivity($data->id, 'update_to_user', 'تعيين مستخدم للمتابعة: ' . ($user->name ?? $request->to_user));
             return response()->json([
                 'success' => 'true',
             ]);

@@ -119,6 +119,11 @@
                             id="notes-tab" data-toggle="pill" href="#notes" role="tab" aria-controls="notes"
                             aria-selected="@if (\Illuminate\Support\Facades\Session::has('tab_id')) @if (session('tab_id') == 10)  true @else false @endif @endif">ملاحظات</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link @if (\Illuminate\Support\Facades\Session::has('tab_id')) @if (session('tab_id') == 11)  active @endif @endif"
+                            id="activity_log-tab" data-toggle="pill" href="#activity_log" role="tab" aria-controls="activity_log"
+                            aria-selected="@if (\Illuminate\Support\Facades\Session::has('tab_id')) @if (session('tab_id') == 11)  true @else false @endif @endif">سجل النشاطات</a>
+                    </li>
                 </ul>
                 <div class="tab-content" id="custom-content-above-tabContent">
                     <div class="tab-pane fade @if (session('tab_id') == null) show active @endif @if (\Illuminate\Support\Facades\Session::has('tab_id')) @if (session('tab_id') == 1) show active @endif @endif"
@@ -427,6 +432,48 @@
                                                 </td>
                                             </tr>
                                         @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade @if (\Illuminate\Support\Facades\Session::has('tab_id')) @if (session('tab_id') == 11) show active @endif @endif"
+                        id="activity_log" role="tabpanel" aria-labelledby="activity_log-tab">
+                        <div class="p-2">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>النشاط</th>
+                                            <th>الموظف</th>
+                                            <th>التفاصيل</th>
+                                            <th>تاريخ الحركة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (!isset($activity_logs) || $activity_logs->isEmpty())
+                                            <tr>
+                                                <td class="text-center" colspan="4">لا توجد سجلات. تفاعل مع الطلبية أولاً</td>
+                                            </tr>
+                                        @else
+                                            @foreach ($activity_logs as $log)
+                                                <tr>
+                                                    <td>{{ $log->action }}</td>
+                                                    <td>{{ $log->user->name ?? 'غير معروف' }}</td>
+                                                    <td>
+                                                        {{ $log->description }}
+                                                        @if($log->old_value !== null || $log->new_value !== null)
+                                                            <div class="mt-1" style="font-size: 11px; padding: 5px; background: #f8f9fa; border-radius: 4px; border: 1px solid #ddd;">
+                                                                <span class="text-danger"><strong>القديمة:</strong> {{ $log->old_value ?? 'فارغ' }}</span> 
+                                                                <i class="fa fa-arrow-left mx-1 text-muted"></i> 
+                                                                <span class="text-success"><strong>الجديدة:</strong> {{ $log->new_value ?? 'فارغ' }}</span>
+                                                            </div>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $log->created_at->format('Y-m-d h:i A') }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>

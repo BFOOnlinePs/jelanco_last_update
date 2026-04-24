@@ -58,6 +58,7 @@ class OrderNotesController extends Controller
         $data->insert_date = Carbon::now();
         $data->status = 1;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_order_note', 'تم إضافة ملاحظة للطلبية');
             return redirect()->route('procurement_officer.orders.notes.index',['order_id'=>$request->order_id])->with(['success'=>'تم اضافة الملاحظة بنجاح','tab_id'=>10]);
         }
         else{
@@ -75,6 +76,7 @@ class OrderNotesController extends Controller
         $data->note_text = $request->note_text;
         $data->alert_date = $request->alert_date;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_order_note', 'تم تعديل ملاحظة للطلبية');
             return redirect()->route('procurement_officer.orders.notes.index',['order_id'=>$data->order_id])->with(['success'=>'تم تعديل الملاحظة بنجاح']);
         }
         else{
@@ -85,7 +87,8 @@ class OrderNotesController extends Controller
     public function delete_order_notes($id){
         $data = OrderNotesModel::find($id);
         if ($data->delete()){
-            return redirect()->route('orders.procurement_officer.order_items_index',['order_id'=>$data->order_id])->with(['success'=>'تم تعديل الملاحظة بنجاح','tab_id'=>10]);
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'delete_order_note', 'تم حذف ملاحظة من الطلبية');
+            return redirect()->route('orders.procurement_officer.order_items_index',['order_id'=>$data->order_id])->with(['success'=>'تم حذف الملاحظة بنجاح','tab_id'=>10]);
         }
         else{
             return redirect()->route('orders.procurement_officer.order_items_index',['order_id'=>$data->order_id])->with(['success'=>'تم تعديل الملاحظة بنجاح','tab_id'=>10]);
@@ -96,6 +99,7 @@ class OrderNotesController extends Controller
         $data = OrderNotesModel::where('id',$request->note_id)->first();
         $data->note_text = $request->note_text;
         if($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_order_note', 'تم تعديل ملاحظة الطلبية');
             return redirect()->back()->with(['success'=>'تم التعديل بنجاح']);
         }
         else{

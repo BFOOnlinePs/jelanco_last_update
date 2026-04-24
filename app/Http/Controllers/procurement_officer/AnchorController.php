@@ -78,6 +78,7 @@ class AnchorController extends Controller
             $data->award_attachment = $filename;
         }
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_anchor', 'تمت الترسية على عرض سعر');
             return redirect()->route('procurement_officer.orders.anchor.index', ['order_id' => $request->order_id])->with(['success' => 'تم اضافة البيانات بنجاح', 'tab_id' => 3]);
         } else {
             return redirect()->route('procurement_officer.orders.anchor.index', ['order_id' => $request->order_id])->with(['fail' => 'هناك خطا ما لم تتم اضافة البيانات', 'tab_id' => 3]);
@@ -89,6 +90,7 @@ class AnchorController extends Controller
         $data = PriceOffersModel::where('id', $id)->first();
         $data->status = 0;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'delete_anchor', 'تم إلغاء الترسية وازالتها من القائمة');
             return redirect()->route('procurement_officer.orders.anchor.index', ['order_id' => $data->order_id])->with(['success' => 'تم الحذف بنجاح', 'tab_id' => 3]);
         } else {
             return redirect()->route('procurement_officer.orders.anchor.index', ['order_id' => $data->order_id])->with(['fail' => 'لم بتم الحذف هناك خطا ما', 'tab_id' => 3]);
@@ -98,8 +100,10 @@ class AnchorController extends Controller
     public function updateNotesForAnchor(Request $request)
     {
         $data = PriceOffersModel::where('id', $request->id)->first();
+        $old_note = $data->award_note;
         $data->award_note = $request->award_note;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_anchor_note', 'تم تعديل ملاحظات الترسية', $old_note, $data->award_note);
             return response()->json($data);
         }
     }
@@ -187,6 +191,7 @@ class AnchorController extends Controller
             $data->award_attachment = $filename;
         }
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'upload_anchor_attachment', 'تم رفع مرفق جديد للترسية');
             return redirect()->route('procurement_officer.orders.anchor.index', ['order_id' => $data->order_id])->with(['success' => 'تم اضافة الصورة بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.anchor.index', ['order_id' => $data->order_id])->with(['fail' => 'لم تتم الاضافة بنجاح هناك خلل ما']);
@@ -197,6 +202,7 @@ class AnchorController extends Controller
         $data = PriceOffersModel::where('id',$id)->first();
         $data->award_attachment = null;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'delete_anchor_attachment', 'تم حذف مرفق الترسية');
             return redirect()->route('procurement_officer.orders.anchor.index', ['order_id' => $data->order_id])->with(['success' => 'تم اضافة الصورة بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.anchor.index', ['order_id' => $data->order_id])->with(['fail' => 'لم تتم الاضافة بنجاح هناك خلل ما']);
@@ -205,8 +211,10 @@ class AnchorController extends Controller
 
     public function edit_anchor_note(Request $request){
         $data = PriceOffersModel::where('id',$request->note_id)->first();
+        $old_note = $data->award_note;
         $data->award_note = $request->note_text;
         if($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_anchor_note', 'تم تعديل ملاحظات الترسية', $old_note, $data->award_note);
             return redirect()->back()->with(['success'=>'تم التعديل بنجاح']);
         }
         else{

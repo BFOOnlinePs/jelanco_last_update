@@ -77,6 +77,7 @@ class ShippingController extends Controller
             $data->cooling_type = $request->cooling_type;
             $data->shipping_method = $request->shipping_method;
             if ($data->save()) {
+                \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_shipping_offer', 'تم إضافة عرض سعر شحن');
                 return redirect()->route('procurement_officer.orders.shipping.index', ['order_id' => $data->order_id])->with(['success' => 'تم اضافة الباينات بنجاح']);
             } else {
                 return redirect()->route('procurement_officer.orders.shipping.index', ['order_id' => $data->order_id])->with(['fail' => 'هناك خلل ما لم يتم اضافة البيانات']);
@@ -118,6 +119,7 @@ class ShippingController extends Controller
         $data->cooling_type = $request->cooling_type;
         $data->shipping_method = $request->shipping_method;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_shipping_offer', 'تم تعديل عرض سعر شحن');
             return redirect()->route('procurement_officer.orders.shipping.index', ['order_id' => $data->order_id])->with(['success' => 'تم تعديل البيانات بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.shipping.index', ['order_id' => $data->order_id])->with(['fail' => 'هناك خلل ما لم يتم تعديل البيانات']);
@@ -127,7 +129,9 @@ class ShippingController extends Controller
     public function delete($id)
     {
         $data = ShippingPriceOfferModel::where('id', $id);
+        $order_id = $data->first()->order_id ?? null;
         if ($data->delete()) {
+            if ($order_id) \App\Models\OrderActivityLogModel::logActivity($order_id, 'delete_shipping_offer', 'تم حذف عرض سعر شحن');
             return redirect()->back()->with(['success' => 'تم الحذف بنجاح']);
         } else {
             return redirect()->back()->with(['fail' => 'هناك خلل ما لم يتم الحذف']);
@@ -167,6 +171,7 @@ class ShippingController extends Controller
         $data->award_status = 1;
         $data->award_notes = $request->award_notes;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'add_shipping_award', 'تمت الترسية على عرض شحن');
             return redirect()->back()->with(['success' => 'تم اضافة الترسية بنجاح']);
         } else {
             return redirect()->back()->with(['fail' => 'هناك خلل ما لم تتم الاضافة بنجاح']);
@@ -181,6 +186,7 @@ class ShippingController extends Controller
         $data->expected_exit_date = null;
         $data->expected_arrival_date = null;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'cancel_shipping_award', 'تم إلغاء ترسية الشحن');
             return redirect()->back()->with(['success' => 'تم الغاء الترسية بنجاح']);
         } else {
             return redirect()->back()->with(['fail' => 'هناك خلل ما لم يتم الغاء الترسية']);
@@ -217,6 +223,7 @@ class ShippingController extends Controller
         }
         $data->award_notes = $request->award_notes;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_shipping_award', 'تم تعديل بيانات ترسية الشحن');
             return redirect()->route('procurement_officer.orders.shipping.index', ['order_id' => $data->order_id])->with(['success' => 'تم تعديل الترسية بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.shipping.index', ['order_id' => $data->order_id])->with(['fail' => 'هناك خلل ما لم يتم التعديل']);
@@ -227,6 +234,7 @@ class ShippingController extends Controller
         $data = ShippingPriceOfferModel::where('id',$request->note_id)->first();
         $data->note = $request->note_text;
         if($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_shipping_note', 'تم تعديل ملاحظات الشحن');
             return redirect()->back()->with(['success'=>'تم التعديل بنجاح']);
         }
         else{
@@ -238,6 +246,7 @@ class ShippingController extends Controller
         $data = ShippingPriceOfferModel::where('id',$request->id)->first();
         $data->status = $request->status;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_shipping_status', 'تم تغيير حالة الشحن');
             return response()->json([
                 'success' => 'true'
             ]);

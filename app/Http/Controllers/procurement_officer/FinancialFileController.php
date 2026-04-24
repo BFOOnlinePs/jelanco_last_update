@@ -68,6 +68,7 @@ class FinancialFileController extends Controller
         $data->insert_at = Carbon::now();
         $data->currency_id = $request->currency_id;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_cash_payment', 'تم إضافة دفعة نقدية');
             return redirect()->route('procurement_officer.orders.financial_file.index', ['order_id' => $request->order_id])->with(['success' => 'تم اضافة البيانات بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.financial_file.index', ['order_id' => $request->order_id])->with(['fail' => 'هناك خلل ما لم يتم اضافة البيانات']);
@@ -95,6 +96,7 @@ class FinancialFileController extends Controller
         $data->duration_days = $request->duration_days;
         $data->currency_id = $request->currency_id;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_letter_bank', 'تم إضافة اعتماد مستندي');
             return redirect()->route('procurement_officer.orders.financial_file.index', ['order_id' => $request->order_id])->with(['success' => 'تم اضافة البيانات بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.financial_file.index', ['order_id' => $request->order_id])->with(['fail' => 'هناك خلل ما لم يتم اضافة البيانات']);
@@ -128,6 +130,7 @@ class FinancialFileController extends Controller
         $data->insert_at = Carbon::now();
         $data->currency_id = $request->currency_id;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_cash_payment', 'تم تعديل دفعة نقدية');
             return redirect()->route('procurement_officer.orders.financial_file.index', ['order_id' => $data->order_id])->with(['success' => 'تم تعديل البيانات بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.financial_file.index', ['order_id' => $data->order_id])->with(['fail' => 'هناك خلل ما لم يتم تعديل البيانات']);
@@ -138,6 +141,7 @@ class FinancialFileController extends Controller
     {
         $data = CashPaymentsModel::find($id);
         if ($data->delete()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'delete_cash_payment', 'تم حذف الدفعة النقدية');
             return redirect()->back()->with(['success' => 'تم حذف الباينات بنجاح']);
         } else {
             return redirect()->back()->with(['fail' => 'هناك خلل ما لم يتم حذف البيانات']);
@@ -172,6 +176,7 @@ class FinancialFileController extends Controller
         $data->duration_days = $request->duration_days;
         $data->currency_id = $request->currency_id;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_letter_bank', 'تم تعديل اعتماد مستندي');
             return redirect()->route('procurement_officer.orders.financial_file.index', ['order_id' => $data->order_id])->with(['success' => 'تم اضافة البيانات بنجاح']);
         } else {
             return redirect()->route('procurement_officer.orders.financial_file.index', ['order_id' => $data->order_id])->with(['fail' => 'هناك خلل ما لم يتم اضافة البيانات']);
@@ -182,6 +187,7 @@ class FinancialFileController extends Controller
     {
         $data = LetterBankModel::find($id);
         if ($data->delete()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'delete_letter_bank', 'تم حذف اعتماد مستندي');
             return redirect()->back()->with(['success' => 'تم حذف الباينات بنجاح']);
         } else {
             return redirect()->back()->with(['fail' => 'هناك خلل ما لم يتم حذف البيانات']);
@@ -218,6 +224,8 @@ class FinancialFileController extends Controller
         }
         $data->insert_by = auth()->user()->id;
         if ($data->save()) {
+            $letterBank = \App\Models\LetterBankModel::find($request->letter_bank_id);
+            if($letterBank) \App\Models\OrderActivityLogModel::logActivity($letterBank->order_id, 'add_letter_bank_extension', 'تم إضافة تمديد للاعتماد المستندي');
             return redirect()->back()->with(['success' => 'تم اضافة البيانات بنجاح']);
         } else {
             return redirect()->back()->with(['fail' => 'هناك خلل ما لم يتم اضافة البيانات']);
@@ -244,6 +252,8 @@ class FinancialFileController extends Controller
         }
         $data->insert_by = auth()->user()->id;
         if ($data->save()) {
+            $letterBank = \App\Models\LetterBankModel::find($data->letter_bank_id);
+            if($letterBank) \App\Models\OrderActivityLogModel::logActivity($letterBank->order_id, 'update_letter_bank_extension', 'تم تعديل تمديد للاعتماد المستندي');
             return redirect()->back()->with(['success' => 'تم تعديل البيانات بنجاح']);
         } else {
             return redirect()->back()->with(['fail' => 'هناك خلل ما لم يتم تعديل البيانات']);
@@ -254,6 +264,8 @@ class FinancialFileController extends Controller
     {
         $data = LetterBankModificationModel::find($id);
         if ($data->delete()) {
+            $letterBank = \App\Models\LetterBankModel::find($data->letter_bank_id);
+            if($letterBank) \App\Models\OrderActivityLogModel::logActivity($letterBank->order_id, 'delete_letter_bank_extension', 'تم حذف تمديد للاعتماد المستندي');
             return redirect()->back()->with(['success' => 'تم حذف البيانات بنجاح']);
         } else {
             return redirect()->back()->with(['fail' => 'هناك خلل ما لم يتم حذف البيانات']);
@@ -264,6 +276,7 @@ class FinancialFileController extends Controller
         $data = CashPaymentsModel::find($request->id);
         $data->payment_status = $request->payment_status;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_payment_status', 'تم تغيير حالة الدفعة النقدية');
             return response()->json([
                 'success'=>'true',
                 'data'=>$data
@@ -317,6 +330,7 @@ class FinancialFileController extends Controller
         }
         $data->payment_voucher_note = $request->payment_voucher_note;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_payment_status', 'تم تحديث حالة تسديد الدفعة نقدية');
             return redirect()->route('procurement_officer.orders.financial_file.index',['order_id'=>$data->order_id])->with(['success'=>'تم اضافة الدفعة بنجاح']);
         }
     }
@@ -329,6 +343,7 @@ class FinancialFileController extends Controller
         $data->payment_voucher_attachment = null;
         $data->payment_voucher_note = null;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($order_id, 'delete_payment_status', 'تم التراجع عن تسديد الدفعة');
             return redirect()->route('procurement_officer.orders.financial_file.index',['order_id'=>$order_id])->with(['success'=>'تم حذف الدفعة بنجاح']);
         }
         else{
@@ -349,6 +364,7 @@ class FinancialFileController extends Controller
         }
         $data->status = 1;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'paid_letter_bank', 'تم تسديد الاعتماد المستندي');
             return redirect()->route('procurement_officer.orders.financial_file.index',['order_id'=>$data->order_id])->with(['success'=>'تمت العملية بنجاح']);
         }
         else{
@@ -369,6 +385,7 @@ class FinancialFileController extends Controller
         }
         $data->status = 1;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_paid_letter_bank', 'تم تعديل تسديد الاعتماد المستندي');
             return redirect()->route('procurement_officer.orders.financial_file.index',['order_id'=>$data->order_id])->with(['success'=>'تم تحديث البيانات بنجاح']);
         }
         else{
@@ -381,6 +398,7 @@ class FinancialFileController extends Controller
         $data->status = 0;
         $order_id = $data->order_id;
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($order_id, 'delete_paid_letter_bank', 'تم التراجع عن تسديد الاعتماد المستندي');
             return redirect()->route('procurement_officer.orders.financial_file.index',['order_id'=>$order_id])->with(['success'=>'تم حذف العنصر بنجاح']);
         }
         else{

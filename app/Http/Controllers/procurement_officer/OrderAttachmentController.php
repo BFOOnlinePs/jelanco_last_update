@@ -78,6 +78,7 @@ class OrderAttachmentController extends Controller
         $data->insert_at = Carbon::now();
         $data->status = 1;
         if ($data->save()) {
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'add_order_attachment', 'تم إضافة مرفق للطلبية');
             return redirect()->route('procurement_officer.orders.attachment.index', ['order_id' => $data->order_id])->with(['success' => 'تم اضافة الباينات بنجاح', 'tab_id' => 9]);
         } else {
             return redirect()->route('procurement_officer.orders.attachment.index', ['order_id' => $data->order_id])->with(['fail' => 'هناك خلل ما لم يتم اضافة البيانات', 'tab_id' => 9]);
@@ -94,6 +95,7 @@ class OrderAttachmentController extends Controller
         $data = OrderAttachmentModel::find($id);
         $order_id = $data->order_id;
         if ($data->delete()) {
+            \App\Models\OrderActivityLogModel::logActivity($order_id, 'delete_order_attachment', 'تم حذف مرفق للطلبية');
             return redirect()->route('procurement_officer.orders.attachment.index', ['order_id' => $order_id])->with(['success' => 'تم حذف المرفق بنجاح', 'tab_id' => 9]);
         } else {
             return redirect()->route('procurement_officer.orders.attachment.index', ['order_id' => $order_id])->with(['fail' => 'هناك خلل ما لم يتم حذف البيانات', 'tab_id' => 9]);

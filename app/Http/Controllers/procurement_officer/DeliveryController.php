@@ -52,6 +52,7 @@ class DeliveryController extends Controller
             $data->attachment = $filename;
         }
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($request->order_id, 'add_delivery', 'تم إضافة بيانات التوصيل');
             return redirect()->route('procurement_officer.orders.delivery.index',['order_id'=>$request->order_id])->with(['success'=>'تم اضافة البيانات بنجاح']);
         }
         else{
@@ -92,6 +93,7 @@ class DeliveryController extends Controller
             $data->attachment = $filename;
         }
         if ($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_delivery', 'تم تعديل بيانات التوصيل');
             return redirect()->route('procurement_officer.orders.delivery.index',['order_id'=>$data->order_id])->with(['success'=>'تم تعديل البيانات بنجاح']);
         }
         else{
@@ -105,6 +107,8 @@ class DeliveryController extends Controller
         $order_local_delivert_items->estimation_cost_element_id = $request->estimation_cost_element_id;
         $order_local_delivert_items->estimation_cost_price = 0;
         if ($order_local_delivert_items->save()){
+            $delivery = \App\Models\OrderLocalDeliveryModel::find($request->order_local_delivery_id);
+            if($delivery) \App\Models\OrderActivityLogModel::logActivity($delivery->order_id, 'add_delivery_item', 'تم إضافة عنصر تكلفة توصيل');
             $data = OrderLocalDeliveryItemsModel::where('order_local_delivery_id',$request->order_local_delivery_id)->get();
             foreach ($data as $key){
                 $key->estimation_cost_element = EstimationCostElementsModel::where('id',$key->estimation_cost_element_id)->first();
@@ -118,7 +122,10 @@ class DeliveryController extends Controller
 
     public function delete_order_local_delivery_items(Request $request){
         $data = OrderLocalDeliveryItemsModel::where('id',$request->order_local_delivery_items_id);
+        $delivery_id = $data->first()->order_local_delivery_id ?? null;
         if ($data->delete()){
+            $delivery = \App\Models\OrderLocalDeliveryModel::find($delivery_id);
+            if($delivery) \App\Models\OrderActivityLogModel::logActivity($delivery->order_id, 'delete_delivery_item', 'تم حذف تكلفة توصيل');
             return response()->json([
                 'success'=>'true'
             ]);
@@ -129,6 +136,8 @@ class DeliveryController extends Controller
         $data = OrderLocalDeliveryItemsModel::find($request->order_local_delivery_items_id);
         $data->estimation_cost_price = $request->estimation_price;
         if ($data->save()){
+            $delivery = \App\Models\OrderLocalDeliveryModel::find($data->order_local_delivery_id);
+            if($delivery) \App\Models\OrderActivityLogModel::logActivity($delivery->order_id, 'update_delivery_item_price', 'تم تسعير تكلفة التوصيل بمبلغ');
             return response()->json([
                 'success'=>'true'
             ]);
@@ -136,8 +145,9 @@ class DeliveryController extends Controller
     }
 
     public function delete($id){
-            $data = OrderLocalDeliveryModel::where('id',$id)->first();
+        $data = OrderLocalDeliveryModel::where('id',$id)->first();
         if ($data->delete()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'delete_delivery', 'تم حذف بيانات التوصيل');
             return redirect()->back()->with(['success'=>'تم حذف البيانات بنجاح']);
         }
         else{
@@ -149,6 +159,7 @@ class DeliveryController extends Controller
         $data = OrderLocalDeliveryModel::where('id',$request->note_id)->first();
         $data->notes = $request->note_text;
         if($data->save()){
+            \App\Models\OrderActivityLogModel::logActivity($data->order_id, 'update_delivery_note', 'تم تعديل ملاحظات التوصيل');
             return redirect()->back()->with(['success'=>'تم التعديل بنجاح']);
         }
         else{
