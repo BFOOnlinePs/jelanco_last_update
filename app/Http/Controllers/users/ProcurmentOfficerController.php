@@ -304,7 +304,7 @@ class ProcurmentOfficerController extends Controller
                 });
             })
             // ->where('order_status', '!=', -1)->where('order_status', '!=', 0)->where('order_status','!=',10)
-            ->where('order_status', '!=', -1)->where('order_status', '!=', 0)
+            ->whereNotIn('order_status', [-1, 0, 10])
             ->where('delete_status',0)
             ->orderBy('id','desc')
             ->paginate(20);
