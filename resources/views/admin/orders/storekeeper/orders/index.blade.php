@@ -152,6 +152,16 @@
                 </div>
                 <div class="col">
                     <div class="form-group">
+                        <label for="">اعتماد المورد</label>
+                        <select onchange="getOrderTable()" class="form-control select2bs4" name="supplier_type" id="supplier_type">
+                            <option value="">جميع الموردين</option>
+                            <option value="certified">مورد معتمد</option>
+                            <option value="not_supported">مورد غير معتمد</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
                         <label for="">من تاريخ</label>
                         <input onchange="getOrderTable()" name="from" id="from" value="<?php echo '2023-01-01'?>" type="text" class="form-control date_format">
                     </div>
@@ -409,6 +419,7 @@
                     'supplier_id': document.getElementById('supplier_id').value,
                     'user_category': document.getElementById('user_category').value,
                     'to_user': document.getElementById('to_user').value,
+                    'supplier_type': document.getElementById('supplier_type').value,
                     'from': document.getElementById('from').value,
                     'to': document.getElementById('to').value,
                     'page': page
@@ -929,4 +940,3 @@
     </script>
 
 @endsection
-
