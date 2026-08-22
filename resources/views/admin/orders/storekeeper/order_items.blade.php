@@ -255,10 +255,10 @@
                                 @else
                                     @foreach ($activity_logs as $log)
                                         <tr>
-                                            <td>{{ $log->action }}</td>
+                                            <td>{{ $log->action_label }}</td>
                                             <td>{{ $log->user->name ?? 'غير معروف' }}</td>
                                             <td>{{ $log->description }}</td>
-                                            <td style="direction: ltr;">{{ $log->created_at->format('Y-m-d h:i A') }}</td>
+                                            <td style="direction: ltr;">{{ optional($log->created_at)->format('Y-m-d h:i A') ?? '-' }}</td>
                                         </tr>
                                     @endforeach
                                 @endif

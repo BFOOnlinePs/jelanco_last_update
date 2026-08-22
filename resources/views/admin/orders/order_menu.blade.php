@@ -140,7 +140,9 @@
         $('#activity_log_body').html('<tr><td colspan="4" class="text-center">يتم التحميل...</td></tr>');
         
         $.ajax({
-            url: '/orders/get-activity-logs/' + orderId,
+            // يجب استخدام route وليس مسار ثابت، حتى يعمل الرابط إذا كان
+            // المشروع منصّباً داخل مجلد فرعي على السيرفر.
+            url: '{{ route('orders.activity_logs.get', ['order_id' => '__ORDER_ID__']) }}'.replace('__ORDER_ID__', orderId),
             method: 'GET',
             success: function(response) {
                 let html = '';
@@ -168,8 +170,11 @@
                 }
                 $('#activity_log_body').html(html);
             },
-            error: function() {
-                $('#activity_log_body').html('<tr><td colspan="4" class="text-danger">حدث خطأ أثناء جلب البيانات</td></tr>');
+            error: function(xhr) {
+                var reason = xhr.status === 419 || xhr.status === 401
+                    ? 'انتهت صلاحية الجلسة، يرجى تسجيل الدخول من جديد'
+                    : 'رمز الخطأ: ' + xhr.status;
+                $('#activity_log_body').html('<tr><td colspan="4" class="text-danger">حدث خطأ أثناء جلب البيانات (' + reason + ')</td></tr>');
             }
         });
     }

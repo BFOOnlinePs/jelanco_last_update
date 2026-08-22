@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 use App\Imports\UsersImport;
 use App\Models\CategoryProductModel;
 use App\Models\OrderItemsModel;
+use App\Models\ProductActivityLogModel;
 use App\Models\ProductModel;
 use App\Models\ProductNotesModel;
 use App\Models\ProductSupplierModel;
 use App\Models\UnitsModel;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 use Illuminate\Http\Request;
@@ -121,8 +123,73 @@ class ProductController extends Controller
 
     public function import(Request $request)
     {
+        // الاستيراد يستخدم batch/upsert فلا تُطلق أحداث الموديل، لذلك نأخذ صورة
+        // عن الأصناف قبل الاستيراد ونقارنها بعده حتى يُسجَّل كل ما تغيّر.
+        // نستخدم query builder وليس Eloquent حتى تبقى الصورة خفيفة على الذاكرة
+        // مهما كان عدد الأصناف.
+        $tracked  = ['product_name_ar', 'product_name_en', 'barcode', 'category_id', 'unit_id', 'product_status'];
+        $columns  = array_merge(['id'], $tracked);
+        $snapshot = fn () => DB::table('product')->select($columns)->get()->keyBy('id');
+
+        $before = $snapshot();
+
         Excel::import(new UsersImport, $request->file('file'));
+
+        foreach ($snapshot() as $id => $product) {
+            $old = $before->get($id);
+
+            if (! $old) {
+                ProductActivityLogModel::logActivity(
+                    $id,
+                    'create_product',
+                    'تم إضافة المنتج عن طريق استيراد ملف Excel'
+                );
+                continue;
+            }
+
+            foreach ($tracked as $field) {
+                if ((string) $old->{$field} === (string) $product->{$field}) {
+                    continue;
+                }
+
+                ProductActivityLogModel::logActivity(
+                    $id,
+                    'import_products',
+                    'تم تعديل ' . (ProductActivityLogModel::FIELD_LABELS[$field] ?? $field) . ' عن طريق استيراد Excel',
+                    $field,
+                    $old->{$field},
+                    $product->{$field}
+                );
+            }
+        }
+
         return redirect()->route('product.index')->with('success', 'تم اضافة البيانات بنجاح');
+    }
+
+    /**
+     * سجل نشاطات كل المنتجات مع إمكانية الفلترة.
+     */
+    public function activity_logs(Request $request)
+    {
+        $logs = ProductActivityLogModel::with(['user:id,name', 'product:id,product_name_ar,product_name_en,barcode'])
+            ->when($request->filled('action'), fn ($query) => $query->where('action', $request->action))
+            ->when($request->filled('user_id'), fn ($query) => $query->where('user_id', $request->user_id))
+            ->when($request->filled('from_date'), fn ($query) => $query->whereDate('created_at', '>=', $request->from_date))
+            ->when($request->filled('to_date'), fn ($query) => $query->whereDate('created_at', '<=', $request->to_date))
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+                $query->whereIn('product_id', ProductModel::select('id')
+                    ->where('product_name_ar', 'like', "%{$search}%")
+                    ->orWhere('product_name_en', 'like', "%{$search}%")
+                    ->orWhere('barcode', 'like', "%{$search}%"));
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(30)
+            ->withQueryString();
+
+        $users = User::whereIn('id', ProductActivityLogModel::select('user_id')->distinct())->get(['id', 'name']);
+
+        return view('admin.product.activity_logs', ['logs' => $logs, 'users' => $users]);
     }
 
     public function details($id){
@@ -140,7 +207,8 @@ class ProductController extends Controller
         }
         $product_notes = ProductNotesModel::get();
         $order_items = OrderItemsModel::where('product_id',$id)->get();
-        return view('admin.product.details',['data'=>$data,'category'=>$category,'units'=>$units,'supplier'=>$supplier,'product_notes'=>$product_notes,'order_items'=>$order_items]);
+        $activity_logs = ProductActivityLogModel::where('product_id',$id)->with('user:id,name')->orderBy('id','desc')->get();
+        return view('admin.product.details',['data'=>$data,'category'=>$category,'units'=>$units,'supplier'=>$supplier,'product_notes'=>$product_notes,'order_items'=>$order_items,'activity_logs'=>$activity_logs]);
     }
 
     public function createForProductSupplier(Request $request){

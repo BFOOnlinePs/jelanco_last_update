@@ -40,5 +40,17 @@
                 </div>
             </a>
         </div>
+
+        <div class="col-md-4 col-sm-6 col-12">
+            <a href="{{ route('product.activity_logs') }}" style="text-decoration: none" class="text-dark">
+                <div class="info-box">
+                    <span class="info-box-icon bg-danger"><i class="fa fa-history"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">سجل نشاطات الأصناف</span>
+                        <span class="info-box-number">كل التعديلات والحذف</span>
+                    </div>
+                </div>
+            </a>
+        </div>
     </div>
 </div>

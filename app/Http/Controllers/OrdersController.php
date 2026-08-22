@@ -250,17 +250,18 @@ class OrdersController extends Controller
     {
         $logs = \App\Models\OrderActivityLogModel::where('order_id', $order_id)
             ->with('user:id,name') // جلب الاسم فقط
-            ->latest()
+            ->orderBy('id', 'desc')
             ->get();
-            
+
         $logs->transform(function($log) {
             return [
-                'action' => $log->action,
+                'action' => $log->action_label,
+                'action_code' => $log->action,
                 'user' => $log->user->name ?? 'غير معروف',
                 'description' => $log->description,
                 'old_value' => $log->old_value,
                 'new_value' => $log->new_value,
-                'created_at' => $log->created_at->format('Y-m-d h:i A')
+                'created_at' => $log->created_at ? $log->created_at->format('Y-m-d h:i A') : '-'
             ];
         });
 

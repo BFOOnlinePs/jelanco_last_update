@@ -12,8 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('order_activity_logs', function (Blueprint $table) {
-            $table->text('old_value')->nullable()->after('description');
-            $table->text('new_value')->nullable()->after('old_value');
+            // الأعمدة تُضاف فقط إذا كانت مفقودة، حتى تعمل الهجرة أيضاً على
+            // قواعد البيانات التي أُنشئ فيها الجدول يدوياً.
+            if (! Schema::hasColumn('order_activity_logs', 'old_value')) {
+                $table->text('old_value')->nullable()->after('description');
+            }
+            if (! Schema::hasColumn('order_activity_logs', 'new_value')) {
+                $table->text('new_value')->nullable()->after('old_value');
+            }
         });
     }
 

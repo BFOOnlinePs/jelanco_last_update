@@ -11,16 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('order_activity_logs')) {
+        if (Schema::hasTable('product_activity_logs')) {
             return;
         }
 
-        Schema::create('order_activity_logs', function (Blueprint $table) {
+        Schema::create('product_activity_logs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('order_id')->index();
+            $table->unsignedBigInteger('product_id')->index();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('action');
             $table->text('description')->nullable();
+            // اسم الحقل الذي تم تعديله (لتعديلات المنتج حقلاً حقلاً)
+            $table->string('field')->nullable();
+            $table->text('old_value')->nullable();
+            $table->text('new_value')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_activity_logs');
+        Schema::dropIfExists('product_activity_logs');
     }
 };

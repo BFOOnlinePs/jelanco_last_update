@@ -458,7 +458,7 @@
                                         @else
                                             @foreach ($activity_logs as $log)
                                                 <tr>
-                                                    <td>{{ $log->action }}</td>
+                                                    <td>{{ $log->action_label }}</td>
                                                     <td>{{ $log->user->name ?? 'غير معروف' }}</td>
                                                     <td>
                                                         {{ $log->description }}
@@ -470,7 +470,7 @@
                                                             </div>
                                                         @endif
                                                     </td>
-                                                    <td>{{ $log->created_at->format('Y-m-d h:i A') }}</td>
+                                                    <td>{{ optional($log->created_at)->format('Y-m-d h:i A') ?? '-' }}</td>
                                                 </tr>
                                             @endforeach
                                         @endif

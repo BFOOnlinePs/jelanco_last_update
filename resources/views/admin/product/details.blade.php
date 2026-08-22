@@ -70,6 +70,11 @@
                     <li class="nav-item">
                         <a class="nav-link @if(session('tab_id') == 2) active @endif" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">ملاحظات المنتج</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link @if(session('tab_id') == 3) active @endif" id="product-activity-log-tab" data-toggle="pill" href="#product-activity-log" role="tab" aria-controls="product-activity-log" aria-selected="false">
+                            <i class="fa fa-history"></i> سجل النشاطات
+                        </a>
+                    </li>
                 </ul>
                 <div class="tab-content" id="custom-content-below-tabContent">
                     <div class="tab-pane fade @if(empty(session('tab_id'))) show active @endif @if(session('tab_id') == 1) show active @endif" id="custom-content-below-home" role="tabpanel" aria-labelledby="custom-content-below-home-tab">
@@ -213,6 +218,58 @@
                                                             <a target="_blank" href="{{ route('procurement_officer.orders.product.index' , ['order_id'=>$key->order_id]) }}">{{ $key->order->reference_number }}</a>
                                                         </td>
                                                         <td>{{ $key->notes }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade @if(session('tab_id') == 3) show active @endif" id="product-activity-log" role="tabpanel" aria-labelledby="product-activity-log-tab">
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="text-bold m-0">كل الحركات التي تمت على هذا الصنف</h6>
+                                    <a href="{{ route('product.activity_logs', ['search' => $data->barcode]) }}" class="btn btn-outline-dark btn-sm">
+                                        سجل نشاطات كل الأصناف
+                                    </a>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover table-bordered text-center">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th style="width: 18%">النشاط</th>
+                                                <th style="width: 15%">الموظف</th>
+                                                <th>التفاصيل</th>
+                                                <th style="width: 18%">التاريخ والوقت</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (!isset($activity_logs) || $activity_logs->isEmpty())
+                                                <tr>
+                                                    <td colspan="4" class="text-center">لا توجد حركات مسجلة على هذا الصنف</td>
+                                                </tr>
+                                            @else
+                                                @foreach ($activity_logs as $log)
+                                                    <tr>
+                                                        <td>{{ $log->action_label }}</td>
+                                                        <td>{{ $log->user->name ?? 'غير معروف' }}</td>
+                                                        <td>
+                                                            {{ $log->description }}
+                                                            @if($log->old_value !== null || $log->new_value !== null)
+                                                                <div class="mt-1" style="font-size: 11px; padding: 5px; background: #f8f9fa; border-radius: 4px; border: 1px solid #ddd;">
+                                                                    @if($log->field_label)
+                                                                        <span class="text-muted"><strong>{{ $log->field_label }}:</strong></span>
+                                                                    @endif
+                                                                    <span class="text-danger"><strong>القديمة:</strong> {{ $log->old_value_text }}</span>
+                                                                    <i class="fa fa-arrow-left mx-1 text-muted"></i>
+                                                                    <span class="text-success"><strong>الجديدة:</strong> {{ $log->new_value_text }}</span>
+                                                                </div>
+                                                            @endif
+                                                        </td>
+                                                        <td style="direction: ltr;">{{ optional($log->created_at)->format('Y-m-d h:i A') ?? '-' }}</td>
                                                     </tr>
                                                 @endforeach
                                             @endif
