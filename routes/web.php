@@ -354,6 +354,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('create_product_notes', [App\Http\Controllers\ProductController::class, 'create_product_notes'])->name('product.create_product_notes');
         Route::get('delete_product_notes/{id}', [App\Http\Controllers\ProductController::class, 'delete_product_notes'])->name('product.delete_product_notes');
         Route::get('activity_logs', [App\Http\Controllers\ProductController::class, 'activity_logs'])->name('product.activity_logs');
+        Route::get('activity_logs_ajax/{id}', [App\Http\Controllers\ProductController::class, 'activity_logs_ajax'])->name('product.activity_logs_ajax');
     });
 
     Route::group(['prefix' => 'currency'], function () {

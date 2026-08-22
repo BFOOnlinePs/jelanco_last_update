@@ -192,6 +192,68 @@ class ProductController extends Controller
         return view('admin.product.activity_logs', ['logs' => $logs, 'users' => $users]);
     }
 
+    /**
+     * سجل نشاطات صنف واحد، مجمّعاً حسب اليوم، لعرضه في مودال من جدول الأصناف.
+     */
+    public function activity_logs_ajax($id)
+    {
+        $product = ProductModel::find($id);
+
+        if (! $product) {
+            return response()->json(['success' => false, 'message' => 'الصنف غير موجود'], 404);
+        }
+
+        $logs = ProductActivityLogModel::where('product_id', $id)
+            ->with('user:id,name')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        // تجميع الحركات حسب اليوم ليعرضها المودال على شكل خط زمني.
+        $groups = $logs->groupBy(fn ($log) => optional($log->created_at)->format('Y-m-d') ?? '-')
+            ->map(function ($dayLogs, $day) {
+                return [
+                    'date'  => $day,
+                    'items' => $dayLogs->map(fn ($log) => [
+                        'action'      => $log->action,
+                        'action_text' => $log->action_label,
+                        'group'       => self::actionGroup($log->action),
+                        'user'        => $log->user->name ?? 'غير معروف',
+                        'description' => $log->description,
+                        'field'       => $log->field_label,
+                        'old_value'   => $log->old_value === null ? null : $log->old_value_text,
+                        'new_value'   => $log->new_value === null ? null : $log->new_value_text,
+                        'time'        => optional($log->created_at)->format('h:i A') ?? '-',
+                    ])->values(),
+                ];
+            })->values();
+
+        return response()->json([
+            'success' => true,
+            'product' => [
+                'name'    => $product->product_name_ar ?: $product->product_name_en,
+                'barcode' => $product->barcode,
+            ],
+            'total'  => $logs->count(),
+            'groups' => $groups,
+        ]);
+    }
+
+    /**
+     * تصنيف الحركة (إضافة / تعديل / حذف) لتلوينها في الواجهة.
+     */
+    private static function actionGroup(string $action): string
+    {
+        if (str_starts_with($action, 'delete_') || $action === 'remove_from_order') {
+            return 'delete';
+        }
+
+        if (str_starts_with($action, 'add_') || str_starts_with($action, 'create_') || $action === 'upload_photo') {
+            return 'create';
+        }
+
+        return 'update';
+    }
+
     public function details($id){
         // TODO this for product supplier table
             $supplier = User::where('user_role',4)->get();

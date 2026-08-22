@@ -107,6 +107,105 @@
             padding: 1.31em 1.21em 1.21em 0;
             color: #fff
         }
+
+        /* ===== سجل نشاطات الصنف (خط زمني داخل المودال) ===== */
+        .pal-head {
+            background: #f4f6f9;
+            border: 1px solid #e3e6ea;
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+        }
+        .pal-head .pal-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .pal-head .pal-barcode {
+            color: #6c757d;
+            font-size: 12px;
+            direction: ltr;
+            display: inline-block;
+        }
+        .pal-day {
+            margin-bottom: 6px;
+        }
+        .pal-day-title {
+            display: inline-block;
+            background: #343a40;
+            color: #fff;
+            font-size: 12px;
+            border-radius: 12px;
+            padding: 2px 12px;
+            margin-bottom: 10px;
+            direction: ltr;
+        }
+        .pal-timeline {
+            position: relative;
+            margin: 0 10px 18px 0;
+            padding: 0 22px 0 0;
+            border-right: 2px solid #e3e6ea;
+            list-style: none;
+        }
+        .pal-item {
+            position: relative;
+            padding-bottom: 14px;
+        }
+        .pal-item:last-child {
+            padding-bottom: 0;
+        }
+        .pal-dot {
+            position: absolute;
+            right: -30px;
+            top: 2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 9px;
+            line-height: 18px;
+            text-align: center;
+        }
+        .pal-dot.create { background: #28a745; }
+        .pal-dot.update { background: #ffc107; color: #333; }
+        .pal-dot.delete { background: #dc3545; }
+        .pal-title {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .pal-meta {
+            font-size: 11px;
+            color: #6c757d;
+        }
+        .pal-desc {
+            font-size: 13px;
+            margin-top: 2px;
+        }
+        .pal-diff {
+            margin-top: 6px;
+            background: #f8f9fa;
+            border: 1px solid #e3e6ea;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+        .pal-diff .pal-field {
+            color: #495057;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+        .pal-old {
+            color: #b02a37;
+            text-decoration: line-through;
+        }
+        .pal-new {
+            color: #157347;
+            font-weight: 700;
+        }
+        .pal-empty {
+            text-align: center;
+            color: #6c757d;
+            padding: 40px 0;
+        }
     </style>
 @endsection
 @section('content')
@@ -318,6 +417,31 @@
         </div>
     </div>
 
+    <!-- مودال سجل نشاطات الصنف -->
+    <div class="modal fade" id="modal-product-activity-log">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title text-white">
+                        <i class="fa fa-history"></i> سجل نشاطات الصنف
+                    </h4>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="product_activity_log_body">
+                    <div class="pal-empty">يتم التحميل...</div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <a href="{{ route('product.activity_logs') }}" class="btn btn-outline-dark btn-sm">
+                        سجل نشاطات كل الأصناف
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection()
 
 @section('script')
@@ -450,6 +574,96 @@
                     }
                 });
             }
+        }
+
+        function palEscape(value) {
+            return $('<div>').text(value === null || value === undefined ? '' : value).html();
+        }
+
+        function fetchProductActivityLogs(productId) {
+            $('#modal-product-activity-log').modal('show');
+            $('#product_activity_log_body').html('<div class="pal-empty">يتم التحميل...</div>');
+
+            $.ajax({
+                url: '{{ route('product.activity_logs_ajax', ['id' => '__ID__']) }}'.replace('__ID__', productId),
+                method: 'GET',
+                success: function (response) {
+                    if (!response.success) {
+                        $('#product_activity_log_body').html('<div class="pal-empty text-danger">تعذر جلب البيانات</div>');
+                        return;
+                    }
+
+                    var html = '<div class="pal-head">' +
+                        '<div class="pal-name">' + palEscape(response.product.name) + '</div>' +
+                        '<span class="pal-barcode">' + palEscape(response.product.barcode) + '</span>' +
+                        ' <span class="badge badge-info">عدد الحركات: ' + response.total + '</span>' +
+                        '</div>';
+
+                    if (response.total === 0) {
+                        html += '<div class="pal-empty">' +
+                            '<i class="fa fa-inbox fa-2x d-block mb-2"></i>' +
+                            'لا توجد حركات مسجلة على هذا الصنف حتى الآن' +
+                            '</div>';
+                        $('#product_activity_log_body').html(html);
+                        return;
+                    }
+
+                    var icons = {create: 'fa-plus', update: 'fa-pen', delete: 'fa-times'};
+
+                    response.groups.forEach(function (group) {
+                        html += '<div class="pal-day"><span class="pal-day-title">' + palEscape(group.date) + '</span></div>';
+                        html += '<ul class="pal-timeline">';
+
+                        group.items.forEach(function (item) {
+                            html += '<li class="pal-item">' +
+                                '<span class="pal-dot ' + item.group + '"><i class="fa ' + (icons[item.group] || 'fa-pen') + '"></i></span>' +
+                                '<div class="pal-title">' + palEscape(item.action_text) + '</div>' +
+                                '<div class="pal-meta">' +
+                                    '<i class="fa fa-user"></i> ' + palEscape(item.user) +
+                                    ' <span class="mx-1">|</span> ' +
+                                    '<i class="fa fa-clock"></i> <span style="direction:ltr;display:inline-block">' + palEscape(item.time) + '</span>' +
+                                '</div>';
+
+                            if (item.description) {
+                                html += '<div class="pal-desc">' + palEscape(item.description) + '</div>';
+                            }
+
+                            if (item.old_value !== null || item.new_value !== null) {
+                                html += '<div class="pal-diff">';
+                                if (item.field) {
+                                    html += '<span class="pal-field">' + palEscape(item.field) + ':</span>';
+                                }
+
+                                if (item.old_value === null) {
+                                    // إضافة: لا توجد قيمة سابقة، نعرض الجديدة فقط
+                                    html += '<span class="pal-new">' + palEscape(item.new_value) + '</span>';
+                                } else if (item.new_value === null) {
+                                    // حذف: نعرض القيمة المحذوفة فقط
+                                    html += '<span class="pal-old">' + palEscape(item.old_value) + '</span>';
+                                } else {
+                                    html += '<span class="pal-old">' + palEscape(item.old_value) + '</span>' +
+                                        ' <i class="fa fa-arrow-left mx-1 text-muted"></i> ' +
+                                        '<span class="pal-new">' + palEscape(item.new_value) + '</span>';
+                                }
+
+                                html += '</div>';
+                            }
+
+                            html += '</li>';
+                        });
+
+                        html += '</ul>';
+                    });
+
+                    $('#product_activity_log_body').html(html);
+                },
+                error: function (xhr) {
+                    var reason = (xhr.status === 419 || xhr.status === 401)
+                        ? 'انتهت صلاحية الجلسة، يرجى تسجيل الدخول من جديد'
+                        : 'رمز الخطأ: ' + xhr.status;
+                    $('#product_activity_log_body').html('<div class="pal-empty text-danger">حدث خطأ أثناء جلب البيانات (' + reason + ')</div>');
+                }
+            });
         }
     </script>
 

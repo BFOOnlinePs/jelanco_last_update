@@ -55,10 +55,12 @@
                         @endif
                     </td>
                     <td>
-                        <a href="{{ route('product.edit', ['id' => $key->id]) }}"
+                        <a href="{{ route('product.edit', ['id' => $key->id]) }}" title="تعديل"
                             class="btn btn-success btn-sm"><span class="fa fa-edit"></span></a>
-                        <a href="{{ route('product.details', ['id' => $key->id]) }}"
+                        <a href="{{ route('product.details', ['id' => $key->id]) }}" title="تفاصيل"
                             class="btn btn-dark btn-sm"><span class="fa fa-search"></span></a>
+                        <button type="button" title="سجل النشاطات" class="btn btn-info btn-sm"
+                            onclick="fetchProductActivityLogs({{ $key->id }})"><span class="fa fa-history"></span></button>
                     </td>
                 </tr>
             @endforeach
