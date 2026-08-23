@@ -293,16 +293,37 @@ class ProductController extends Controller
 
     public function edit_product_ajax(Request $request){
         $data = ProductModel::where('id',$request->product_id)->first();
-        if ($data->product_name_ar == ''){
-            $data->product_name_ar = $request->product_name_ar;
-        }
-        $data->product_name_en = $request->product_name_en;
-        if ($data->save()){
+
+        if (empty($data)){
             return response()->json([
-                'success'=>'true',
-                'data'=>$data,
-            ]);
+                'success'=>'false',
+                'message'=>'الصنف غير موجود',
+            ], 404);
         }
+
+        // نحدّث فقط الحقول التي أرسلتها الشاشة، فبعض الشاشات ترسل الاسم
+        // الانجليزي وحده.
+        if ($request->has('product_name_ar')){
+            $product_name_ar = trim((string) $request->product_name_ar);
+            if ($product_name_ar === ''){
+                return response()->json([
+                    'success'=>'false',
+                    'message'=>'اسم الصنف بالعربي مطلوب',
+                ], 422);
+            }
+            $data->product_name_ar = $product_name_ar;
+        }
+
+        if ($request->has('product_name_en')){
+            $data->product_name_en = trim((string) $request->product_name_en);
+        }
+
+        $data->save();
+
+        return response()->json([
+            'success'=>'true',
+            'data'=>$data,
+        ]);
     }
 
     public function delete_image(Request $request){

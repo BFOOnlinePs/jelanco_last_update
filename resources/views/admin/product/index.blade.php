@@ -547,7 +547,7 @@
             });
         }
         function edit_product_ajax(id) {
-            if((document.getElementById('product_name_ar_' + id).value == '') && (document.getElementById('product_name_en_' + id).value)){
+            if(document.getElementById('product_name_ar_' + id).value.trim() == ''){
                 alert('يجب ان لا يكون حقل الحروف فارغ');
             }
             else{
@@ -570,7 +570,10 @@
                         toastr.success('تم تعديل الاسم بنجاح')
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        alert('error');
+                        var message = (jqXHR.responseJSON && jqXHR.responseJSON.message)
+                            ? jqXHR.responseJSON.message
+                            : 'حدث خطأ اثناء التعديل';
+                        toastr.error(message);
                     }
                 });
             }
