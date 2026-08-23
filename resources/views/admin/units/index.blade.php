@@ -29,58 +29,19 @@
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <form action="{{ route('units.index') }}" method="get">
-                        <div class="input-group">
-                            <input type="text" name="search" class="form-control" value="{{ $search }}"
-                                   placeholder="ابحث باسم الوحدة بالعربي او بالانجليزي">
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-primary">بحث</button>
-                                @if($search !== '')
-                                    <a href="{{ route('units.index') }}" class="btn btn-secondary">الغاء البحث</a>
-                                @endif
-                            </div>
+                    <div class="input-group">
+                        <input type="text" id="input_search" class="form-control" value="{{ $search }}"
+                               placeholder="ابحث باسم الوحدة بالعربي او بالانجليزي" autocomplete="off">
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-secondary" onclick="clearUnitsSearch()">الغاء البحث</button>
                         </div>
-                    </form>
-                </div>
-                <div class="col-md-6 text-md-left mt-2 mt-md-0">
-                    <span class="text-muted">
-                        عدد النتائج: {{ $data->total() }}
-                    </span>
+                    </div>
                 </div>
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                        <th>الاسم</th>
-                        <th>الاسم باللغة الانجليزية</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse($data as $key)
-                        <tr>
-                            <td>
-                                <input type="text" class="form-control" onchange="updateUnitName({{ $key->id }})" id="unit_name_{{ $key->id }}" value="{{ $key->unit_name }}">
-                            </td>
-                            <td>
-                                <input type="text" class="form-control" onchange="updateUnitName({{ $key->id }})" id="unit_name_en_{{ $key->id }}" value="{{ $key->unit_name_en }}">
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="2" class="text-center">لا توجد وحدات مطابقة</td>
-                        </tr>
-                    @endforelse
-                    </tbody>
-                </table>
+            <div id="units_table">
+                @include('admin.units.ajax.units_table',['data'=>$data])
             </div>
-
-            @if($data->hasPages())
-                <div class="d-flex justify-content-center mt-3">
-                    {{ $data->links() }}
-                </div>
-            @endif
 
             <div class="modal fade" id="modal-default">
                 <div class="modal-dialog">
@@ -125,6 +86,56 @@
     <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}"></script>
 
     <script>
+        var unitsSearchTimer = null;
+
+        function fetchUnits(page) {
+            page = page || 1;
+            var search = document.getElementById('input_search').value;
+
+            $.ajax({
+                url: '{{ route('units.index') }}',
+                type: 'get',
+                data: {
+                    'search': search,
+                    'page': page
+                },
+                beforeSend: function () {
+                    $('#units_table').css('opacity', '0.5');
+                },
+                success: function (data) {
+                    $('#units_table').html(data);
+                },
+                error: function () {
+                    toastr.error('حدث خطأ اثناء جلب البيانات');
+                },
+                complete: function () {
+                    $('#units_table').css('opacity', '1');
+                }
+            });
+        }
+
+        function clearUnitsSearch() {
+            document.getElementById('input_search').value = '';
+            fetchUnits(1);
+        }
+
+        $(document).on('click', '#units_table .pagination a', function (e) {
+            e.preventDefault();
+            var href = $(this).attr('href');
+            if (!href) {
+                return;
+            }
+            var page = new URL(href, window.location.origin).searchParams.get('page') || 1;
+            fetchUnits(page);
+        });
+
+        $(document).on('keyup', '#input_search', function () {
+            clearTimeout(unitsSearchTimer);
+            unitsSearchTimer = setTimeout(function () {
+                fetchUnits(1);
+            }, 400);
+        });
+
         function updateUnitName(id) {
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
             var headers = {

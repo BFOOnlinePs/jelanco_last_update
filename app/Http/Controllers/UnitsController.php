@@ -10,10 +10,6 @@ use Illuminate\Http\Request;
 class UnitsController extends Controller
 {
     public function index(Request $request){
-        $product_count = ProductModel::count();
-        $category_count = CategoryProductModel::count();
-        $unit_count = UnitsModel::count();
-
         $search = trim((string) $request->input('search'));
 
         $data = UnitsModel::when($search !== '', function ($query) use ($search) {
@@ -23,6 +19,14 @@ class UnitsController extends Controller
             ->orderBy('unit_name')
             ->paginate(20)
             ->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->view('admin.units.ajax.units_table',['data'=>$data]);
+        }
+
+        $product_count = ProductModel::count();
+        $category_count = CategoryProductModel::count();
+        $unit_count = UnitsModel::count();
 
         return view('admin.units.index',['data'=>$data,'search'=>$search,'product_count'=>$product_count,'category_count'=>$category_count,'unit_count'=>$unit_count]);
     }
