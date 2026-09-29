@@ -405,7 +405,7 @@
         <div class="card-body">
             <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
                 <div class="row">
-                    <input onkeyup="fetchAdditionalData()" id="input_search" name="product_search" type="text" placeholder="بحث" class="form-control mb-2">
+                    <input id="input_search" name="product_search" type="text" placeholder="بحث" class="form-control mb-2" autocomplete="off">
                     <div id="search_table" style="width: 100%">
 
                     </div>
@@ -482,9 +482,14 @@
             var page = $(this).attr('href').split('page=')[1];
             fetchAdditionalData(page);
         });
+
+        AjaxSearch.bind('#input_search', function () {
+            fetchAdditionalData(1);
+        });
+
         function fetchAdditionalData(page = 1) {
             // showLoader();
-            $.ajax({
+            AjaxSearch.request('product.search_table', {
                 url: '{{ url('/product/search_table') }}',
                 type: 'get',
                 data:{
@@ -587,7 +592,8 @@
             $('#modal-product-activity-log').modal('show');
             $('#product_activity_log_body').html('<div class="pal-empty">يتم التحميل...</div>');
 
-            $.ajax({
+            // فتح سجل صنف ثاني بيلغي طلب الصنف السابق حتى ما يظهر سجل غلط
+            AjaxSearch.request('product.activity_logs', {
                 url: '{{ route('product.activity_logs_ajax', ['id' => '__ID__']) }}'.replace('__ID__', productId),
                 method: 'GET',
                 success: function (response) {

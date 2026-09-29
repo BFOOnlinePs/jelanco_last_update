@@ -100,8 +100,8 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="">رقم المرجع</label>
-                        <input onkeyup="getOrderTable()" placeholder="رقم المرجع" id="reference_number" name="reference_number"
-                               class="form-control" type="text">
+                        <input placeholder="رقم المرجع" id="reference_number" name="reference_number"
+                               class="form-control js-orders-search" type="text" autocomplete="off">
                     </div>
                 </div>
                 <div class="col">
@@ -181,7 +181,7 @@
 {{--            <h3 class="text-center">قائمة طلبات الشراء</h3>--}}
 {{--        </div>--}}
         <div class="">
-            <input hidden class="form-control mb-2" type="text" id="search_order_number" onkeyup="getOrderTable()"
+            <input hidden class="form-control mb-2 js-orders-search" type="text" id="search_order_number"
                    placeholder="بحث عن رقم الفاتورة">
             <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4 mt-3">
                 <div class="row text-center" id="order_table">
@@ -401,6 +401,10 @@
             });
         }
         window.addEventListener("load", getOrderTable());
+
+        AjaxSearch.bind('.js-orders-search', function () {
+            getOrderTable();
+        });
         // $(document).ready(function () {
         //     // showLoader();
         //     getOrderTable();
@@ -409,7 +413,7 @@
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
             $.ajaxSetup({headers: {'X-CSRF-TOKEN': csrfToken}});
             document.getElementById('order_table').innerHTML = '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
-            $.ajax({
+            AjaxSearch.request('orders.order_table', {
                 url: '{{ url('users/procurement_officer/orders/order_table') }}',
                 method: 'post',
                 data: {

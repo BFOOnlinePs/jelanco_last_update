@@ -118,6 +118,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 <script src="{{ asset('assets/jquery-ui/jquery-ui.js') }}"></script>
 
+@include('layouts.ajax_search')
+
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
@@ -133,6 +135,48 @@ scratch. This page gets rid of all links and provides the needed markup only.
 </script>
 
 @yield('script')
+
+<script>
+    // بحث select2 بالكلمات: كل كلمة لازم تكون موجودة بأي مكان بالنص وبأي ترتيب
+    // مثال: "سيريه كبير" تجيب "سيريه رش ابجل كبير - ذهبي"
+    function select2WordsMatcher(params, data) {
+        var term = String(params.term || '').trim().toLowerCase();
+        if (term === '') {
+            return data;
+        }
+        if (data.children && data.children.length > 0) {
+            var match = $.extend(true, {}, data);
+            for (var c = data.children.length - 1; c >= 0; c--) {
+                if (select2WordsMatcher(params, data.children[c]) == null) {
+                    match.children.splice(c, 1);
+                }
+            }
+            if (match.children.length > 0) {
+                return match;
+            }
+        }
+        var text = String(data.text || '').toLowerCase();
+        var words = term.split(/\s+/);
+        for (var i = 0; i < words.length; i++) {
+            if (text.indexOf(words[i]) === -1) {
+                return null;
+            }
+        }
+        return data;
+    }
+
+    if ($.fn.select2) {
+        // القوائم اللي بتتهيأ بعد هذا السطر (داخل document.ready او بعد ajax)
+        $.fn.select2.defaults.set('matcher', select2WordsMatcher);
+        // القوائم اللي تهيأت قبل هذا السطر
+        $('select').each(function () {
+            var instance = $(this).data('select2');
+            if (instance) {
+                instance.options.set('matcher', select2WordsMatcher);
+            }
+        });
+    }
+</script>
 
 <script>
     function viewAttachment(id,url,notes) {

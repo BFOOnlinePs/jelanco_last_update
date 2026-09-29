@@ -8,7 +8,7 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <input onkeyup="list_orders_for_tag()" id="order_search_for_tag" type="text" class="form-control" placeholder="بحث عن طلبية">
+                        <input id="order_search_for_tag" type="text" class="form-control" placeholder="بحث عن طلبية" autocomplete="off">
                     </div>
                 </div>
                 <div class="row mt-2">

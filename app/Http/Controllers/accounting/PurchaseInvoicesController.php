@@ -138,7 +138,7 @@ class PurchaseInvoicesController extends Controller
     }
 
     public function search_product_ajax(Request $request){
-        $data = ProductModel::where('product_name_ar','like','%'.$request->search_product.'%')->whereNotIn('id',function($query) use($request){
+        $data = ProductModel::searchWords($request->search_product)->whereNotIn('id',function($query) use($request){
             $query->select('item_id')->from('bfo_invoice_items')->where('invoice_id',$request->invoice_id)->get();
         })->paginate(7);
         return response()->json([

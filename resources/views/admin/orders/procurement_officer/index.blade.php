@@ -89,7 +89,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>رقم المرجع</label>
-                        <input onkeyup="getOrderTable()" placeholder="رقم المرجع" id="reference_number" name="reference_number" class="form-control" type="text">
+                        <input placeholder="رقم المرجع" id="reference_number" name="reference_number" class="form-control js-orders-search" type="text" autocomplete="off">
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -98,7 +98,7 @@
                         <select onchange="getOrderTable()" class="select2bs4 form-control supplier_select2" name="supplier_id" id="supplier_id">
                             <option value="">جميع الموردين</option>
                             @foreach ($supplier as $key)
-                                <option value="{{ $key->id }}">{{ $key->name }}</option>
+                                <option value="{{ $key->id }}" data-type="{{ $key->potential_suppliers }}">{{ $key->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -155,7 +155,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>مورد معتمد</label>
-                        <select onchange="getOrderTable()" class="form-control select2bs4" id="supplier_type">
+                        <select onchange="filterSuppliersByType()" class="form-control select2bs4" id="supplier_type">
                             <option value="">جميع الموردين</option>
                             <option value="certified">مورد معتمد</option>
                             <option value="not_supported">مورد غير معتمد</option>
@@ -168,7 +168,7 @@
 
     <div class="card">
         <div class="">
-            <input hidden class="form-control mb-2" type="text" id="search_order_number" onkeyup="getOrderTable()" placeholder="بحث عن رقم الفاتورة">
+            <input hidden class="form-control mb-2 js-orders-search" type="text" id="search_order_number" placeholder="بحث عن رقم الفاتورة">
             <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4 mt-3">
                 <div class="row text-center" id="order_table">
                     </div>
@@ -193,7 +193,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label>اسم المورد</label>
-                            <select required class="select2bs4 select2-hidden-accessible" multiple="" name="supplier[]" style="width: 100%;">
+                            <select required class="select2-hidden-accessible" multiple="" name="supplier[]" id="add_order_suppliers" style="width: 100%;">
                                 @foreach ($supplier as $key)
                                     <option value="{{ $key->id }}">{{ $key->name }}</option>
                                 @endforeach
@@ -210,6 +210,23 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-supplier-details" style="z-index: 1060">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">تفاصيل المورد</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="supplier_details_body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">اغلاق</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -330,7 +347,58 @@
             // تهيئة مكتبات التاريخ والـ Select2
             $('.select2').select2();
             $('.select2bs4').select2({ theme: 'bootstrap4' });
+            $('#add_order_suppliers').select2({ theme: 'bootstrap4', templateResult: supplierOptionWithDetailsButton });
             $('#reservationdate').datetimepicker({ format: 'L' });
+        });
+
+        // زر بجانب كل مورد في قائمة "اضافة طلبية شراء" يعرض تفاصيل المورد في popup
+        function supplierOptionWithDetailsButton(supplier) {
+            if (!supplier.id) {
+                return supplier.text;
+            }
+            var button = $('<button type="button" class="btn btn-sm btn-outline-info py-0" title="تفاصيل المورد"><span class="fa fa-eye"></span></button>');
+            // منع select2 من اختيار المورد عند الضغط على الزر
+            button.on('mousedown mouseup', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            button.on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                showSupplierDetails(supplier.id);
+            });
+            return $('<span class="d-flex justify-content-between align-items-center"></span>')
+                .append($('<span></span>').text(supplier.text))
+                .append(button);
+        }
+
+        function showSupplierDetails(supplierId) {
+            $('#add_order_suppliers').select2('close');
+            $('#supplier_details_body').html('<div class="text-center p-5"><i class="fas fa-2x fa-sync-alt fa-spin"></i></div>');
+            $('#modal-supplier-details').modal('show');
+            $.ajax({
+                url: "{{ route('users.supplier.details_modal_ajax', ['id' => ':id']) }}".replace(':id', supplierId),
+                method: 'get',
+                success: function(data) {
+                    $('#supplier_details_body').html(data.view);
+                },
+                error: function() {
+                    $('#supplier_details_body').html('<p class="text-danger text-center">حدث خطأ في جلب البيانات</p>');
+                }
+            });
+        }
+
+        // popup فوق popup: خلفية التفاصيل فوق نافذة اضافة الطلبية
+        $('#modal-supplier-details').on('shown.bs.modal', function() {
+            $('.modal-backdrop').last().css('z-index', 1055);
+        });
+
+        // بعد اغلاق التفاصيل نرجع لنافذة اضافة الطلبية وقائمة الموردين مفتوحة
+        $('#modal-supplier-details').on('hidden.bs.modal', function() {
+            if ($('#modal-default').hasClass('show')) {
+                $('body').addClass('modal-open');
+                $('#add_order_suppliers').select2('open');
+            }
         });
 
         function getReferenceNumber(id) {
@@ -378,7 +446,7 @@
             // عرض أيقونة التحميل
             $('#order_table').html('<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>');
             
-            $.ajax({
+            AjaxSearch.request('orders.order_table', {
                 url: "{{ url('users/procurement_officer/orders/order_table') }}",
                 method: 'post',
                 data: {
@@ -403,6 +471,25 @@
                     hideLoader();
                 }
             });
+        }
+
+        // نسخة من كل الموردين لإعادة بناء القائمة عند تغيير فلتر "مورد معتمد"
+        var allSupplierOptions = $('#supplier_id option').clone();
+
+        function filterSuppliersByType() {
+            var type = $('#supplier_type').val();
+            var supplierSelect = $('#supplier_id');
+            var selected = supplierSelect.val();
+
+            supplierSelect.empty().append(allSupplierOptions.filter(function() {
+                return this.value === '' || !type || $(this).attr('data-type') === type;
+            }).clone());
+
+            // إذا المورد المختار غير موجود في القائمة الجديدة نرجع لـ "جميع الموردين"
+            supplierSelect.val(supplierSelect.find('option[value="' + selected + '"]').length ? selected : '');
+
+            // يحدّث select2 ويستدعي getOrderTable() عبر onchange الخاص بالمورد
+            supplierSelect.trigger('change');
         }
 
         function updateOrderStatus(order_id, order_status_id, background_color, text_color) {
@@ -634,6 +721,10 @@
             $('#new_date').val('');
             $('#AddNewDate').modal('show');
         }
+
+        AjaxSearch.bind('.js-orders-search', function() {
+            getOrderTable();
+        });
 
         var page = 1;
         $(document).on('click', '.pagination a', function(e) {

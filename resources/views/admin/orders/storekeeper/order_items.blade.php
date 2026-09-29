@@ -210,7 +210,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <input type="text" onkeyup="search_table_storekeeper_ajax()" id="search_product"
+                        <input type="text" id="search_product" autocomplete="off"
                             class="form-control" placeholder="البحث عن صنف">
                         <div class="row mt-2">
                             <div class="col-md-12" id="search_product_view">
@@ -303,6 +303,20 @@
             order_items_table_ajax();
         });
 
+        // Tab في حقل الكمية ينزل على كمية الصنف اللي تحته (و Shift+Tab يطلع للي فوقه)
+        $(document).on('keydown', '#order_items_table .qty-input', function(e) {
+            if (e.key !== 'Tab') {
+                return;
+            }
+            var inputs = $('#order_items_table .qty-input');
+            var next = inputs.index(this) + (e.shiftKey ? -1 : 1);
+            // أول/آخر صنف: نخلي Tab يشتغل عادي
+            if (next >= 0 && next < inputs.length) {
+                e.preventDefault();
+                inputs.eq(next).focus().select();
+            }
+        });
+
         function updateQty(qty, order_items_id) {
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
             var headers = {
@@ -331,7 +345,7 @@
             var headers = {
                 "X-CSRF-Token": csrfToken
             };
-            $.ajax({
+            AjaxSearch.request('storekeeper.order_items_table', {
                 url: '{{ route('users.storekeeper.order_items_table_ajax') }}',
                 method: 'post',
                 headers: headers,
@@ -466,7 +480,7 @@
                 "X-CSRF-Token": csrfToken
             };
 
-            $.ajax({
+            AjaxSearch.request('storekeeper.search_product', {
                 url: '{{ route('users.storekeeper.search_table_storekeeper_ajax') }}',
                 method: 'post',
                 headers: headers,
@@ -490,7 +504,8 @@
                 "X-CSRF-Token": csrfToken
             };
 
-            $.ajax({
+            // نفس مكان عرض النتائج تبع search_table_storekeeper_ajax فنفس المفتاح
+            AjaxSearch.request('storekeeper.search_product', {
                 url: '{{ route('procurement_officer.orders.product.search_product_ajax') }}',
                 method: 'post',
                 headers: headers,
@@ -554,6 +569,12 @@
 
             // getOrderTable(page);
             search_table_storekeeper_ajax(page)
+        });
+
+        // بحث جديد يرجع لأول صفحة (page بتستخدم كمان بعد اضافة صنف)
+        AjaxSearch.bind('#search_product', function() {
+            page = 1;
+            search_table_storekeeper_ajax(page);
         });
     </script>
 

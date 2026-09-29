@@ -78,8 +78,8 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="">رقم المرجع</label>
-                        <input onkeyup="getOrderTable()" placeholder="رقم المرجع" id="reference_number" name="reference_number"
-                               class="form-control" type="text">
+                        <input placeholder="رقم المرجع" id="reference_number" name="reference_number"
+                               class="form-control js-orders-search" type="text" autocomplete="off">
                     </div>
                 </div>
                 <div class="col">
@@ -277,11 +277,15 @@
 
         window.addEventListener("load", getOrderTable());
 
+        AjaxSearch.bind('.js-orders-search', function () {
+            getOrderTable();
+        });
+
         function getOrderTable() {
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
             $.ajaxSetup({headers: {'X-CSRF-TOKEN': csrfToken}});
             document.getElementById('order_table').innerHTML = '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
-            $.ajax({
+            AjaxSearch.request('orders.archive_order_table', {
                 url: '{{ route("order_archive.archive_order_table") }}',
                 method: 'post',
                 data: {

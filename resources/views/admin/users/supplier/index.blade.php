@@ -32,7 +32,7 @@
                     <div class="col-sm-12">
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <input type="text" onkeyup="supplier_table()" class="form-control" id="search"
+                                <input type="text" autocomplete="off" class="form-control" id="search"
                                     placeholder="بحث">
                             </div>
                             <div class="col-md-4">
@@ -174,7 +174,7 @@
             var headers = {
                 "X-CSRF-Token": csrfToken
             };
-            $.ajax({
+            AjaxSearch.request('supplier.supplier_table', {
                 url: '{{ route('users.supplier.supplier_table') }}',
                 method: 'post',
                 headers: headers,
@@ -200,6 +200,10 @@
         }
 
         $(document).ready(function() {
+            supplier_table();
+        });
+
+        AjaxSearch.bind('#search', function() {
             supplier_table();
         });
 

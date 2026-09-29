@@ -625,7 +625,7 @@
                                                                     <h5>تعريف أصناف المورد</h5>
                                                                     <hr>
                                                                     <p>يمكن من خلال النموذج التالي تحديد الأصناف التي يعمل بها هذا المورد</p>
-                                                                    <input onkeyup="product_search_ajax()" placeholder="البحث عن صنف" class="form-control" id="search_product" name="search_product" type="text">
+                                                                    <input placeholder="البحث عن صنف" class="form-control" id="search_product" name="search_product" type="text" autocomplete="off">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1001,6 +1001,10 @@
             product_search_ajax(page);
         });
 
+        AjaxSearch.bind('#search_product', function () {
+            product_search_ajax(1);
+        });
+
         function add_contact_person() {
             var contact_person_table = document.getElementById('contact_person_table');
             var count = {{ \App\Models\CompanyContactPersonModel::count() }};
@@ -1102,7 +1106,7 @@
                     "X-CSRF-Token": csrfToken
                 };
                 document.getElementById('product_search').innerHTML = '<div class="text-center"><i class="fas fa-2x fa-sync fa-spin"></i></div>';
-                $.ajax({
+                AjaxSearch.request('supplier.product_search', {
                     url: '{{ route("users.supplier.product_search_ajax") }}',
                     method: 'post',
                     headers: headers,

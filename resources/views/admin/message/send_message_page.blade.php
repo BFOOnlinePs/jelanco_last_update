@@ -40,7 +40,7 @@
                                 @csrf
                                 <div class="row">
                                     <div class="col-3 text-center">
-                                        <input id="search_input" onkeyup="list_users_ajax()" type="text"
+                                        <input id="search_input" type="text" autocomplete="off"
                                             class="form-control" style="font-size: 14px" placeholder="بحث عن مستخدم">
                                         <div style="width:100%" id="list_users_ajax" class="">
                                         </div>
@@ -56,7 +56,7 @@
                                         <div class="row text-center">
                                             <div class="col-md-12">
                                                 <h6 class="">طلبيات الشراء</h6>
-                                                <input onkeyup="orders_table_ajax()" id="order_search"
+                                                <input id="order_search" autocomplete="off"
                                                     class="form-control text-center" type="text"
                                                     placeholder="بحث عن الرقم المرجعي">
                                             </div>
@@ -91,6 +91,16 @@
             list_orders_for_tag();
         })
 
+        AjaxSearch.bind('#search_input', function() {
+            list_users_ajax();
+        });
+        AjaxSearch.bind('#order_search', function() {
+            orders_table_ajax();
+        });
+        AjaxSearch.bind('#order_search_for_tag', function() {
+            list_orders_for_tag();
+        });
+
 
         function saveScrollPosition() {
             var scrollDiv = document.getElementById('list_message');
@@ -121,7 +131,7 @@
             };
             document.getElementById('list_users_ajax').innerHTML =
                 '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
-            $.ajax({
+            AjaxSearch.request('message.list_users', {
                 url: '{{ route('message.list_users_ajax') }}',
                 method: 'post',
                 headers: headers,
@@ -142,7 +152,8 @@
         // Attach scroll event listener to save scroll position
         setInterval(function() {
             var received_id = $('#received_id').val();
-            if (received_id) {
+            // ما نبعث تحديث جديد والسابق لسا ما رجع
+            if (received_id && !AjaxSearch.isPending('message.list_message')) {
                 list_message_ajax(received_id);
             }
         }, 3000);
@@ -163,7 +174,8 @@
             };
             // scrollPosition = scrollDiv.scrollTop;
 
-            $.ajax({
+            // عند اختيار مستخدم ثاني بيلغي طلب رسائل المستخدم السابق
+            AjaxSearch.request('message.list_message', {
                 url: '{{ route('message.list_message_ajax') }}',
                 method: 'post',
                 headers: headers,
@@ -196,7 +208,7 @@
             };
             document.getElementById('order_table').innerHTML =
                 '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
-            $.ajax({
+            AjaxSearch.request('message.orders_table', {
                 url: '{{ route('message.orders_table_ajax') }}',
                 method: 'post',
                 headers: headers,
@@ -224,7 +236,7 @@
             };
             document.getElementById('orders_table_for_tag').innerHTML =
                 '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
-            $.ajax({
+            AjaxSearch.request('message.orders_for_tag', {
                 url: '{{ route('message.list_orders_for_tag') }}',
                 method: 'post',
                 headers: headers,

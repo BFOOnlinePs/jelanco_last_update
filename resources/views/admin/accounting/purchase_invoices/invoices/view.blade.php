@@ -211,7 +211,7 @@
                         </button>
                     </div>
                     <div class="toast-body">
-                        <input type="text" id="search_product" onkeyup="search_product_ajax(this.value)"
+                        <input type="text" id="search_product" autocomplete="off"
                             class="form-control" placeholder="بحث عن عنصر">
                         <div style="width: 300px;display:block" class="mt-2">
                             <div id="search_product_table">
@@ -307,7 +307,7 @@
             var headers = {
                 "X-CSRF-Token": csrfToken
             };
-            $.ajax({
+            AjaxSearch.request('purchase_invoice.search_product', {
                 url: '{{ route('accounting.purchase_invoices.search_product_ajax') }}',
                 method: 'post',
                 headers: headers,
@@ -333,7 +333,7 @@
             };
             document.getElementById('invoices_table').innerHTML =
                 '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
-            $.ajax({
+            AjaxSearch.request('purchase_invoice.invoice_table', {
                 url: '{{ route('accounting.purchase_invoices.invoice_table') }}',
                 method: 'post',
                 headers: headers,
@@ -533,6 +533,12 @@
             page = $(this).attr('href').split('page=')[1];
             search_product_ajax(document.getElementById('search_product').value,page);
             });
+
+        // بحث جديد يرجع لأول صفحة
+        AjaxSearch.bind('#search_product', function (value) {
+            page = 1;
+            search_product_ajax(value, page);
+        });
 
         $(function (){
             $(document).on("keypress", function() {

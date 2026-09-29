@@ -140,8 +140,7 @@ class OrdersController extends Controller
     public function search_table_storekeeper_ajax(Request $request)
     {
         $data = ProductModel::when($request->filled('search_product'), function ($query) use ($request) {
-            $query->where('product_name_ar', 'like', '%'.$request->search_product.'%')
-                ->orWhere('barcode', 'like', '%'.$request->search_product.'%');
+            $query->searchWords($request->search_product);
         })->whereNotIn('id', function ($query) use ($request) {
             $query->select('product_id')->from('order_items')->where('product_id', $request->product_id)->orWhere('order_id', $request->order_id)->get();
         })->paginate(10);

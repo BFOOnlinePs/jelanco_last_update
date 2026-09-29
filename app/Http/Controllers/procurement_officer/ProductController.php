@@ -135,7 +135,7 @@ class ProductController extends Controller
         })
         ->whereNotIn('id',OrderItemsModel::select('product_id')->where('order_id',$order_id)->get())
         ->when(!empty($request->search_product),function($query) use ($request){
-            $query->where('product_name_ar','like','%'.$request->search_product.'%')->orWhere('product_name_en','like','%'.$request->search_product.'%')->orWhere('barcode','like','%'.$request->search_product.'%')->get();
+            $query->searchWords($request->search_product);
         })
             ->paginate(10);
         return response()->json([
@@ -158,9 +158,7 @@ class ProductController extends Controller
 
     public function order_items_table(Request $request){
         $order = OrderModel::where('id',$request->order_id)->first();
-        $data = OrderItemsModel::where('order_id',$request->order_id)->whereIn('product_id',function ($query) use ($request){
-            $query->select('id')->from('product')->where('product_name_ar','like','%'.$request->search_order_table.'%')->orWhere('product_name_en','like','%'.$request->search_order_table.'%')->orWhere('barcode','like','%'.$request->search_order_table.'%')->get();
-        })->paginate(25);
+        $data = OrderItemsModel::where('order_id',$request->order_id)->whereIn('product_id',ProductModel::select('id')->searchWords($request->search_order_table))->paginate(25);
         $order->user = User::where('id',$order->user_id)->first();
         $order->to_user = User::where('id',$order->to_user)->first();
         foreach ($data as $key){

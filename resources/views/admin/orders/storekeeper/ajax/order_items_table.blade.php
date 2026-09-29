@@ -18,12 +18,12 @@
     @else
         @foreach($data as $key)
             <tr id="delete_tr_{{ $loop->index }}">
-                <td>{{ $key->id }}</td>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $key['product']->product_name_ar }}</td>
                 <td>
                     <input @if($order->order_status == 1) readonly
                            @endif onchange="updateQty( this.value  , {{ $key->id }})"
-                           id="qty_{{ $loop->index }}" style="width: 80%" class="form-control"
+                           id="qty_{{ $loop->index }}" style="width: 80%" class="form-control qty-input"
                            type="number" value="{{ $key->qty }}" placeholder="ادخل الكمية">
                 </td>
                 <td>

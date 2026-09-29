@@ -86,13 +86,11 @@
     <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}"></script>
 
     <script>
-        var unitsSearchTimer = null;
-
         function fetchUnits(page) {
             page = page || 1;
             var search = document.getElementById('input_search').value;
 
-            $.ajax({
+            AjaxSearch.request('units.table', {
                 url: '{{ route('units.index') }}',
                 type: 'get',
                 data: {
@@ -129,11 +127,8 @@
             fetchUnits(page);
         });
 
-        $(document).on('keyup', '#input_search', function () {
-            clearTimeout(unitsSearchTimer);
-            unitsSearchTimer = setTimeout(function () {
-                fetchUnits(1);
-            }, 400);
+        AjaxSearch.bind('#input_search', function () {
+            fetchUnits(1);
         });
 
         function updateUnitName(id) {

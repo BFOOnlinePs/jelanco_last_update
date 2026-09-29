@@ -39,13 +39,13 @@ class ProductController extends Controller
     }
 
     public function search_table(Request $request){
-        $data = ProductModel::where('product_name_ar','like',"%{$request->product_search}%")->orWhere('product_name_en','like',"%{$request->product_search}%")->orWhere('barcode','like',"%{$request->product_search}%")->paginate(20);
+        $data = ProductModel::searchWords($request->product_search)->paginate(20);
         foreach ($data as $key){
             $key->category = CategoryProductModel::where('id',$key->category_id)->first();
             $key->unit = UnitsModel::where('id',$key->unit_id)->first();
         }
         if ($request->ajax()) {
-            $data = ProductModel::where('product_name_ar','like',"%{$request->product_search}%")->orWhere('product_name_en','like',"%{$request->product_search}%")->orWhere('barcode','like',"%{$request->product_search}%")->paginate(20);
+            $data = ProductModel::searchWords($request->product_search)->paginate(20);
             foreach ($data as $key){
                 $key->category = CategoryProductModel::where('id',$key->category_id)->first();
                 $key->unit = UnitsModel::where('id',$key->unit_id)->first();
@@ -178,10 +178,7 @@ class ProductController extends Controller
             ->when($request->filled('to_date'), fn ($query) => $query->whereDate('created_at', '<=', $request->to_date))
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
-                $query->whereIn('product_id', ProductModel::select('id')
-                    ->where('product_name_ar', 'like', "%{$search}%")
-                    ->orWhere('product_name_en', 'like', "%{$search}%")
-                    ->orWhere('barcode', 'like', "%{$search}%"));
+                $query->whereIn('product_id', ProductModel::select('id')->searchWords($search));
             })
             ->orderBy('id', 'desc')
             ->paginate(30)

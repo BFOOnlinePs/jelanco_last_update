@@ -64,7 +64,7 @@
             <h3 class="text-center">قائمة طلبات الشراء</h3>
         </div>
         <div class="card-body">
-            <input hidden class="form-control mb-2" type="text" id="search_order_number" onkeyup="getOrderTable()"
+            <input hidden class="form-control mb-2" type="text" id="search_order_number"
                    placeholder="بحث عن رقم الفاتورة">
             <div class="row">
                 <div class="col-md-3">
@@ -195,6 +195,17 @@
         });
 
         window.addEventListener("load", getOrderTable());
+
+        // هون البحث بزر "بحث"، فـ Enter برقم المرجع بيبحث فوراً بدل البحث مع الكتابة
+        $('#reference_number').on('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                getOrderTable();
+            }
+        });
+        AjaxSearch.bind('#search_order_number', function () {
+            getOrderTable();
+        });
         // $(document).ready(function () {
         //     // showLoader();
         //     getOrderTable();
@@ -203,7 +214,7 @@
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
             $.ajaxSetup({headers: {'X-CSRF-TOKEN': csrfToken}});
 
-            $.ajax({
+            AjaxSearch.request('reports.order_table', {
                 url: '{{ url('users/procurement_officer/orders/order_table') }}',
                 method: 'post',
                 data: {

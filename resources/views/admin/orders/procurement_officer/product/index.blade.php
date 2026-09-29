@@ -152,7 +152,7 @@
     @include('admin.orders.order_menu')
     <div class="row">
         <div class="col-md-12">
-            <input type="text" onkeyup="order_items_table()" id="search_order_table" class="form-control" placeholder="البحث عن اسم الصنف او الباركود">
+            <input type="text" id="search_order_table" autocomplete="off" class="form-control" placeholder="البحث عن اسم الصنف او الباركود">
         </div>
     </div>
     <div class="row mt-3">
@@ -220,7 +220,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <input type="text" onkeyup="search_product(this.value)" class="form-control"
+                        <input type="text" id="search_product_input" autocomplete="off" class="form-control"
                             placeholder="البحث عن صنف">
                         <div class="row mt-2">
                             <div class="col-md-12" id="search_product_view">
@@ -479,7 +479,7 @@
                     "X-CSRF-Token": csrfToken
                 };
 
-                $.ajax({
+                AjaxSearch.request('officer.search_product', {
                     url: '{{ route('procurement_officer.orders.product.search_product_ajax') }}',
                     method: 'post',
                     headers: headers,
@@ -538,7 +538,7 @@
                         console.log(data);
                         toastr.success('تمت الاضافة الاسم بنجاح')
                         order_items_table(page);
-                        search_product('',page)
+                        search_product($('#search_product_input').val(), page)
                     },
                     error: function(xhr, status, error) {
                         console.error(xhr.responseText);
@@ -553,7 +553,7 @@
                     "X-CSRF-Token": csrfToken
                 };
                 document.getElementById('order_items_table').innerHTML = '<div class="col text-center p-5"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>';
-                $.ajax({
+                AjaxSearch.request('officer.order_items_table', {
                     url: '{{ route('procurement_officer.orders.product.order_items_table') }}',
                     method: 'post',
                     headers: headers,
@@ -580,8 +580,18 @@
                 e.preventDefault();
                 page = $(this).attr('href').split('page=')[1];
 
-                search_product('', page);
+                search_product($('#search_product_input').val(), page);
                 order_items_table(page);
+            });
+
+            // بحث جديد يرجع لأول صفحة
+            AjaxSearch.bind('#search_order_table', function() {
+                page = 1;
+                order_items_table(page);
+            });
+            AjaxSearch.bind('#search_product_input', function(value) {
+                page = 1;
+                search_product(value, page);
             });
 
             $(document).ready(function () {

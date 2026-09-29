@@ -125,8 +125,8 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="">رقم المرجع</label>
-                        <input onkeyup="orders_list()" placeholder="رقم المرجع" id="reference_number"
-                               name="reference_number" class="form-control" type="text">
+                        <input placeholder="رقم المرجع" id="reference_number"
+                               name="reference_number" class="form-control" type="text" autocomplete="off">
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -241,6 +241,10 @@
             orders_list();
         });
 
+        AjaxSearch.bind('#reference_number', function() {
+            orders_list();
+        });
+
         $(document).on('click', '.pagination a', function(e) {
             e.preventDefault();
             page = $(this).attr('href').split('page=')[1];
@@ -253,7 +257,7 @@
             var headers = {
                 "X-CSRF-Token": csrfToken
             };
-            $.ajax({
+            AjaxSearch.request('evaluation.orders_list', {
                 url: '{{ route('evaluation.orders_list') }}',
                 method: 'post',
                 headers: headers,

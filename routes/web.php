@@ -254,6 +254,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('edit/{id}', [App\Http\Controllers\users\SupplierController::class, 'edit'])->name('users.supplier.edit');
             Route::post('update/{id}', [App\Http\Controllers\users\SupplierController::class, 'update'])->name('users.supplier.update');
             Route::get('details/{id}', [App\Http\Controllers\users\SupplierController::class, 'details'])->name('users.supplier.details');
+            Route::get('details_modal_ajax/{id}', [App\Http\Controllers\users\SupplierController::class, 'details_modal_ajax'])->name('users.supplier.details_modal_ajax');
             Route::post('createProductSupplier', [App\Http\Controllers\users\SupplierController::class, 'createProductSupplier'])->name('users.supplier.createProductSupplier');
             Route::get('delete_product_supplier/{id}', [App\Http\Controllers\users\SupplierController::class, 'delete_product_supplier'])->name('users.supplier.delete_product_supplier');
             Route::post('create_for_supplier', [App\Http\Controllers\UsersFollowUpRecordsController::class, 'create_for_supplier'])->name('users.supplier.create_for_supplier');

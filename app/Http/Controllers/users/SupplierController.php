@@ -157,6 +157,23 @@ class SupplierController extends Controller
         return view('admin.users.supplier.details', ['data' => $data, 'banks' => $banks, 'company_contact_person' => $company_contact_person, 'order_supplier' => $order_supplier, 'product_supplier' => $product_supplier, 'users_follow_up_records' => $users_follow_up_records, 'products' => $products, 'supplier_banks' => $supplier_banks, 'supplier_notes' => $supplier_notes]);
     }
 
+    // تفاصيل المورد داخل popup (مثلاً عند اختيار الموردين في اضافة طلبية شراء)
+    public function details_modal_ajax($id)
+    {
+        $data = User::findOrFail($id);
+        $userCategoryIds = json_decode($data->user_category, true);
+        $user_categories = is_array($userCategoryIds) ? UserCategoryModel::whereIn('id', $userCategoryIds)->pluck('name') : collect();
+        $company_contact_person = CompanyContactPersonModel::where('company_id', $id)->get();
+        $supplier_banks = BankSupplierModel::where('supplier_id', $id)->get();
+        $products = ProductModel::whereIn('id', ProductSupplierModel::select('product_id')->where('user_id', $id))->get();
+        $supplier_notes = SupplierNotesModel::where('supplier_id', $id)->get();
+
+        return response()->json([
+            'success' => 'true',
+            'view' => view('admin.users.supplier.ajax.supplier_details_modal', ['data' => $data, 'user_categories' => $user_categories, 'company_contact_person' => $company_contact_person, 'supplier_banks' => $supplier_banks, 'products' => $products, 'supplier_notes' => $supplier_notes])->render(),
+        ]);
+    }
+
     public function product_list_ajax(Request $request)
     {
         $product_supplier = ProductSupplierModel::where('user_id', $request->user_id)->get();
@@ -175,7 +192,7 @@ class SupplierController extends Controller
     {
         $user = User::where('id', $request->user_id)->first();
         $data = ProductModel::when(! empty($request->search_product), function ($query) use ($request) {
-            $query->where('product_name_ar', 'like', '%'.$request->search_product.'%')->orWhere('product_name_en', 'like', '%'.$request->search_product.'%')->orWhere('barcode', 'like', '%'.$request->search_product.'%');
+            $query->searchWords($request->search_product);
         })->paginate(10);
 
         return response()->json([
