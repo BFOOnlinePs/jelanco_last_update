@@ -1,112 +1,94 @@
-@if(auth()->user()->user_role == 11)
-    <div class="pb-2 row d-flex justify-content-center">
-        <a class="btn btn-app @if(!\App\Models\ShippingPriceOfferModel::where('order_id',$order->id)->get()->isEmpty()) bg-gradient-success @else bg-gradient-info @endif text-white" href="{{ route('procurement_officer.orders.shipping.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-plane">
+@php
+    $jlOrderRoute = fn (string $section) => route('procurement_officer.orders.' . $section . '.index', ['order_id' => $order->id]);
+    $jlIsHere = fn (string $section) => request()->routeIs('procurement_officer.orders.' . $section . '.*');
 
-            </i>
-            شحن
-        </a>
-    </div>
-@else
-    <div class="pb-2 row d-flex justify-content-center">
-        <a class="btn btn-app @if(!\App\Models\OrderItemsModel::where('order_id',$order->id)->get()->isEmpty()) bg-gradient-success @else bg-gradient-info @endif text-white"  href="{{ route('procurement_officer.orders.product.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-list">
+    // مراحل الطلبية بالترتيب، والمرحلة "مكتملة" اذا فيها بيانات
+    $jlSteps = [
+        ['label' => 'الأصناف', 'section' => 'product',
+            'done' => \App\Models\OrderItemsModel::where('order_id', $order->id)->exists()],
+        ['label' => 'عروض الأسعار', 'section' => 'price_offer',
+            'done' => \App\Models\PriceOffersModel::where('order_id', $order->id)->exists()],
+        ['label' => 'الترسية', 'section' => 'anchor',
+            'done' => \App\Models\PriceOffersModel::where('order_id', $order->id)->where('status', 1)->exists()],
+        ['label' => 'الملف المالي', 'section' => 'financial_file',
+            'done' => \App\Models\CashPaymentsModel::where('order_id', $order->id)->exists()
+                || \App\Models\LetterBankModel::where('order_id', $order->id)->exists()],
+        ['label' => 'الشحن', 'section' => 'shipping',
+            'done' => \App\Models\ShippingPriceOfferModel::where('order_id', $order->id)->exists()],
+        ['label' => 'التأمين', 'section' => 'insurance',
+            'done' => \App\Models\OrderInsuranceModel::where('order_id', $order->id)->exists()],
+        ['label' => 'التخليص', 'section' => 'clearance',
+            'done' => \App\Models\OrderClearanceModel::where('order_id', $order->id)->exists()],
+        ['label' => 'التوصيل', 'section' => 'delivery',
+            'done' => \App\Models\OrderLocalDeliveryModel::where('order_id', $order->id)->exists()],
+    ];
 
-            </i>
-            الأصناف
-        </a>
-        <a class="btn btn-app @if(!\App\Models\PriceOffersModel::where('order_id',$order->id)->get()->isEmpty()) bg-gradient-success @else bg-gradient-info @endif text-white" href="{{ route('procurement_officer.orders.price_offer.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-bars">
+    $jlTools = [
+        ['label' => 'المرفقات', 'icon' => 'fa-paperclip', 'section' => 'attachment'],
+        ['label' => 'الملاحظات', 'icon' => 'fa-note-sticky', 'section' => 'notes'],
+        ['label' => 'النماذج', 'icon' => 'fa-file-circle-check', 'section' => 'forms'],
+        ['label' => 'المحادثات', 'icon' => 'fa-comments', 'section' => 'chat_message'],
+    ];
 
-            </i>
-            عروض الأسعار
-        </a>
-        <a class="btn btn-app @if(!\App\Models\PriceOffersModel::where('order_id',$order->id)->where('status',1)->get()->isEmpty()) bg-gradient-success @else bg-gradient-info @endif text-white" href="{{ route('procurement_officer.orders.anchor.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-thumbs-up">
+    // مدير الشحن يرى مرحلة الشحن فقط
+    if (auth()->user()->user_role == 11) {
+        $jlSteps = array_values(array_filter($jlSteps, fn ($step) => $step['section'] === 'shipping'));
+        $jlTools = [];
+    }
+@endphp
 
-            </i>
-            الترسية
-        </a>
-        <a class="btn btn-app @if(!(\App\Models\CashPaymentsModel::where('order_id',$order->id)->get()->isEmpty()) || !(\App\Models\LetterBankModel::where('order_id',$order->id)->get()->isEmpty())) bg-gradient-success @else bg-gradient-info @endif text-white" href="{{ route('procurement_officer.orders.financial_file.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-dollar">
+<nav class="jl-order-nav" aria-label="مراحل الطلبية">
+    <span class="jl-order-nav__label" id="jl-order-steps-label">مراحل الطلبية</span>
+    <ol class="jl-steps" aria-labelledby="jl-order-steps-label">
+        @foreach ($jlSteps as $jlStep)
+            @php
+                $jlCurrent = $jlIsHere($jlStep['section']);
+            @endphp
+            <li>
+                <a href="{{ $jlOrderRoute($jlStep['section']) }}"
+                   class="jl-step {{ $jlStep['done'] ? 'is-done' : '' }} {{ $jlCurrent ? 'is-current' : '' }}"
+                   @if ($jlCurrent) aria-current="page" @endif>
+                    <span class="jl-step__num" aria-hidden="true">
+                        @if ($jlStep['done'])
+                            <i class="fas fa-check"></i>
+                        @else
+                            {{ $loop->iteration }}
+                        @endif
+                    </span>
+                    {{ $jlStep['label'] }}
+                    @if ($jlStep['done'])
+                        <span class="sr-only">(تحتوي على بيانات)</span>
+                    @endif
+                </a>
+            </li>
+        @endforeach
+    </ol>
 
-            </i>
-            الملف المالي
-        </a>
-        <a class="btn btn-app @if(!\App\Models\ShippingPriceOfferModel::where('order_id',$order->id)->get()->isEmpty()) bg-gradient-success @else bg-gradient-info @endif text-white" href="{{ route('procurement_officer.orders.shipping.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-plane">
-
-            </i>
-            شحن
-        </a>
-        <a class="btn btn-app @if(!\App\Models\OrderInsuranceModel::where('order_id',$order->id)->get()->isEmpty()) bg-gradient-success @else bg-gradient-info @endif text-white" href="{{ route('procurement_officer.orders.insurance.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-file-alt">
-
-            </i>
-            تأمين
-        </a>
-        <a class="btn btn-app @if(!\App\Models\OrderClearanceModel::where('order_id',$order->id)->get()->isEmpty()) bg-gradient-success @else bg-gradient-info @endif text-white" href="{{ route('procurement_officer.orders.clearance.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-file-import">
-
-            </i>
-            تخليص
-        </a>
-        <a class="btn btn-app @if(!\App\Models\OrderLocalDeliveryModel::where('order_id',$order->id)->get()->isEmpty()) bg-gradient-success @else bg-gradient-info @endif text-white" href="{{ route('procurement_officer.orders.delivery.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-car">
-
-            </i>
-            توصيل
-        </a>
-        {{--    <a class="btn btn-app bg-gradient-info text-white" href="{{ route('procurement_officer.orders.calender.index',['order_id'=>$order->id]) }}">--}}
-        {{--        <i class="fa fa-calendar">--}}
-
-        {{--        </i>--}}
-        {{--        تقويم--}}
-        {{--    </a>--}}
-        <a class="btn btn-app bg-gradient-info text-white" href="{{ route('procurement_officer.orders.attachment.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-paperclip">
-
-            </i>
-            مرفقات
-        </a>
-        <a class="btn btn-app bg-gradient-info text-white" href="{{ route('procurement_officer.orders.notes.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-note-sticky">
-
-            </i>
-            ملاحظات
-        </a>
-        <a class="btn btn-app bg-gradient-info text-white" href="{{ route('procurement_officer.orders.forms.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-file-circle-check">
-
-            </i>
-            نماذج
-        </a>
-        <a class="btn btn-app bg-gradient-info text-white" href="{{ route('procurement_officer.orders.chat_message.index',['order_id'=>$order->id]) }}">
-            <i class="fa fa-message">
-
-            </i>
-            محادثات
-        </a>
-        <a class="btn btn-app bg-gradient-info text-white" onclick="fetchActivityLogs({{ $order->id }})">
-            <i class="fa fa-history"></i>
-            سجل النشاطات
-        </a>
-        {{--    <a target="_blank" class="btn btn-app bg-gradient-info text-white" href="{{ route('procurement_officer.orders.forms.order_summery',['order_id'=>$order->id]) }}">--}}
-        {{--        <i class="fa fa-file-circle-check">--}}
-
-        {{--        </i>--}}
-        {{--        ملخص الطلبية--}}
-        {{--    </a>--}}
-    </div>
-@endif
+    @if (!empty($jlTools))
+        <div class="jl-order-nav__tools">
+            @foreach ($jlTools as $jlTool)
+                @php
+                    $jlCurrent = $jlIsHere($jlTool['section']);
+                @endphp
+                <a href="{{ $jlOrderRoute($jlTool['section']) }}" class="jl-tool {{ $jlCurrent ? 'is-current' : '' }}"
+                   @if ($jlCurrent) aria-current="page" @endif>
+                    <i class="fas {{ $jlTool['icon'] }}" aria-hidden="true"></i> {{ $jlTool['label'] }}
+                </a>
+            @endforeach
+            <button type="button" class="jl-tool border-0" onclick="fetchActivityLogs({{ $order->id }})">
+                <i class="fas fa-clock-rotate-left" aria-hidden="true"></i> سجل النشاطات
+            </button>
+        </div>
+    @endif
+</nav>
 
     <!-- Activity Log Modal -->
-    <div class="modal fade" id="modal-activity_log">
-        <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="modal-activity_log" tabindex="-1" role="dialog" aria-labelledby="modal-activity_log-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header bg-info">
-                    <h4 class="modal-title text-white">سجل نشاطات الطلبية</h4>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modal-activity_log-title">سجل نشاطات الطلبية</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="إغلاق">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -127,8 +109,8 @@
                         </table>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-dismiss="modal">إغلاق</button>
                 </div>
             </div>
         </div>

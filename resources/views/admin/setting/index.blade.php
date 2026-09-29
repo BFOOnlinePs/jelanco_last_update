@@ -1,126 +1,52 @@
 @extends('home')
 @section('title')
-    الاعدادات
+    الإعدادات
 @endsection
 @section('header_title')
-    الاعدادات
+    الإعدادات
 @endsection
 @section('header_link')
     الرئيسية
 @endsection
 @section('header_title_link')
-    الاعدادات
+    الإعدادات
 @endsection
 @section('content')
-    <div class="row">
-        <div class="col-md-3 col-sm-6 col-12">
-            <a href="{{ route('currency.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="far fa-dollar"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">العملات</span>
-                        {{--                        <span class="info-box-number">None</span> --}}
-                    </div>
+    @php
+        $jlGroups = [
+            'المالية' => [
+                ['العملات', 'العملات وأسعار الصرف', 'fa-coins', 'currency.index'],
+                ['البنوك', 'البنوك المعتمدة للدفع', 'fa-building-columns', 'bank.index'],
+                ['عناصر تقدير التكلفة', 'بنود احتساب تكلفة الطلبية', 'fa-calculator', 'estimation_cost_element.index'],
+            ],
+            'الطلبيات والشحن' => [
+                ['حالة الطلبيات', 'مراحل وحالات الطلبية', 'fa-stamp', 'order_status.index'],
+                ['طرق الشحن', 'بحري، جوي، بري...', 'fa-truck-fast', 'shipping_methods.index'],
+                ['مرفقات التخليص', 'المستندات المطلوبة للتخليص', 'fa-file-lines', 'clearance_attachment.index'],
+                ['معايير التقييم', 'معايير تقييم الطلبيات والموردين', 'fa-star-half-stroke', 'criteria.index'],
+            ],
+            'النظام' => [
+                ['أنواع المهام', 'تصنيف المهام', 'fa-list-check', 'tasks_type.index'],
+                ['مجالات الاختصاص', 'مجالات عمل الموردين', 'fa-tags', 'setting.user_category.index'],
+                ['إعدادات النظام', 'المظهر والإعدادات العامة', 'fa-sliders', 'setting.system_setting.index'],
+            ],
+        ];
+    @endphp
+
+    @foreach ($jlGroups as $jlGroupTitle => $jlTiles)
+        <h2 class="jl-section-title">{{ $jlGroupTitle }}</h2>
+        <div class="row">
+            @foreach ($jlTiles as [$jlTitle, $jlDesc, $jlIcon, $jlRoute])
+                <div class="col-xl-3 col-md-4 col-sm-6">
+                    <a href="{{ route($jlRoute) }}" class="jl-tile">
+                        <span class="jl-tile__icon" aria-hidden="true"><i class="fas {{ $jlIcon }}"></i></span>
+                        <span class="jl-tile__body">
+                            <span class="jl-tile__title">{{ $jlTitle }}</span>
+                            <span class="jl-tile__desc">{{ $jlDesc }}</span>
+                        </span>
+                    </a>
                 </div>
-            </a>
+            @endforeach
         </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <a href="{{ route('bank.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-bank"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">البنوك</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <a href="{{ route('tasks_type.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-tasks"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">أنواع المهام</span>
-                        {{--                        <span class="info-box-number">None</span> --}}
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <a href="{{ route('shipping_methods.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-shipping-fast"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">طرق الشحن</span>
-                        {{--                        <span class="info-box-number">None</span> --}}
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <a href="{{ route('clearance_attachment.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-file"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">مرفقات التخليص</span>
-                        {{--                        <span class="info-box-number">None</span> --}}
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <a href="{{ route('estimation_cost_element.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-list"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">عناصر تقدير التكلفة</span>
-                        {{--                        <span class="info-box-number">None</span> --}}
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <a href="{{ route('order_status.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-stamp"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">حالة الطلبيات</span>
-                        {{--                        <span class="info-box-number">None</span> --}}
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <a href="{{ route('setting.system_setting.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-cog"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">اعدادات النظام</span>
-                        {{--                        <span class="info-box-number">None</span> --}}
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <a href="{{ route('setting.user_category.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-list"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">مجالات الاختصاص</span>
-                        {{--                        <span class="info-box-number">None</span> --}}
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <a href="{{ route('criteria.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-list"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">معايير التقييم</span>
-                        {{--                        <span class="info-box-number">None</span> --}}
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-@endsection()
+    @endforeach
+@endsection

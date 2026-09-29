@@ -7,6 +7,8 @@ use App\Models\BankModel;
 use App\Models\BankSupplierModel;
 use App\Models\CompanyContactPersonModel;
 use App\Models\OrderModel;
+use App\Models\OrderNotesModel;
+use App\Models\PriceOffersModel;
 use App\Models\ProductModel;
 use App\Models\ProductSupplierModel;
 use App\Models\SupplierNotesModel;
@@ -139,6 +141,17 @@ class SupplierController extends Controller
         $product_supplier = ProductSupplierModel::where('user_id', $id)->get();
         $order_supplier = OrderModel::join('price_offers', 'price_offers.order_id', '=', 'orders.id')->where('price_offers.supplier_id', $id)->get();
         $supplier_notes = SupplierNotesModel::where('supplier_id', $id)->get();
+        // ملاحظات الطلبيات اللي المورد مشارك فيها (عن طريق عروض الاسعار)، بدون الطلبيات المحذوفة
+        $order_notes = OrderNotesModel::join('orders', 'orders.id', '=', 'order_notes.order_id')
+            ->leftJoin('users', 'users.id', '=', 'order_notes.user_id')
+            ->whereIn('order_notes.order_id', PriceOffersModel::select('order_id')->where('supplier_id', $id))
+            ->where('orders.delete_status', 0)
+            ->whereNotNull('order_notes.note_text')
+            ->where('order_notes.note_text', '!=', '')
+            ->select('order_notes.*', 'orders.reference_number', 'users.name as user_name')
+            ->orderByDesc('order_notes.insert_date')
+            ->orderByDesc('order_notes.id')
+            ->get();
         foreach ($order_supplier as $key) {
             $key->supplier = User::where('id', $key->supplier_id)->first();
         }
@@ -154,7 +167,7 @@ class SupplierController extends Controller
             $key->bank = BankModel::where('id', $key->bank_id)->first();
         }
 
-        return view('admin.users.supplier.details', ['data' => $data, 'banks' => $banks, 'company_contact_person' => $company_contact_person, 'order_supplier' => $order_supplier, 'product_supplier' => $product_supplier, 'users_follow_up_records' => $users_follow_up_records, 'products' => $products, 'supplier_banks' => $supplier_banks, 'supplier_notes' => $supplier_notes]);
+        return view('admin.users.supplier.details', ['data' => $data, 'banks' => $banks, 'company_contact_person' => $company_contact_person, 'order_supplier' => $order_supplier, 'product_supplier' => $product_supplier, 'users_follow_up_records' => $users_follow_up_records, 'products' => $products, 'supplier_banks' => $supplier_banks, 'supplier_notes' => $supplier_notes, 'order_notes' => $order_notes]);
     }
 
     // تفاصيل المورد داخل popup (مثلاً عند اختيار الموردين في اضافة طلبية شراء)

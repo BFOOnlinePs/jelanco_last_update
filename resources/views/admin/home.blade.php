@@ -3,159 +3,118 @@
     الرئيسية
 @endsection
 @section('header_title')
-    الرئيسية
+    لوحة التحكم
 @endsection
 @section('header_link')
     الرئيسية
 @endsection
 @section('header_title_link')
-    الرئيسية
+    لوحة التحكم
 @endsection
 @section('content')
+    <p class="text-muted mb-3">مرحباً {{ auth()->user()->name }}، هذه نظرة سريعة على آخر المستجدات.</p>
+
     <div class="row">
-        <div class="col-lg-3 col-6">
-
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>{{ $order_count }}</h3>
-                    <p>الطلبيات</p>
-                </div>
-                <div class="icon">
-                    <i class="fa fa-bag-shopping"></i>
-                </div>
-                <a href="{{ route('orders.procurement_officer.order_index') }}" class="small-box-footer">المزيد <i
-                        class="fas fa-arrow-circle-right"></i></a>
-            </div>
+        <div class="col-xl-3 col-sm-6">
+            <a href="{{ route('orders.procurement_officer.order_index') }}" class="jl-stat">
+                <span class="jl-stat__icon" aria-hidden="true"><i class="fas fa-cart-shopping"></i></span>
+                <span class="jl-stat__body">
+                    <span class="jl-stat__value">{{ number_format($order_count) }}</span>
+                    <span class="jl-stat__label">طلبية شراء</span>
+                </span>
+            </a>
         </div>
-
-        <div class="col-lg-3 col-6">
-
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3>{{ $product_count }}</h3>
-                    <p>الاصناف</p>
-                </div>
-                <div class="icon">
-                    <i class="fa fa-list"></i>
-                </div>
-                <a href="{{ route('product.home') }}" class="small-box-footer">المزيد <i
-                        class="fas fa-arrow-circle-right"></i></a>
-            </div>
+        <div class="col-xl-3 col-sm-6">
+            <a href="{{ route('product.home') }}" class="jl-stat">
+                <span class="jl-stat__icon jl-stat__icon--success" aria-hidden="true"><i class="fas fa-boxes-stacked"></i></span>
+                <span class="jl-stat__body">
+                    <span class="jl-stat__value">{{ number_format($product_count) }}</span>
+                    <span class="jl-stat__label">صنف</span>
+                </span>
+            </a>
         </div>
-
-        <div class="col-lg-3 col-6">
-
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3>{{ $supplier_count }}</h3>
-                    <p>الموردين</p>
-                </div>
-                <div class="icon">
-                    <i class="fa fa-user"></i>
-                </div>
-                <a href="{{ route('users.supplier.index') }}" class="small-box-footer">المزيد <i
-                        class="fas fa-arrow-circle-right"></i></a>
-            </div>
+        <div class="col-xl-3 col-sm-6">
+            <a href="{{ route('users.supplier.index') }}" class="jl-stat">
+                <span class="jl-stat__icon jl-stat__icon--warning" aria-hidden="true"><i class="fas fa-truck-field"></i></span>
+                <span class="jl-stat__body">
+                    <span class="jl-stat__value">{{ number_format($supplier_count) }}</span>
+                    <span class="jl-stat__label">مورد</span>
+                </span>
+            </a>
         </div>
-
-        <div class="col-lg-3 col-6">
-
-            <div class="small-box bg-danger">
-                <div class="inner">
-                    <h3>{{ $task_count }}</h3>
-                    <p>مهمة</p>
-                </div>
-                <div class="icon">
-                    <i class="fa fa-tasks"></i>
-                </div>
-                <a href="{{ route('tasks.index') }}" class="small-box-footer">المزيد <i
-                        class="fas fa-arrow-circle-right"></i></a>
-            </div>
+        <div class="col-xl-3 col-sm-6">
+            <a href="{{ route('tasks.index') }}" class="jl-stat">
+                <span class="jl-stat__icon jl-stat__icon--danger" aria-hidden="true"><i class="fas fa-list-check"></i></span>
+                <span class="jl-stat__body">
+                    <span class="jl-stat__value">{{ number_format($task_count) }}</span>
+                    <span class="jl-stat__label">مهمة</span>
+                </span>
+            </a>
         </div>
-
     </div>
+
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="card">
-                <div class="card-header">
-                    <span class="">اخر الطلبيات</span>
-                    <a href="{{ route('orders.procurement_officer.order_index') }}" class="btn btn-dark btn-sm" style="float: left">عرض الطلبيات</a>
+                <div class="card-header jl-card-head">
+                    <h2 class="card-title">آخر الطلبيات</h2>
+                    <a href="{{ route('orders.procurement_officer.order_index') }}" class="btn btn-outline-primary btn-sm">
+                        عرض كل الطلبيات <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    </a>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="table-responsive">
-                            <table id="example1"  class="table table-bordered table-hover text-center dataTable dtr-inline"
-                                   aria-describedby="example1_info">
-                                <thead class="bg-dark">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th scope="col">ر.مرجعي</th>
+                                <th scope="col">الترسية</th>
+                                <th scope="col">بواسطة</th>
+                                <th scope="col">تاريخ الإرسال</th>
+                                @if(auth()->user()->user_role != 3)
+                                    <th scope="col" class="text-center"><span class="sr-only">العمليات</span></th>
+                                @endif
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @forelse($data as $key)
                                 <tr>
-                                    {{--                <th>رقم طلبية الشراء</th>--}}
-                                    <th>ر.مرجعي</th>
-                                    <th width="150">الترسية</th>
-                                    <th>بواسطة</th>
-                                    <th>تاريخ الارسال</th>
-                                    @if(!auth()->user()->user_role == 3)
-                                    <th>العمليات</th>
+                                    <td class="font-weight-bold">{{ $key->reference_number ?: '—' }}</td>
+                                    <td>
+                                        @foreach($key->supplier as $child)
+                                            <span class="jl-chip jl-chip--muted mb-1">{{ optional($child['name'])->name }}</span>
+                                        @endforeach
+                                    </td>
+                                    <td>{{ optional($key['user'])->name }}</td>
+                                    <td class="text-nowrap">{{ $key->created_at }}</td>
+                                    @if(auth()->user()->user_role != 3)
+                                        <td class="text-center">
+                                            <a href="{{ route('procurement_officer.orders.product.index',['order_id'=>$key->order_id]) }}"
+                                               class="btn btn-light btn-sm" title="فتح الطلبية" aria-label="فتح الطلبية {{ $key->reference_number }}">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </a>
+                                        </td>
                                     @endif
-                                    {{--                    <th>العمليات</th>--}}
                                 </tr>
-                                </thead>
-                                <tbody>
-                                @foreach($data as $key)
-                                    <tr class="">
-                                        {{--                    <td>{{ $key->id }}</td>--}}
-                                        {{--                    <td>{{ $key->order_id }}</td>--}}
-                                        <td>{{ $key->reference_number }}
-                                        {{--                            <span onclick="getReferenceNumber({{ $key->order_id }})" class="fa fa-edit text-success" style="float: left" data-toggle="modals" data-target="#modals-reference_number"></span></td>--}}
-                                        <td>
-                                            @foreach($key->supplier as $child)
-                                                {{ $child['name']->name }},
-                                            @endforeach
-                                        </td>
-                                        <td>{{ $key['user']->name }}</td>
-                                        <td>{{ $key->created_at }}</td>
-                                        @if(!auth()->user()->user_role == 3)
-                                        <td>
-                                            <a href="{{ route('procurement_officer.orders.product.index',['order_id'=>$key->order_id]) }}" class="btn btn-dark btn-sm"><span class="fa fa-search"></span></a>
-                                        </td>
-                                        @endif
-                                        {{--                        <td>--}}
-                                        {{--                                                        <a href="{{ route('procurement_officer.orders.product.index',['order_id'=>$key->order_id]) }}"--}}
-                                        {{--                                                           class="btn btn-dark btn-sm"><span class="fa fa-search"></span></a>--}}
-                                        {{--                                                    <button type="button" onclick="getReferenceNumber({{ $key->order_id }})" class="btn btn-success btn-sm" data-toggle="modals" data-target="#modals-reference_number">--}}
-                                        {{--                                                        تعديل الرقم المرجعي--}}
-                                        {{--                                                    </button>--}}
-                                        {{--                                                        <a href="{{ route('orders.procurement_officer.delete_order',['id'=>$key->order_id]) }}" onclick="return confirm('هل انت متاكد من عملية الحذف علما انه بعد الحذف سوف يتم نقله لسلة المحذوفات')" class="btn btn-danger btn-sm"><span class="fa fa-trash"></span></a>--}}
-                                        {{--                        </td>--}}
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="jl-empty"><i class="fas fa-inbox" aria-hidden="true"></i>لا توجد طلبيات بعد</td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
                     </div>
-                    {{--    <div class="col-lg-3 col-6">--}}
-
-                    {{--        <div class="small-box bg-danger">--}}
-                    {{--            <div class="inner">--}}
-                    {{--                <h3>65</h3>--}}
-                    {{--                <p>Unique Visitors</p>--}}
-                    {{--            </div>--}}
-                    {{--            <div class="icon">--}}
-                    {{--                <i class="ion ion-pie-graph"></i>--}}
-                    {{--            </div>--}}
-                    {{--            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>--}}
-                    {{--        </div>--}}
-                    {{--    </div>--}}
-
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="card">
-                <div class="card-header">
-                    <span class="text-center">التقويم</span>
-                    <a href="{{ route('calendar.index') }}" class="btn btn-dark btn-sm" style="float: left">عرض التقويم</a>
+                <div class="card-header jl-card-head">
+                    <h2 class="card-title">التقويم</h2>
+                    <a href="{{ route('calendar.index') }}" class="btn btn-outline-primary btn-sm">
+                        فتح التقويم <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    </a>
                 </div>
-
                 <div class="card-body">
                     <div id="calendar-ajax">
                         <div id="calendar"></div>

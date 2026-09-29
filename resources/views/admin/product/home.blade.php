@@ -20,10 +20,7 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
-    <div class="card">
-        @include('admin.product.home_menu')
-    </div>
-    </div>
+    @include('admin.product.home_menu')
 
 @endsection()
 

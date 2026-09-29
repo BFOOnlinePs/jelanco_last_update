@@ -1,56 +1,29 @@
-<div class="card-body">
-    <div class="row">
-        <div class="col-md-4 col-sm-6 col-12">
-            <a href="{{ route('product.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box">
-                    <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">قائمة الاصناف</span>
-                        <span class="info-box-number">{{ $product_count }}</span>
-                    </div>
-
-                </div>
-            </a>
-
-        </div>
-
-        <div class="col-md-4 col-sm-6 col-12">
-            <a href="{{ route('category.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box">
-                    <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">مجموعات الأصناف</span>
-                        <span class="info-box-number">{{ $category_count }}</span>
-                    </div>
-
-                </div>
-            </a>
-
-
-        </div>
-
-        <div class="col-md-4 col-sm-6 col-12">
-            <a href="{{ route('units.index') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box">
-                    <span class="info-box-icon bg-warning"><i class="far fa-copy"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">الوحدات</span>
-                        <span class="info-box-number">{{ $unit_count }}</span>
-                    </div>
-                </div>
+@php
+    $jlProductTiles = [
+        ['قائمة الأصناف', $product_count ?? null, 'fa-boxes-stacked', 'product.index', ['product.index', 'product.add', 'product.edit', 'product.details']],
+        ['مجموعات الأصناف', $category_count ?? null, 'fa-layer-group', 'category.index', ['category.*']],
+        ['الوحدات', $unit_count ?? null, 'fa-ruler-combined', 'units.index', ['units.*']],
+        ['سجل نشاطات الأصناف', 'كل التعديلات والحذف', 'fa-clock-rotate-left', 'product.activity_logs', ['product.activity_logs']],
+    ];
+@endphp
+<nav class="row" aria-label="أقسام الأصناف">
+    @foreach ($jlProductTiles as [$jlTitle, $jlMeta, $jlIcon, $jlRoute, $jlPatterns])
+        @php
+            $jlCurrent = request()->routeIs(...$jlPatterns);
+        @endphp
+        <div class="col-xl-3 col-sm-6">
+            <a href="{{ route($jlRoute) }}" class="jl-tile {{ $jlCurrent ? 'is-active' : '' }}" @if ($jlCurrent) aria-current="page" @endif>
+                <span class="jl-tile__icon" aria-hidden="true"><i class="fas {{ $jlIcon }}"></i></span>
+                <span class="jl-tile__body">
+                    <span class="jl-tile__title">{{ $jlTitle }}</span>
+                    @if (!is_numeric($jlMeta) && $jlMeta)
+                        <span class="jl-tile__desc">{{ $jlMeta }}</span>
+                    @endif
+                </span>
+                @if (is_numeric($jlMeta))
+                    <span class="jl-tile__meta">{{ number_format($jlMeta) }}</span>
+                @endif
             </a>
         </div>
-
-        <div class="col-md-4 col-sm-6 col-12">
-            <a href="{{ route('product.activity_logs') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box">
-                    <span class="info-box-icon bg-danger"><i class="fa fa-history"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">سجل نشاطات الأصناف</span>
-                        <span class="info-box-number">كل التعديلات والحذف</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-</div>
+    @endforeach
+</nav>

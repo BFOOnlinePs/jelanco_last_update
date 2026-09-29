@@ -1,340 +1,118 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4"
-    style="background-color: {{ !empty(App\Models\SystemSettingModel::first()) ?? App\Models\SystemSettingModel::first()->value('sidebar_color') }}">
-    <!-- Brand Logo -->
-    {{--    <a href="{{ route('home') }}" class="brand-link"> --}}
-    {{--        <img src="{{ asset('assets/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" --}}
-    {{--             style="opacity: .8"> --}}
-    {{--        <span class="brand-text font-weight-light">Jelanco</span> --}}
-    {{--    </a> --}}
+@php
+    $jlRole = (int) auth()->user()->user_role;
 
-    <!-- Sidebar -->
+    // لون القائمة الجانبية من اعدادات النظام (اختياري)
+    $jlSidebarColor = optional(App\Models\SystemSettingModel::first())->sidebar_color;
+    $jlSidebarColor = preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $jlSidebarColor) ? $jlSidebarColor : null;
+
+    $jlItem = fn (string $label, string $icon, string $url, array $patterns = []) => compact('label', 'icon', 'url', 'patterns');
+
+    $jlDashboard = $jlItem('لوحة التحكم', 'fa-gauge-high', route('home'), ['home']);
+    $jlOrders = $jlItem('طلبات الشراء', 'fa-cart-shopping', route('orders.procurement_officer.order_index'), [
+        'orders.procurement_officer.order_index', 'orders.procurement_officer.list_orders_from_storekeeper',
+        'orders.procurement_officer.order_items_index', 'procurement_officer.orders.*', 'order_archive.*', 'trash.*',
+    ]);
+    $jlEvaluation = $jlItem('تقييم الطلبات', 'fa-star-half-stroke', route('evaluation.index'), ['evaluation.*']);
+    $jlSuppliers = $jlItem('الموردين', 'fa-truck-field', route('users.supplier.index'), ['users.supplier.*', 'company_contact_person.*']);
+    $jlMessages = $jlItem('الرسائل', 'fa-comments', route('message.send_message_page'), ['message.*']);
+    $jlCalendar = $jlItem('التقويم', 'fa-calendar-days', route('calendar.index'), ['calendar.*']);
+    $jlNotebook = $jlItem('دفتر ملاحظاتي', 'fa-note-sticky', route('note_book.index'), ['note_book.*']);
+    $jlReports = $jlItem('التقارير', 'fa-chart-column', route('reports.index'), ['reports.*']);
+    $jlSettings = $jlItem('الإعدادات', 'fa-gear', route('setting.index'), [
+        'setting.*', 'currency.*', 'bank.*', 'tasks_type.*', 'shipping_methods.*', 'clearance_attachment.*',
+        'estimation_cost_element.*', 'order_status.*', 'criteria.*',
+    ]);
+    $jlOfficerTasks = $jlItem('المهام', 'fa-list-check', route('procurement_officer.tasks.index'), ['procurement_officer.tasks.*']);
+    $jlProductsHub = $jlItem('الأصناف', 'fa-boxes-stacked', route('product.home'), ['product.*', 'units.*', 'category.*']);
+
+    $jlMenu = match ($jlRole) {
+        // أمين المستودع
+        9 => [
+            null => [$jlDashboard, $jlItem('الملف الشخصي', 'fa-id-card', route('users.storekeeper.personal_account', ['id' => auth()->user()->id]), ['users.storekeeper.personal_account'])],
+            'طلبات الشراء' => [
+                $jlItem('طلبات الشراء بواسطتي', 'fa-cart-plus', route('orders.index'), ['orders.index', 'orders.order_items']),
+                $jlItem('جميع طلبات الشراء', 'fa-clipboard-list', route('users.storekeeper.orders.index'), ['users.storekeeper.orders.*']),
+                $jlEvaluation,
+            ],
+            'التواصل والمتابعة' => [$jlMessages, $jlOfficerTasks],
+        ],
+        // موظف المشتريات
+        2 => [
+            null => [$jlDashboard],
+            'المشتريات' => [
+                $jlOrders,
+                $jlItem('طلباتي', 'fa-user-check', route('orders.procurement_officer.listOrderForOfficerIndex'), ['orders.procurement_officer.listOrderForOfficerIndex']),
+                $jlProductsHub,
+                $jlSuppliers,
+                $jlEvaluation,
+            ],
+            'التواصل والمتابعة' => [$jlMessages, $jlOfficerTasks, $jlCalendar, $jlNotebook],
+            'الإدارة' => [$jlReports, $jlSettings],
+        ],
+        // سكرتيريا
+        3 => [
+            null => [$jlDashboard],
+            'المشتريات' => [$jlOrders, $jlProductsHub, $jlSuppliers],
+            'التواصل والمتابعة' => [$jlCalendar],
+        ],
+        // مدير الشحن
+        11 => [
+            null => [$jlDashboard],
+            'المشتريات' => [$jlOrders],
+        ],
+        // مدير النظام
+        default => [
+            null => [$jlDashboard],
+            'المشتريات' => [
+                $jlOrders,
+                $jlItem('الأصناف', 'fa-boxes-stacked', route('product.index'), ['product.*', 'units.*', 'category.*']),
+                $jlEvaluation,
+            ],
+            'التواصل والمتابعة' => [
+                $jlItem('المهام', 'fa-list-check', route('tasks.index'), ['tasks.*']),
+                $jlCalendar,
+                $jlMessages,
+                $jlNotebook,
+            ],
+            'الإدارة' => [
+                $jlItem('المستخدمين', 'fa-users', route('users.index'), ['users.*', 'company_contact_person.*']),
+                $jlReports,
+                $jlSettings,
+            ],
+        ],
+    };
+@endphp
+<aside class="main-sidebar jl-sidebar sidebar-dark-primary"
+       @if ($jlSidebarColor) style="--jl-sidebar-bg: {{ $jlSidebarColor }}" @endif>
+    <a href="{{ route('home') }}" class="brand-link" aria-label="{{ company_name }} - الرئيسية">
+        <span class="jl-brand__logo"><img src="{{ asset('img/jelanco.png') }}" alt=""></span>
+        <span class="brand-text jl-brand__text">
+            <strong>{{ company_name }}</strong>
+            <small>نظام إدارة المشتريات</small>
+        </span>
+    </a>
+
     <div class="sidebar">
-        <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 text-center">
-            <a href="{{ route('home') }}">
-                <div class="image">
-                    <img src="{{ asset('img/jelanco.png') }}" style="width: 60%" class="img-circle elevation-2"
-                        alt="User Image">
-                </div>
-                <h6 class="text-white mt-2">{{ company_name }}</h6>
-            </a>
-            {{--            <div class="info"> --}}
-            {{--                <a href="#" class="d-block">{{ auth()->user()->name }}</a> --}}
-            {{--            </div> --}}
-        </div>
-
-        <!-- Sidebar Menu -->
-        <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                data-accordion="false">
-                <!-- Add icons to the links using the .nav-icon class
-                     with font-awesome or any other icon font library -->
-                @if (auth()->user()->user_role == 9)
-                    <li class="nav-item has-treeview ">
-                        <a href="{{ route('users.storekeeper.personal_account', ['id' => auth()->user()->id]) }}"
-                            class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                الملف الشخصي
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview ">
-                        <a href="{{ route('orders.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                طلبات الشراء بواسطتي
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview ">
-                        <a href="{{ route('users.storekeeper.orders.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                جميع طلبات الشراء
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview ">
-                        <a href="{{ route('evaluation.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                تقييم طلبات
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview">
-                        <a href="{{ route('message.send_message_page') }}" class="nav-link">
-                            <i class="nav-icon fa fa-message"></i>
-                            <p>
-                                الرسائل
-                            </p>
-                        </a>
-                    </li>
-                    {{-- <li class="nav-item">
-                        <a href="{{ route('calendar.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-th"></i>
-                            <p>
-                                التقويم
-                                                           <span class="right badge badge-danger">New</span>
-                            </p>
-                        </a>
-                    </li> --}}
-                    <li class="nav-item">
-                        <a href="{{ route('procurement_officer.tasks.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-th"></i>
-                            <p>
-                                المهام
-                                {{--                            <span class="right badge badge-danger">New</span> --}}
-                            </p>
-                        </a>
-                    </li>
-                @elseif(auth()->user()->user_role == 2)
-                    <li class="nav-item has-treeview">
-                        <a href="{{ route('orders.procurement_officer.order_index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                طلبات الشراء
-                                {{--                            <i class="right fas fa-angle-left"></i> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview ">
-                        <a href="{{ route('orders.procurement_officer.listOrderForOfficerIndex') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                طلبات الشراء الخاصة بي
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview">
-                        <a href="{{ route('product.home') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                الأصناف
-                                {{--                            <i class="right fas fa-angle-left"></i> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview ">
-                        <a href="{{ route('evaluation.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                تقييم طلبات
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview">
-                        <a href="{{ route('users.supplier.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                الموردين
-                                {{--                            <i class="right fas fa-angle-left"></i> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview">
-                        <a href="{{ route('message.send_message_page') }}" class="nav-link">
-                            <i class="nav-icon fa fa-message"></i>
-                            <p>
-                                الرسائل
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('calendar.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-th"></i>
-                            <p>
-                                التقويم
-                                {{--                            <span class="right badge badge-danger">New</span> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('procurement_officer.tasks.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-th"></i>
-                            <p>
-                                المهام
-                                {{--                            <span class="right badge badge-danger">New</span> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('note_book.index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-note-sticky"></i>
-                            <p>
-                                دفتر ملاحظاتي
-                                {{--                            <span class="right badge badge-danger">New</span> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('reports.index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-file"></i>
-                            <p>
-                                التقارير
-                                {{--                            <span class="right badge badge-danger">New</span> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview">
-                        <a href="{{ route('setting.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                الاعدادات
-                            </p>
-                        </a>
-                    </li>
-
-                @elseif(auth()->user()->user_role == 3)
-                    <li class="nav-item has-treeview menu-open">
-                        <a href="{{ route('orders.procurement_officer.order_index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                طلبات الشراء
-                                {{--                            <i class="right fas fa-angle-left"></i> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview menu-open">
-                        <a href="{{ route('product.home') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                الأصناف
-                                {{--                            <i class="right fas fa-angle-left"></i> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview menu-open">
-                        <a href="{{ route('users.supplier.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                الموردين
-                                {{--                            <i class="right fas fa-angle-left"></i> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('calendar.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-th"></i>
-                            <p>
-                                التقويم
-                                {{--                            <span class="right badge badge-danger">New</span> --}}
-                            </p>
-                        </a>
-                    </li>
-                @elseif(auth()->user()->user_role == 11)
-                    <li class="nav-item has-treeview menu-open">
-                        <a href="{{ route('orders.procurement_officer.order_index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                طلبات الشراء
-                                {{--                            <i class="right fas fa-angle-left"></i> --}}
-                            </p>
-                        </a>
-                    </li>
-                @else
-                    <li class="nav-item has-treeview menu-open">
-                        <a href="{{ route('users.index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-user"></i>
-                            <p>
-                                المستخدمين
-                                {{--                            <i class="right fas fa-angle-left"></i> --}}
-                            </p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item has-treeview ">
-                        <a href="{{ route('product.index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-list"></i>
-                            <p>
-                                الأصناف
-                            </p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="{{ route('orders.procurement_officer.order_index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-th-list"></i>
-                            <p>
-                                طلبات شراء
-                                {{--                            <span class="right badge badge-danger">New</span> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview ">
-                        <a href="{{ route('evaluation.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                تقييم طلبات
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('tasks.index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-tasks"></i>
-                            <p>
-                                المهام
-                                {{--                            <span class="right badge badge-danger">New</span> --}}
-                            </p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="{{ route('calendar.index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-calendar"></i>
-                            <p>
-                                التقويم
-                                {{--                            <span class="right badge badge-danger">New</span> --}}
-                            </p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="{{ route('reports.index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-file"></i>
-                            <p>
-                                التقارير
-                                {{--                            <span class="right badge badge-danger">New</span> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview">
-                        <a href="{{ route('message.send_message_page') }}" class="nav-link">
-                            <i class="nav-icon fa fa-message"></i>
-                            <p>
-                                الرسائل
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('note_book.index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-note-sticky"></i>
-                            <p>
-                                دفتر ملاحظاتي
-                                {{--                            <span class="right badge badge-danger">New</span> --}}
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview">
-                        <a href="{{ route('setting.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                الاعدادات
-                            </p>
-                        </a>
-                    </li>
-                @endif
+        <nav aria-label="القائمة الرئيسية">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" data-accordion="false">
+                @foreach ($jlMenu as $jlSection => $jlItems)
+                    @if ($jlSection)
+                        <li class="nav-header">{{ $jlSection }}</li>
+                    @endif
+                    @foreach ($jlItems as $jlLink)
+                        @php
+                            $jlActive = $jlLink['patterns'] && request()->routeIs(...$jlLink['patterns']);
+                        @endphp
+                        <li class="nav-item">
+                            <a href="{{ $jlLink['url'] }}" class="nav-link {{ $jlActive ? 'active' : '' }}"
+                               @if ($jlActive) aria-current="page" @endif title="{{ $jlLink['label'] }}">
+                                <i class="nav-icon fas {{ $jlLink['icon'] }}" aria-hidden="true"></i>
+                                <p>{{ $jlLink['label'] }}</p>
+                            </a>
+                        </li>
+                    @endforeach
+                @endforeach
             </ul>
         </nav>
-        <!-- /.sidebar-menu -->
-    </div>
-    <!-- /.sidebar -->
-</aside>
-<aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-    <div class="p-3">
-        <h5>Title</h5>
-        <p>Sidebar content</p>
     </div>
 </aside>

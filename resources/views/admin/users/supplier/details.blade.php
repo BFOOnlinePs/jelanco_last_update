@@ -267,6 +267,12 @@
                                    aria-controls="supplier_notes"
                                    aria-selected="@if(session('tab_id') == 9) true @else false @endif">ملاحظات المورد</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white"
+                                   id="supplier_order_notes-tab" data-toggle="pill"
+                                   href="#supplier_order_notes" role="tab"
+                                   aria-controls="supplier_order_notes" aria-selected="false">ملاحظات الطلبيات</a>
+                            </li>
                         </ul>
                         <div class="tab-content" id="custom-content-below-tabContent">
                             <div
@@ -828,6 +834,49 @@
                                                         </tbody>
                                                     </table>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="supplier_order_notes" role="tabpanel"
+                                 aria-labelledby="supplier_order_notes-tab">
+                                <div class="p-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-striped table-bordered">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>الرقم المرجعي للطلبية</th>
+                                                        <th>الملاحظة</th>
+                                                        <th>بواسطة</th>
+                                                        <th>تاريخ الاضافة</th>
+                                                        <th>تاريخ التنبيه</th>
+                                                        <th>العمليات</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @forelse($order_notes as $note)
+                                                        <tr>
+                                                            <td>{{ $note->reference_number ?: '-' }}</td>
+                                                            <td style="white-space: pre-line">{{ $note->note_text }}</td>
+                                                            <td>{{ $note->user_name ?? '-' }}</td>
+                                                            <td>{{ $note->insert_date }}</td>
+                                                            <td>{{ $note->alert_date }}</td>
+                                                            <td>
+                                                                <a href="{{ route('procurement_officer.orders.notes.index',['order_id'=>$note->order_id]) }}"
+                                                                   target="_blank" class="btn btn-dark btn-sm" title="عرض ملاحظات الطلبية"><span
+                                                                        class="fa fa-search"></span></a>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="6" class="text-center">لا توجد ملاحظات على طلبيات هذا المورد</td>
+                                                        </tr>
+                                                    @endforelse
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>

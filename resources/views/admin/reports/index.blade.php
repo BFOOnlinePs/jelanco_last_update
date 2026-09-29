@@ -21,15 +21,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">تقرير مورد</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="إغلاق">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <form target="_blank" action="{{ route('reports.suppliers.supplier_report') }}" method="post">
                     @csrf
-                    <div class="info-box shadow-none">
-                        <span class="info-box-icon"><i class="fa fa-bank"></i></span>
-                        <div class="info-box-content">
+                    <div class="modal-body">
+                        <div>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -57,7 +56,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-dark btn-sm">عرض التقرير</button>
+                            <button class="btn btn-primary"><i class="fas fa-file-lines" aria-hidden="true"></i> عرض التقرير</button>
                             {{--                        <span class="info-box-number">None</span>--}}
                         </div>
                     </div>
@@ -71,15 +70,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">تقرير مورد مفصل</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="إغلاق">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <form target="_blank" action="{{ route('reports.suppliers.details_supplier_report') }}" method="post">
                     @csrf
-                    <div class="info-box shadow-none">
-                        <span class="info-box-icon"><i class="fa fa-bank"></i></span>
-                        <div class="info-box-content">
+                    <div class="modal-body">
+                        <div>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -118,7 +116,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-dark btn-sm">عرض التقرير</button>
+                            <button class="btn btn-primary"><i class="fas fa-file-lines" aria-hidden="true"></i> عرض التقرير</button>
                             {{--                        <span class="info-box-number">None</span>--}}
                         </div>
                     </div>
@@ -132,22 +130,21 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">عرض الصنف حسب الشركة</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="إغلاق">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <form target="_blank" action="{{ route('reports.products.products_to_the_company_report') }}" method="post">
                     @csrf
-                    <div class="info-box shadow-none">
-                        <span class="info-box-icon"><i class="fa fa-bank"></i></span>
-                        <div class="info-box-content">
+                    <div class="modal-body">
+                        <div>
                             <select class="form-control select2bs4" name="user_id" id="">
                                 @foreach($supplier as $key)
                                     <option value="{{ $key->id }}">{{ $key->name }}</option>
                                 @endforeach
                             </select>
                             <br>
-                            <button class="btn btn-dark btn-sm">عرض التقرير</button>
+                            <button class="btn btn-primary"><i class="fas fa-file-lines" aria-hidden="true"></i> عرض التقرير</button>
                             {{--                        <span class="info-box-number">None</span>--}}
                         </div>
                     </div>
@@ -157,90 +154,62 @@
         </div>
     </div>
 
+    <h2 class="jl-section-title">تقارير الموردين</h2>
     <div class="row">
-        <div class="col-md-3 col-sm-6 col-12">
-            <a target="_blank" href="{{ route('reports.suppliers.suppliers_report') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="far fa-dollar"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">قائمة الموردين</span>
-                        {{--                        <span class="info-box-number">None</span>--}}
-                    </div>
-                </div>
+        <div class="col-xl-3 col-md-4 col-sm-6">
+            <a target="_blank" rel="noopener" href="{{ route('reports.suppliers.suppliers_report') }}" class="jl-tile">
+                <span class="jl-tile__icon" aria-hidden="true"><i class="fas fa-address-book"></i></span>
+                <span class="jl-tile__body">
+                    <span class="jl-tile__title">قائمة الموردين</span>
+                    <span class="jl-tile__desc">تفتح في نافذة جديدة</span>
+                </span>
             </a>
         </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            {{--            <a href="{{ route('bank.index') }}" style="text-decoration: none" class="text-dark">--}}
-            <a data-toggle="modal" data-target="#supplier-report-lg" style="text-decoration: none"
-                    class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-user"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">تقرير مورد</span>
-                        {{--                        <span class="info-box-number">None</span>--}}
-                    </div>
-                </div>
-            </a>
-            {{--            </a>--}}
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            {{--            <a href="{{ route('bank.index') }}" style="text-decoration: none" class="text-dark">--}}
-            <a data-toggle="modal" data-target="#details-supplier-report-lg" style="text-decoration: none"
-                    class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-user-check"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">تقرير مورد مفصل</span>
-                    </div>
-                </div>
-            </a>
-            {{--            </a>--}}
-        </div>
-{{--        <div class="col-md-3 col-sm-6 col-12">--}}
-{{--            <a href="{{ route('reports.orders.order_index') }}" style="text-decoration: none" class="text-dark">--}}
-{{--                <div class="info-box shadow-none">--}}
-{{--                    <span class="info-box-icon"><i class="fa fa-tasks"></i></span>--}}
-{{--                    <div class="info-box-content">--}}
-{{--                        <span class="info-box-text text-center pt-3">عرض جميع الطلبات</span>--}}
-{{--                        --}}{{--                        <span class="info-box-number">None</span>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </a>--}}
-{{--        </div>--}}
-        <div hidden class="col-md-3 col-sm-6 col-12">
-            <a href="{{ route('reports.products.products_report') }}" style="text-decoration: none" class="text-dark">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-list"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">الاصناف</span>
-                        {{--                        <span class="info-box-number">None</span>--}}
-                    </div>
-                </div>
+        <div class="col-xl-3 col-md-4 col-sm-6">
+            <a href="#supplier-report-lg" role="button" data-toggle="modal" data-target="#supplier-report-lg" class="jl-tile">
+                <span class="jl-tile__icon" aria-hidden="true"><i class="fas fa-user"></i></span>
+                <span class="jl-tile__body">
+                    <span class="jl-tile__title">تقرير مورد</span>
+                    <span class="jl-tile__desc">اختر المورد والفترة</span>
+                </span>
             </a>
         </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            {{--            <a href="{{ route('estimation_cost_element.index') }}" style="text-decoration: none" class="text-dark">--}}
-            <a data-toggle="modal" data-target="#products-to-the-company-report-lg" style="text-decoration: none">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-building"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">تقرير أصناف الشركة</span>
-                    </div>
-                </div>
+        <div class="col-xl-3 col-md-4 col-sm-6">
+            <a href="#details-supplier-report-lg" role="button" data-toggle="modal" data-target="#details-supplier-report-lg" class="jl-tile">
+                <span class="jl-tile__icon" aria-hidden="true"><i class="fas fa-user-check"></i></span>
+                <span class="jl-tile__body">
+                    <span class="jl-tile__title">تقرير مورد مفصل</span>
+                    <span class="jl-tile__desc">تفاصيل الطلبيات لكل مورد</span>
+                </span>
             </a>
-            {{--            </a>--}}
         </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            {{--            <a href="{{ route('estimation_cost_element.index') }}" style="text-decoration: none" class="text-dark">--}}
-            <a class="text-dark" href="{{ route('reports.financial_report.financial_report_index') }}" style="text-decoration: none">
-                <div class="info-box shadow-none">
-                    <span class="info-box-icon"><i class="fa fa-building"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text text-center pt-3">التقارير المالية</span>
-                    </div>
-                </div>
+    </div>
+
+    <h2 class="jl-section-title">تقارير الأصناف والمالية</h2>
+    <div class="row">
+        <div hidden class="col-xl-3 col-md-4 col-sm-6">
+            <a href="{{ route('reports.products.products_report') }}" class="jl-tile">
+                <span class="jl-tile__icon" aria-hidden="true"><i class="fas fa-list"></i></span>
+                <span class="jl-tile__body"><span class="jl-tile__title">الاصناف</span></span>
             </a>
-            {{--            </a>--}}
+        </div>
+        <div class="col-xl-3 col-md-4 col-sm-6">
+            <a href="#products-to-the-company-report-lg" role="button" data-toggle="modal" data-target="#products-to-the-company-report-lg" class="jl-tile">
+                <span class="jl-tile__icon" aria-hidden="true"><i class="fas fa-boxes-stacked"></i></span>
+                <span class="jl-tile__body">
+                    <span class="jl-tile__title">تقرير أصناف الشركة</span>
+                    <span class="jl-tile__desc">الأصناف الواردة للشركة</span>
+                </span>
+            </a>
+        </div>
+        <div class="col-xl-3 col-md-4 col-sm-6">
+            <a href="{{ route('reports.financial_report.financial_report_index') }}" class="jl-tile">
+                <span class="jl-tile__icon" aria-hidden="true"><i class="fas fa-sack-dollar"></i></span>
+                <span class="jl-tile__body">
+                    <span class="jl-tile__title">التقارير المالية</span>
+                    <span class="jl-tile__desc">الدفعات والاعتمادات البنكية</span>
+                </span>
+            </a>
         </div>
     </div>
 @endsection()
