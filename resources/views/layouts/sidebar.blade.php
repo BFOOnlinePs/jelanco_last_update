@@ -2,7 +2,7 @@
     $jlRole = (int) auth()->user()->user_role;
 
     // لون القائمة الجانبية من اعدادات النظام (اختياري)
-    $jlSidebarColor = optional(App\Models\SystemSettingModel::first())->sidebar_color;
+    $jlSidebarColor = optional(App\Models\SystemSettingModel::current())->sidebar_color;
     $jlSidebarColor = preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $jlSidebarColor) ? $jlSidebarColor : null;
 
     $jlItem = fn (string $label, string $icon, string $url, array $patterns = []) => compact('label', 'icon', 'url', 'patterns');
@@ -85,7 +85,9 @@
 <aside class="main-sidebar jl-sidebar sidebar-dark-primary"
        @if ($jlSidebarColor) style="--jl-sidebar-bg: {{ $jlSidebarColor }}" @endif>
     <a href="{{ route('home') }}" class="brand-link" aria-label="{{ company_name }} - الرئيسية">
-        <span class="jl-brand__logo"><img src="{{ asset('img/jelanco.png') }}" alt=""></span>
+        <span class="jl-brand__logo {{ App\Models\SystemSettingModel::hasCustomLogo() ? 'jl-brand__logo--custom' : '' }}">
+            <img src="{{ App\Models\SystemSettingModel::logoUrl() }}" alt="">
+        </span>
         <span class="brand-text jl-brand__text">
             <strong>{{ company_name }}</strong>
             <small>نظام إدارة المشتريات</small>

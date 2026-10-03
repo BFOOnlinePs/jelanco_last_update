@@ -2,7 +2,7 @@
   <table style="width:100%" class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>صورة الصنف</th>
+            <th class="jl-thumb-cell">صورة الصنف</th>
             <th>اسم الصنف</th>
             <th>اسم الصنف EN</th>
             <th>المجموعة</th>
@@ -15,18 +15,17 @@
     <tbody id="tableBody">
             @foreach ($data as $key)
                 <tr>
-                    <td>
+                    <td class="jl-thumb-cell">
                         @if (empty($key->product_photo))
-                            <img src="{{ asset('img/no_img.jpeg') }}" width="80" alt="">
+                            <span class="jl-thumb jl-thumb--empty" title="لا توجد صورة">
+                                <span class="fa fa-image" aria-hidden="true"></span>
+                            </span>
                         @else
-                            <span class="mytooltip tooltip-effect-1">
-                                <span class="tooltip-item"
-                                    style='width: 65px;height: 50px;background-image: url("{{ asset('storage/product/' . $key->product_photo) }}");background-size: contain;background-repeat: no-repeat;background-position: center'>
-
-                                </span>
-                                <span class="tooltip-content clearfix">
-                                    <img src="{{ asset('storage/product/' . $key->product_photo) }}">
-                                </span>
+                            <span class="jl-thumb" tabindex="0"
+                                data-preview="{{ asset('storage/product/' . $key->product_photo) }}"
+                                data-caption="{{ $key->product_name_ar }}">
+                                <img src="{{ asset('storage/product/' . $key->product_photo) }}"
+                                    alt="{{ $key->product_name_ar }}" loading="lazy">
                             </span>
                         @endif
                     </td>

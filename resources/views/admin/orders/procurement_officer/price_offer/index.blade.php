@@ -79,18 +79,37 @@
             margin-top: 10px
         }
 
+        /* يحجز مكان الصورة داخل الخلية، بينما تبقى mytooltip absolute حتى لا يقص table-responsive الصورة المكبرة */
+        .product-thumb {
+            display: inline-block;
+            width: 64px;
+            height: 64px;
+            vertical-align: middle
+        }
+
         .mytooltip {
-            display: inline;
+            display: block;
             position: absolute;
             z-index: 999
         }
 
+        .mytooltip:hover {
+            z-index: 1000
+        }
+
         .mytooltip .tooltip-item {
-            background: rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            display: inline-block;
-            font-weight: 500;
-            padding: 0 10px
+            display: block;
+            width: 64px;
+            height: 64px;
+            padding: 4px;
+            background-color: #fff;
+            background-origin: content-box;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: zoom-in
         }
 
         .mytooltip .tooltip-content {
@@ -338,15 +357,16 @@
                                                         @foreach ($order_items as $order_item)
                                                             <tr>
                                                                 <td>{{ $loop->index + 1 }}</td>
-                                                                <td>
-                                                                    <span class="mytooltip tooltip-effect-1">
-                                                                        <span class="tooltip-item"
-                                                                            style='width: 65px;height: 50px;background-image: url("{{ asset('storage/product/' . $order_item['product']->product_photo) }}");background-size: contain;background-repeat: no-repeat;background-position: center'>
-
-                                                                        </span>
-                                                                        <span class="tooltip-content clearfix">
-                                                                            <img
-                                                                                src="{{ asset('storage/product/' . $order_item['product']->product_photo) }}">
+                                                                <td class="text-center">
+                                                                    <span class="product-thumb">
+                                                                        <span class="mytooltip tooltip-effect-1">
+                                                                            <span class="tooltip-item"
+                                                                                style='background-image: url("{{ asset('storage/product/' . $order_item['product']->product_photo) }}")'>
+                                                                            </span>
+                                                                            <span class="tooltip-content clearfix">
+                                                                                <img
+                                                                                    src="{{ asset('storage/product/' . $order_item['product']->product_photo) }}">
+                                                                            </span>
                                                                         </span>
                                                                     </span>
                                                                 </td>

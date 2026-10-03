@@ -483,6 +483,15 @@ summary:focus-visible {
     transform: scale(1.35);
 }
 
+/* Logo uploaded from system settings: show it whole, no zoom-crop */
+.jl-brand__logo--custom {
+    padding: 3px;
+}
+
+.jl-brand__logo--custom img {
+    transform: none;
+}
+
 .jl-brand__text {
     display: flex;
     flex-direction: column;
@@ -1221,6 +1230,16 @@ input[type="radio"] {
     margin-right: .25rem;
 }
 
+/* Row actions column: keep the buttons side by side instead of stacking */
+.table td:last-child:has(> .btn),
+.table td:last-child:has(> form .btn) {
+    white-space: nowrap;
+}
+
+.table td:last-child:has(> .btn) > form {
+    display: inline-block;
+}
+
 .table-responsive {
     border-radius: var(--jl-radius);
 }
@@ -1260,6 +1279,106 @@ input[type="radio"] {
     margin: 0 auto .5rem;
     font-size: 1.75rem;
     color: var(--jl-border-strong);
+}
+
+/* Image thumbnail in a table cell; hovering shows a large preview (script in home.blade.php) */
+.jl-thumb-cell {
+    width: 84px;
+    text-align: center;
+}
+
+.jl-thumb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    padding: 3px;
+    vertical-align: middle;
+    background: var(--jl-surface);
+    border: 1px solid var(--jl-border);
+    border-radius: var(--jl-radius);
+    box-shadow: var(--jl-shadow-sm);
+    overflow: hidden;
+    cursor: zoom-in;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+.jl-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: calc(var(--jl-radius) - 3px);
+}
+
+.jl-thumb:hover,
+.jl-thumb:focus-visible {
+    border-color: var(--jl-primary-200);
+    box-shadow: var(--jl-focus);
+    transform: translateY(-1px);
+    outline: 0;
+}
+
+.jl-thumb--empty {
+    background: var(--jl-surface-2);
+    border-style: dashed;
+    box-shadow: none;
+    color: var(--jl-border-strong);
+    font-size: 1.25rem;
+    cursor: default;
+}
+
+.jl-thumb--empty:hover {
+    border-color: var(--jl-border-strong);
+    box-shadow: none;
+    transform: none;
+}
+
+.jl-thumb-preview {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1080;
+    width: 300px;
+    margin: 0;
+    padding: 8px;
+    background: var(--jl-surface);
+    border: 1px solid var(--jl-border);
+    border-radius: var(--jl-radius-lg);
+    box-shadow: var(--jl-shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(.94);
+    pointer-events: none;
+    transition: opacity .16s ease, transform .16s ease, visibility 0s linear .16s;
+}
+
+.jl-thumb-preview.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    transition-delay: 0s;
+}
+
+.jl-thumb-preview img {
+    display: block;
+    width: 100%;
+    height: 284px;
+    object-fit: contain;
+    background: var(--jl-surface-2);
+    border-radius: var(--jl-radius);
+}
+
+.jl-thumb-preview figcaption {
+    padding: 8px 4px 2px;
+    color: var(--jl-text);
+    font-size: .85rem;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ============================================================

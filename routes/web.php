@@ -486,6 +486,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::group(['prefix' => 'system_setting'], function () {
             Route::get('index', [App\Http\Controllers\SystemSettingController::class, 'index'])->name('setting.system_setting.index');
             Route::post('create', [App\Http\Controllers\SystemSettingController::class, 'create'])->name('setting.system_setting.create');
+            Route::post('update_logo', [App\Http\Controllers\SystemSettingController::class, 'update_logo'])->name('setting.system_setting.update_logo');
         });
         Route::group(['prefix' => 'user_category'], function () {
             Route::get('index', [App\Http\Controllers\UserCategoryController::class, 'index'])->name('setting.user_category.index');

@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#0f1b3d">
 
     <title>{{ trim($__env->yieldContent('title')) ?: 'الرئيسية' }} | {{ company_name }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('img/jelanco.png') }}">
+    <link rel="icon" href="{{ App\Models\SystemSettingModel::logoUrl() }}">
 
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.css') }}">
@@ -92,6 +92,62 @@
 </script>
 
 @yield('script')
+
+<script>
+    // معاينة مكبرة لصور الأصناف عند المرور على .jl-thumb[data-preview]
+    // المعاينة fixed على مستوى الصفحة حتى لا يقصها table-responsive أو المودال
+    (function ($) {
+        var $preview = null;
+
+        function getPreview() {
+            if (!$preview) {
+                $preview = $('<figure class="jl-thumb-preview" aria-hidden="true"><img alt=""><figcaption></figcaption></figure>')
+                    .appendTo('body');
+            }
+            return $preview;
+        }
+
+        // تظهر على يسار الصورة المصغرة، وتنقلب لليمين إذا لم يكن هناك مكان، وتبقى داخل الشاشة دائماً
+        function place(thumb) {
+            var rect = thumb.getBoundingClientRect();
+            var el = getPreview()[0];
+            var gap = 14, pad = 8;
+            var w = el.offsetWidth, h = el.offsetHeight;
+
+            var left = rect.left - gap - w;
+            if (left < pad) {
+                left = rect.right + gap;
+            }
+            left = Math.min(Math.max(pad, left), window.innerWidth - pad - w);
+
+            var top = rect.top + rect.height / 2 - h / 2;
+            top = Math.min(Math.max(pad, top), window.innerHeight - pad - h);
+
+            el.style.left = left + 'px';
+            el.style.top = top + 'px';
+        }
+
+        function hide() {
+            if ($preview) {
+                $preview.removeClass('is-visible');
+            }
+        }
+
+        $(document)
+            .on('mouseenter focusin', '.jl-thumb[data-preview]', function () {
+                var $p = getPreview();
+                var caption = $(this).data('caption') || '';
+                $p.find('img').attr('src', $(this).data('preview'));
+                $p.find('figcaption').text(caption).toggle(caption !== '');
+                place(this);
+                $p.addClass('is-visible');
+            })
+            .on('mouseleave focusout', '.jl-thumb[data-preview]', hide);
+
+        window.addEventListener('scroll', hide, true);
+        $(window).on('resize', hide);
+    })(jQuery);
+</script>
 
 <script>
     // بحث select2 بالكلمات: كل كلمة لازم تكون موجودة بأي مكان بالنص وبأي ترتيب
