@@ -16,18 +16,7 @@
             @foreach ($data as $key)
                 <tr>
                     <td class="jl-thumb-cell">
-                        @if (empty($key->product_photo))
-                            <span class="jl-thumb jl-thumb--empty" title="لا توجد صورة">
-                                <span class="fa fa-image" aria-hidden="true"></span>
-                            </span>
-                        @else
-                            <span class="jl-thumb" tabindex="0"
-                                data-preview="{{ asset('storage/product/' . $key->product_photo) }}"
-                                data-caption="{{ $key->product_name_ar }}">
-                                <img src="{{ asset('storage/product/' . $key->product_photo) }}"
-                                    alt="{{ $key->product_name_ar }}" loading="lazy">
-                            </span>
-                        @endif
+                        <x-product-thumb :photo="$key->product_photo" :name="$key->product_name_ar" />
                     </td>
                     <td>
                         <input onchange="edit_product_ajax({{ $key->id }})"

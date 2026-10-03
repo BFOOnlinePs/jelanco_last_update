@@ -8,24 +8,23 @@
             <th>خصم</th>
             <th>بونص</th>
             <th>المجموع</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         @if($data->isEmpty())
             <tr>
-                <td class="text-center" colspan="6">لا توجد بيانات</td>
+                <td class="text-center" colspan="7">لا توجد بيانات</td>
             </tr>
         @else
         @foreach ($data as $key)
         <tr id="item_row_{{ $key->id }}">
             <td>
-                @if(!empty($key['product']->product_photo))
-                    <img width="50" src="{{ asset('storage/product/'.$key["product"]->product_photo??'') }}" alt="">
-                @else
-                    <img width="50" src="{{ asset('img/no_img.jpeg') }}" alt="">
-                @endif
+                <div class="jl-thumb-name">
+                    <x-product-thumb size="sm" :photo="$key['product']->product_photo ?? null" :name="$key['product']->product_name_ar ?? ''" />
+                    <span>{{ $key['product']->product_name_ar??'' }}</span>
+                </div>
             </td>
-            <td>{{ $key['product']->product_name_ar??'' }}</td>
             <td>
                 <input class="input" id="qty_input_{{ $key->id }}" onchange="edit_inputs_from_invoice({{ $key->id }},this.value,'qty')" type="text" value="{{ $key->quantity ?? '' }}">
             </td>

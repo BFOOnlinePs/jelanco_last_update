@@ -748,6 +748,11 @@ summary:focus-visible {
     gap: .5rem 1rem;
 }
 
+/* AdminLTE's clearfix would become an extra flex item */
+.jl-card-head::after {
+    content: none;
+}
+
 .jl-card-head > h1, .jl-card-head > h2, .jl-card-head > h3,
 .jl-card-head > h4, .jl-card-head > h5 {
     margin: 0;
@@ -794,6 +799,13 @@ summary:focus-visible {
 .btn-block {
     display: flex;
     width: 100%;
+}
+
+/* Legacy markup that puts the icon classes on the button itself (<span class="fa fa-upload btn">):
+   .btn's font-weight would pick the icon font's regular face, which lacks most icons */
+.btn.fa,
+.btn.fas {
+    font-weight: 900;
 }
 
 .btn:focus,
@@ -1320,6 +1332,17 @@ input[type="radio"] {
     outline: 0;
 }
 
+.jl-thumb--sm {
+    width: 40px;
+    height: 40px;
+    padding: 2px;
+    border-radius: var(--jl-radius-sm);
+}
+
+.jl-thumb__fallback {
+    display: none;
+}
+
 .jl-thumb--empty {
     background: var(--jl-surface-2);
     border-style: dashed;
@@ -1329,10 +1352,39 @@ input[type="radio"] {
     cursor: default;
 }
 
+.jl-thumb--sm.jl-thumb--empty {
+    font-size: 1rem;
+}
+
+.jl-thumb--empty .jl-thumb__fallback {
+    display: inline-block;
+}
+
 .jl-thumb--empty:hover {
     border-color: var(--jl-border-strong);
     box-shadow: none;
     transform: none;
+}
+
+/* Thumbnail that opens a modal (e.g. edit product) */
+.jl-thumb[data-toggle="modal"] {
+    cursor: pointer;
+}
+
+.jl-thumb--empty[data-toggle="modal"]:hover {
+    border-color: var(--jl-primary-200);
+    color: var(--jl-primary);
+}
+
+/* Thumbnail followed by text in the same cell */
+.jl-thumb-name {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+}
+
+.jl-thumb-name > .jl-thumb {
+    flex-shrink: 0;
 }
 
 .jl-thumb-preview {

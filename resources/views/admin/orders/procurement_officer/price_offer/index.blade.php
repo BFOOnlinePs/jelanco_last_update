@@ -79,116 +79,6 @@
             margin-top: 10px
         }
 
-        /* يحجز مكان الصورة داخل الخلية، بينما تبقى mytooltip absolute حتى لا يقص table-responsive الصورة المكبرة */
-        .product-thumb {
-            display: inline-block;
-            width: 64px;
-            height: 64px;
-            vertical-align: middle
-        }
-
-        .mytooltip {
-            display: block;
-            position: absolute;
-            z-index: 999
-        }
-
-        .mytooltip:hover {
-            z-index: 1000
-        }
-
-        .mytooltip .tooltip-item {
-            display: block;
-            width: 64px;
-            height: 64px;
-            padding: 4px;
-            background-color: #fff;
-            background-origin: content-box;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            cursor: zoom-in
-        }
-
-        .mytooltip .tooltip-content {
-            position: absolute;
-            z-index: 9999;
-            width: 500px;
-            right: 40px;
-            /*left: 50%;*/
-            margin: 0 0 -40px -180px;
-            bottom: 100%;
-            text-align: left;
-            font-size: 14px;
-            line-height: 30px;
-            -webkit-box-shadow: -5px -5px 15px rgba(48, 54, 61, 0.2);
-            box-shadow: -5px -5px 15px rgba(48, 54, 61, 0.2);
-            background: #2b2b2b;
-            opacity: 0;
-            cursor: default;
-            pointer-events: none
-        }
-
-        .mytooltip .tooltip-content::after {
-            content: '';
-            top: 100%;
-            right: 0px;
-            border: solid transparent;
-            height: 0;
-            width: 0;
-            position: absolute;
-            pointer-events: none;
-            border-color: #2a3035 transparent transparent;
-            border-width: 10px;
-            margin-left: -10px
-        }
-
-        .mytooltip .tooltip-content img {
-            position: relative;
-            width: 100%;
-            display: block;
-            float: left;
-            margin-right: 1em
-        }
-
-        .mytooltip .tooltip-item::after {
-            content: '';
-            position: absolute;
-            width: 360px;
-            height: 20px;
-            bottom: 100%;
-            left: 50%;
-            pointer-events: none;
-            -webkit-transform: translateX(-50%);
-            transform: translateX(-50%)
-        }
-
-        .mytooltip:hover .tooltip-item::after {
-            pointer-events: auto
-        }
-
-        .mytooltip:hover .tooltip-content {
-            pointer-events: auto;
-            opacity: 1;
-            -webkit-transform: translate3d(0, 0, 0) rotate3d(0, 0, 0, 0deg);
-            transform: translate3d(0, 0, 0) rotate3d(0, 0, 0, 0deg)
-        }
-
-        .mytooltip:hover .tooltip-content2 {
-            opacity: 1;
-            font-size: 18px
-        }
-
-        .mytooltip .tooltip-text {
-            font-size: 14px;
-            line-height: 24px;
-            display: block;
-            padding: 1.31em 1.21em 1.21em 0;
-            color: #fff
-        }
-
         /*.popup {*/
         /*    position: relative;*/
         /*    display: inline-block;*/
@@ -337,7 +227,7 @@
                                                 <thead>
                                                     <tr class="text-center">
                                                         <th>الرقم</th>
-                                                        <th>الصورة</th>
+                                                        <th class="jl-thumb-cell">الصورة</th>
                                                         <th>اسم الصنف</th>
                                                         <th>الكمية</th>
                                                         <th>الوحدة</th>
@@ -357,18 +247,8 @@
                                                         @foreach ($order_items as $order_item)
                                                             <tr>
                                                                 <td>{{ $loop->index + 1 }}</td>
-                                                                <td class="text-center">
-                                                                    <span class="product-thumb">
-                                                                        <span class="mytooltip tooltip-effect-1">
-                                                                            <span class="tooltip-item"
-                                                                                style='background-image: url("{{ asset('storage/product/' . $order_item['product']->product_photo) }}")'>
-                                                                            </span>
-                                                                            <span class="tooltip-content clearfix">
-                                                                                <img
-                                                                                    src="{{ asset('storage/product/' . $order_item['product']->product_photo) }}">
-                                                                            </span>
-                                                                        </span>
-                                                                    </span>
+                                                                <td class="jl-thumb-cell">
+                                                                    <x-product-thumb :photo="$order_item['product']->product_photo" :name="$order_item['product']->product_name_ar" />
                                                                 </td>
                                                                 <td>{{ $order_item['product']->product_name_ar }}</td>
                                                                 <td>{{ $order_item->qty }}</td>

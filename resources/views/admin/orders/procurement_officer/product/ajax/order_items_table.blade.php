@@ -3,7 +3,7 @@
         <thead>
             <tr>
                 <th>الرقم</th>
-                <th>الصورة</th>
+                <th class="jl-thumb-cell">الصورة</th>
                 <th>اسم الصنف</th>
                 <th>اسم الصنف انجليزي</th>
                 <th>الكمية</th>
@@ -23,20 +23,10 @@
                 @foreach ($data as $key)
                     <tr id="delete_tr_{{ $loop->index }}">
                         <td>{{ ($data ->currentpage()-1) * $data ->perpage() + $loop->index + 1 }}</td>
-                        <td>
-                            @if (!empty($key['product']->product_photo))
-                            <span class="mytooltip tooltip-effect-1">
-                                <span data-toggle="modal" data-target="#edit_product_modal" onclick="get_data_from_product({{ $key }})" class="tooltip-item"
-                                    style='width: 65px;height: 50px;background-image: url("{{ asset('storage/product/' . $key['product']->product_photo) }}");background-size: contain;background-repeat: no-repeat;background-position: center'>
-                                </span>
-                                <span class="tooltip-content clearfix">
-                                    <img src="{{ asset('storage/product/' . $key['product']->product_photo) }}">
-                                </span>
-                            </span>
-                            @else
-                            <img data-toggle="modal" data-target="#edit_product_modal" onclick="get_data_from_product({{ $key }})" style="width:50px"
-                            src="{{ asset('img/no_img.jpeg') }}">
-                            @endif
+                        <td class="jl-thumb-cell">
+                            <x-product-thumb :photo="$key['product']->product_photo" :name="$key['product']->product_name_ar"
+                                data-toggle="modal" data-target="#edit_product_modal"
+                                onclick="get_data_from_product({{ $key }})" />
                         </td>
                         <td>
                             <span>{{ $key['product']->product_name_ar }}</span>

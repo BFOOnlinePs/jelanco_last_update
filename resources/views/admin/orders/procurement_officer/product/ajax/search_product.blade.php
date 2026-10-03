@@ -17,12 +17,10 @@
                                value="{{ $key->id }}">
                     </td>
                     <td>
-                        @if (!empty($key->product_photo))
-                        <img style="width: 30px" src="{{ asset('storage/product/'.$key->product_photo) }}" alt="">
-                        @else
-                        <img style="width: 30px" src="{{ asset('img/no_img.jpeg') }}" alt="">
-                        @endif
-                        {{ $key->barcode }} <span class=" alert-warning">|</span> {{ $key->product_name_ar }} <span class=" alert-warning">|</span> {{ $key->product_name_en }}
+                        <div class="jl-thumb-name">
+                            <x-product-thumb size="sm" :photo="$key->product_photo" :name="$key->product_name_ar" />
+                            <span>{{ $key->barcode }} <span class=" alert-warning">|</span> {{ $key->product_name_ar }} <span class=" alert-warning">|</span> {{ $key->product_name_en }}</span>
+                        </div>
                     </td>
                 </tr>
             @endforeach
