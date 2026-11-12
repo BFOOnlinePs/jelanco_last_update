@@ -108,48 +108,113 @@ class AnchorController extends Controller
         }
     }
 
-    public function anchor_table_pdf($order_id,$price_offer)
+    
+    public function anchor_table_pdf($order_id, $price_offer)
     {
-        $order = OrderModel::where('id', $order_id)->first();
-        $anchor = PriceOffersModel::where('status', 1)->where('order_id', $order_id)->get();
+        // جلب الطلبية
+        $order = OrderModel::findOrFail($order_id);
+
+        // جلب عروض الأسعار المعتمدة
+        $anchor = PriceOffersModel::where('status', 1)
+            ->where('order_id', $order_id)
+            ->get();
+
+        // جلب عروض الأسعار غير المعتمدة
+        $offer_price_anchor = PriceOffersModel::where('order_id', $order_id)
+            ->where('status', 0)
+            ->get();
+
+        // جلب جميع العروض
+        $query = PriceOffersModel::where('order_id', $order_id)
+            ->get();
+
+        // جلب جميع معرفات المستخدمين والموردين والعملات
+        $userIds = $anchor->pluck('user_id')
+            ->merge($anchor->pluck('supplier_id'))
+            ->merge($offer_price_anchor->pluck('user_id'))
+            ->merge($offer_price_anchor->pluck('supplier_id'))
+            ->merge($query->pluck('supplier_id'))
+            ->filter()
+            ->unique();
+
+        $users = User::whereIn('id', $userIds)->get()->keyBy('id');
+
+        $currencyIds = $anchor->pluck('currency_id')
+            ->filter()
+            ->unique();
+
+        $currencies = CurrencyModel::whereIn('id', $currencyIds)
+            ->get()
+            ->keyBy('id');
+
+        // تجهيز بيانات عروض الأسعار المعتمدة
         foreach ($anchor as $key) {
-            $key->user = User::where('id', $key->user_id)->first();
-            $key->supplier = User::where('id', $key->supplier_id)->first();
-            $key->currency = CurrencyModel::where('id',$key->currency_id)->first();
+            $key->user = $users->get($key->user_id);
+            $key->supplier = $users->get($key->supplier_id);
+            $key->currency = $currencies->get($key->currency_id);
         }
-        $offer_price_anchor = PriceOffersModel::where('order_id', $order_id)->where('status', 0)->get();
+
+        // تجهيز بيانات عروض الأسعار غير المعتمدة
         foreach ($offer_price_anchor as $key) {
-            $key->user = User::where('id', $key->user_id)->first();
-            $key->supplier = User::where('id', $key->supplier_id)->first();
+            $key->user = $users->get($key->user_id);
+            $key->supplier = $users->get($key->supplier_id);
         }
 
-        $order_items = OrderItemsModel::where('order_id', $order_id)->get();
-        foreach ($order_items as $order_item) {
-            $order_item->product = ProductModel::where('id', $order_item->product_id)->first();
-            $order_item->unit = UnitsModel::where('id', $order_item->unit_id)->first();
-//            $order_item->offer_price_items = PriceOfferItemsModel::where('order_id',$order_item->order_id)->where('product_id',$order_item->product_id)->where('supplier_id',$key->supplier_id)->first();
-        }
-        $query = PriceOffersModel::where('order_id', $order_id)->get();
+        // تجهيز بيانات الموردين في العروض
         foreach ($query as $key) {
-            $key->user_name = User::where('id', $key->supplier_id)->get();
+            $supplier = $users->get($key->supplier_id);
+
+            $key->user_name = $supplier
+                ? collect([$supplier])
+                : collect();
         }
 
-        $pdf = PDF::loadView('admin.orders.procurement_officer.anchor.pdf.anchor_table', ['anchor' => $anchor, 'order' => $order, 'offer_price_anchor' => $offer_price_anchor, 'order_items' => $order_items, 'query' => $query,'price_offer'=>$price_offer]);
-        return $pdf->stream('anchor.pdf');
+        // جلب تفاصيل المنتجات
+        $order_items = OrderItemsModel::where('order_id', $order_id)->get();
 
-//        $offer_price_anchor = PriceOffersModel::where('id', $id)->first();
-//        $order = OrderModel::where('id', $offer_price_anchor->order_id)->first();
-//        $offer_price_anchor->user = User::where('id', $offer_price_anchor->user_id)->first();
-//        $offer_price_anchor->supplier = User::where('id', $offer_price_anchor->supplier_id)->first();
-//
-//        $price_offer_items = OrderItemsModel::where('order_id',$offer_price_anchor->order_id)->get();
-//        foreach ($price_offer_items as $key){
-//            $key->product = ProductModel::where('id',$key->product_id)->first();
-//            $key->unit = UnitsModel::where('id',$key->unit_id)->first();
-//        }
-//        $pdf = PDF::loadView('admin.orders.procurement_officer.anchor.pdf.anchor_table', ['anchor' => $offer_price_anchor, 'offer_price_anchor' => $offer_price_anchor, 'order' => $order, 'price_offer_items' => $price_offer_items]);
-//        return $pdf->stream('anchor.pdf');
+        // جلب معرفات المنتجات والوحدات
+        $productIds = $order_items->pluck('product_id')->filter()->unique();
+        $unitIds = $order_items->pluck('unit_id')->filter()->unique();
+
+        // جلب جميع المنتجات مرة واحدة
+        $products = ProductModel::whereIn('id', $productIds)
+            ->get()
+            ->keyBy('id');
+
+        // جلب جميع الوحدات مرة واحدة
+        $units = UnitsModel::whereIn('id', $unitIds)
+            ->get()
+            ->keyBy('id');
+
+        foreach ($order_items as $item) {
+            $item->product = $products->get($item->product_id);
+            $item->unit = $units->get($item->unit_id);
+        }
+
+        // جلب جميع أسعار المنتجات للموردين مرة واحدة
+        $priceItems = PriceOfferItemsModel::where('order_id', $order_id)
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->supplier_id . '_' . $item->product_id;
+            });
+
+        // إنشاء PDF
+        $pdf = PDF::loadView(
+            'admin.orders.procurement_officer.anchor.pdf.anchor_table',
+            [
+                'anchor' => $anchor,
+                'order' => $order,
+                'offer_price_anchor' => $offer_price_anchor,
+                'order_items' => $order_items,
+                'query' => $query,
+                'price_offer' => $price_offer,
+                'priceItems' => $priceItems
+            ]
+        );
+
+        return $pdf->stream('anchor.pdf');
     }
+
 
     public function compare_price_offers($order_id){
         $order = OrderModel::where('id', $order_id)->first();
