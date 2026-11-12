@@ -126,10 +126,12 @@ class ProductController extends Controller
     //     return $pdf->stream('products.pdf');
     // }
 
+    
     public function product_list_arabic_pdf($order_id)
     {
         $order = OrderModel::findOrFail($order_id);
 
+        // تحميل المنتجات والوحدات باستعلامات محدودة
         $data = OrderItemsModel::where('order_id', $order_id)
             ->with(['product', 'unit'])
             ->get();
@@ -139,6 +141,7 @@ class ProductController extends Controller
             compact('data', 'order')
         );
 
+        // تحسين استهلاك الذاكرة في الجداول
         $pdf->getMpdf()->simpleTables = true;
         $pdf->getMpdf()->packTableData = true;
 
@@ -150,6 +153,7 @@ class ProductController extends Controller
 
         return $pdf->stream('products.pdf');
     }
+
 
 
     public function search_product_ajax(Request $request){
