@@ -1701,6 +1701,74 @@ input[type="radio"] {
     background: var(--jl-surface-2);
 }
 
+/* Automatic table pager (layouts/table_pagination.blade.php) */
+tr.jl-pager-hidden {
+    display: none !important;
+}
+
+.jl-pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem 1rem;
+    padding: .75rem .25rem 0;
+}
+
+.jl-pager__info {
+    color: var(--jl-muted);
+    font-size: .85rem;
+}
+
+.jl-pager__info b {
+    color: var(--jl-text);
+    font-variant-numeric: tabular-nums;
+}
+
+.jl-pager__controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem;
+}
+
+.jl-pager__size {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    margin: 0;
+    color: var(--jl-muted);
+    font-size: .85rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.jl-pager__size .custom-select {
+    width: auto;
+    min-width: 64px;
+}
+
+.jl-pager .page-link {
+    cursor: pointer;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 575.98px) {
+    .jl-pager {
+        justify-content: center;
+    }
+}
+
+@media print {
+    tr.jl-pager-hidden {
+        display: table-row !important;
+    }
+
+    .jl-pager {
+        display: none !important;
+    }
+}
+
 /* ============================================================
    15. Dashboard & hub tiles
    ============================================================ */

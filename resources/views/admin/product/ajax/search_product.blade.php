@@ -1,5 +1,5 @@
 <div class="table-responsive">
-  <table style="width:100%" class="table table-bordered table-striped">
+  <table data-paginate="false" style="width:100%" class="table table-bordered table-striped">
     <thead>
         <tr>
             <th class="jl-thumb-cell">صورة الصنف</th>

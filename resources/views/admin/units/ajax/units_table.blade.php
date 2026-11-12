@@ -5,7 +5,7 @@
 </div>
 
 <div class="table-responsive">
-    <table class="table table-bordered table-striped">
+    <table data-paginate="false" class="table table-bordered table-striped">
         <thead>
         <tr>
             <th>الاسم</th>

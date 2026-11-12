@@ -1,4 +1,4 @@
-    <table style="width: 100%" class="table-sm table-bordered table-hover">
+    <table data-paginate="false" style="width: 100%" class="table-sm table-bordered table-hover">
         <thead>
             <tr>
                 <th></th>

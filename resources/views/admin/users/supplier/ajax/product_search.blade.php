@@ -1,4 +1,4 @@
-<table id="example1" class="table table-hover table-bordered table-sm">
+<table data-paginate="false" id="example1" class="table table-hover table-bordered table-sm">
     <thead>
         <tr>
             <th></th>

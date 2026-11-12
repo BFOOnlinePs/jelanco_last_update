@@ -43,4 +43,16 @@ class ProductModel extends Model
         }
         return $query;
     }
+
+
+    public function product()
+    {
+        return $this->belongsTo(ProductModel::class, 'product_id', 'id');
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(UnitsModel::class, 'unit_id', 'id');
+    }
+
 }

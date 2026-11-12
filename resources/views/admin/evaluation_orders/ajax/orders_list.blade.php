@@ -1,6 +1,6 @@
 <div class="col-sm-12">
     <div class="table-responsive">
-        <table class="table  table-bordered table-hover dataTable dtr-inline">
+        <table data-paginate="false" class="table  table-bordered table-hover dataTable dtr-inline">
             <thead>
                 <tr>
                     {{--                <th>رقم طلبية الشراء</th> --}}

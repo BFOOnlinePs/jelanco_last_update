@@ -1,5 +1,5 @@
 <div class="table-responsive">
-    <table class="table table-hover border">
+    <table data-paginate="false" class="table table-hover border">
         <thead>
             <tr>
                 <th>الرقم</th>
